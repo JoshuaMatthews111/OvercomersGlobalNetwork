@@ -1,12 +1,13 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Heart, CheckCircle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-export default function GiveSuccessPage() {
+function GiveSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
 
@@ -92,5 +93,17 @@ export default function GiveSuccessPage() {
 
       <Footer />
     </main>
+  );
+}
+
+export default function GiveSuccessPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-amber-500">Loading...</div>
+      </main>
+    }>
+      <GiveSuccessContent />
+    </Suspense>
   );
 }
