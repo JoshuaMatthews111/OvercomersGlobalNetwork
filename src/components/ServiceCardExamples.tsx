@@ -24,7 +24,7 @@ import {
   Lightbulb,
   Compass,
   Anchor,
-  Dove,
+  Bird,
   Cross
 } from 'lucide-react';
 
@@ -34,7 +34,7 @@ const iconSets = {
   spiritual: [Church, Heart, Star, Sparkles],
   modern: [Zap, Target, Globe, Flame],
   elegant: [Crown, Diamond, Award, Shield],
-  biblical: [Dove, Cross, Anchor, Compass],
+  biblical: [Bird, Cross, Anchor, Compass],
   prophetic: [Lightbulb, Star, Sparkles, Flame]
 };
 
@@ -238,7 +238,7 @@ export const iconExamples = {
     { name: 'Sparkles', icon: Sparkles, description: 'Glory & Presence' }
   ],
   biblical: [
-    { name: 'Dove', icon: Dove, description: 'Holy Spirit' },
+    { name: 'Bird', icon: Bird, description: 'Holy Spirit' },
     { name: 'Cross', icon: Cross, description: 'Salvation' },
     { name: 'Anchor', icon: Anchor, description: 'Hope & Faith' },
     { name: 'Compass', icon: Compass, description: 'Direction & Purpose' }
