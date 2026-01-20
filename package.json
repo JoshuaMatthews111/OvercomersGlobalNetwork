@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "bunx tsc --noEmit && next lint",
-    "format": "bunx biome format --write"
+    "format": "bunx biome format --write",
+    "export": "next export"
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.6.3",
