@@ -1,0 +1,40 @@
+name: Deploy to IONOS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Build
+      run: npm run build
+      env:
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+        NEXT_PUBLIC_BASE_URL: https://overcomerglobalnetwork.com
+        NEXT_PUBLIC_ADMIN_EMAIL: admin@overcomers.org
+        NEXT_PUBLIC_ADMIN_PASSWORD: OGN2026Admin!
+        
+    - name: Export static files
+      run: npm run export
+      
+    - name: Deploy to IONOS
+      uses: ionos-deploy/action@v1
+      with:
+        api-key: ${{ secrets.IONOS_API_KEY }}
+        domain: overcomerglobalnetwork.com
+        dist-folder: ./out
+        account-id: ${{ secrets.IONOS_ACCOUNT_ID }}
