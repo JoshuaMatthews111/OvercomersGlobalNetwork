@@ -9,6 +9,11 @@ interface Event {
   image: string;
   title: string;
   date?: string;
+  description?: string;
+  location?: string;
+  startTime?: string;
+  endTime?: string;
+  eventDate?: string;
 }
 
 // Default placeholder events - these will be replaced by admin-uploaded events
@@ -43,6 +48,8 @@ export function EventsCarousel() {
   const [events, setEvents] = useState<Event[]>(defaultEvents);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Load events from localStorage (admin can add these)
   useEffect(() => {
@@ -81,6 +88,25 @@ export function EventsCarousel() {
     setCurrentIndex(index);
   };
 
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+    setShowModal(true);
+    setIsAutoPlaying(false);
+  };
+
+  const handleAddToCalendar = (event: Event) => {
+    const startDate = event.eventDate || new Date().toISOString().split('T')[0];
+    const startTime = event.startTime || '10:00';
+    const endTime = event.endTime || '12:00';
+    
+    const start = `${startDate}T${startTime}:00`;
+    const end = `${startDate}T${endTime}:00`;
+    
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${start.replace(/[-:]/g, '')}/${end.replace(/[-:]/g, '')}&details=${encodeURIComponent(event.description || 'Join us for this special event!')}&location=${encodeURIComponent(event.location || 'Overcomers Global Network')}`;
+    
+    window.open(googleCalendarUrl, '_blank');
+  };
+
   if (events.length === 0) return null;
 
   return (
@@ -116,7 +142,8 @@ export function EventsCarousel() {
             {events.map((event, index) => (
               <div
                 key={event.id}
-                className={`absolute inset-0 transition-all duration-700 ease-out ${
+                onClick={() => handleEventClick(event)}
+                className={`absolute inset-0 transition-all duration-700 ease-out cursor-pointer group ${
                   index === currentIndex 
                     ? 'opacity-100 scale-100 z-10' 
                     : index === (currentIndex - 1 + events.length) % events.length
@@ -139,10 +166,11 @@ export function EventsCarousel() {
                 
                 {/* Event Info */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{event.title}</h3>
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">{event.title}</h3>
                   {event.date && (
                     <p className="text-amber-400 font-medium">{event.date}</p>
                   )}
+                  <p className="text-white/80 text-sm mt-2">Click to view details</p>
                 </div>
               </div>
             ))}
@@ -218,6 +246,89 @@ export function EventsCarousel() {
           </div>
         </div>
       </div>
+
+      {/* Event Detail Modal */}
+      {showModal && selectedEvent && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Flyer Image */}
+            <div className="relative aspect-[16/9] md:aspect-[2/1]">
+              <Image
+                src={selectedEvent.image}
+                alt={selectedEvent.title}
+                fill
+                className="object-cover rounded-t-2xl"
+              />
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Event Details */}
+            <div className="p-6 md:p-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">{selectedEvent.title}</h2>
+              
+              {selectedEvent.description && (
+                <p className="text-gray-600 mb-6">{selectedEvent.description}</p>
+              )}
+
+              <div className="space-y-3 mb-6">
+                {selectedEvent.date && (
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <Calendar className="w-5 h-5 text-amber-600" />
+                    <span className="font-medium">{selectedEvent.date}</span>
+                  </div>
+                )}
+                {selectedEvent.location && (
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{selectedEvent.location}</span>
+                  </div>
+                )}
+                {selectedEvent.startTime && selectedEvent.endTime && (
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{selectedEvent.startTime} - {selectedEvent.endTime}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => handleAddToCalendar(selectedEvent)}
+                  className="flex-1 bg-amber-500 hover:bg-amber-600 text-white px-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                >
+                  <Calendar className="w-5 h-5" />
+                  Add to Calendar
+                </button>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 border-2 border-gray-200 text-gray-700 px-6 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Animation Keyframes */}
       <style jsx>{`

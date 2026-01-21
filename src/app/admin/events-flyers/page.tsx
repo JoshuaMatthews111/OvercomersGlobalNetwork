@@ -10,6 +10,11 @@ interface EventFlyer {
   image: string;
   title: string;
   date: string;
+  description?: string;
+  location?: string;
+  startTime?: string;
+  endTime?: string;
+  eventDate?: string;
 }
 
 export default function AdminEventsFlyersPage() {
@@ -19,6 +24,11 @@ export default function AdminEventsFlyersPage() {
     title: '',
     date: '',
     image: '',
+    description: '',
+    location: 'Overcomers Global Network, 7519 Mentor Ave, Unit A106, Mentor, OH 44060',
+    startTime: '10:00',
+    endTime: '12:00',
+    eventDate: new Date().toISOString().split('T')[0],
   });
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -53,7 +63,16 @@ export default function AdminEventsFlyersPage() {
     };
 
     saveFlyers([...flyers, flyer]);
-    setNewFlyer({ title: '', date: '', image: '' });
+    setNewFlyer({ 
+      title: '', 
+      date: '', 
+      image: '',
+      description: '',
+      location: 'Overcomers Global Network, 7519 Mentor Ave, Unit A106, Mentor, OH 44060',
+      startTime: '10:00',
+      endTime: '12:00',
+      eventDate: new Date().toISOString().split('T')[0],
+    });
     setShowAddForm(false);
   };
 
@@ -101,10 +120,10 @@ export default function AdminEventsFlyersPage() {
           <div className="bg-white rounded-2xl p-6 max-w-lg w-full">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Add Event Flyer</h2>
             
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Event Title
+                  Event Title *
                 </label>
                 <input
                   type="text"
@@ -117,15 +136,79 @@ export default function AdminEventsFlyersPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Event Date (optional)
+                  Display Date (e.g., "March 15-17, 2026")
                 </label>
                 <input
                   type="text"
                   value={newFlyer.date}
                   onChange={(e) => setNewFlyer({ ...newFlyer, date: e.target.value })}
-                  placeholder="e.g., March 15-17, 2026"
+                  placeholder="e.g., March 15-17, 2026 or Every Sunday"
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Event Description
+                </label>
+                <textarea
+                  value={newFlyer.description}
+                  onChange={(e) => setNewFlyer({ ...newFlyer, description: e.target.value })}
+                  placeholder="Describe what this event is about..."
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none resize-none"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Event Date (for calendar)
+                  </label>
+                  <input
+                    type="date"
+                    value={newFlyer.eventDate}
+                    onChange={(e) => setNewFlyer({ ...newFlyer, eventDate: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    value={newFlyer.location}
+                    onChange={(e) => setNewFlyer({ ...newFlyer, location: e.target.value })}
+                    placeholder="Event location"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Start Time
+                  </label>
+                  <input
+                    type="time"
+                    value={newFlyer.startTime}
+                    onChange={(e) => setNewFlyer({ ...newFlyer, startTime: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    End Time
+                  </label>
+                  <input
+                    type="time"
+                    value={newFlyer.endTime}
+                    onChange={(e) => setNewFlyer({ ...newFlyer, endTime: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div>
@@ -227,10 +310,14 @@ export default function AdminEventsFlyersPage() {
           <h3 className="font-bold text-gray-900 mb-2">How to add event flyers:</h3>
           <ol className="list-decimal list-inside text-gray-600 space-y-2 text-sm">
             <li>Upload your flyer image to the <code className="bg-white px-2 py-0.5 rounded">/public/images/events/</code> folder</li>
-            <li>Click "Add Flyer" and enter the event details</li>
+            <li>Click "Add Flyer" and enter the event details (title, description, date, time, location)</li>
             <li>Use the image path like <code className="bg-white px-2 py-0.5 rounded">/images/events/your-flyer.jpg</code></li>
             <li>The flyer will appear in the Events Carousel on the homepage</li>
+            <li>Users can click the flyer to see full details and add the event to their calendar</li>
           </ol>
+          <div className="mt-4 p-3 bg-white rounded-lg">
+            <p className="text-gray-700 text-sm"><strong>Note:</strong> Fill in all event details so users can add the event to Google Calendar with accurate information.</p>
+          </div>
         </div>
       </div>
     </main>
