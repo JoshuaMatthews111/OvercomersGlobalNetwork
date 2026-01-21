@@ -5,6 +5,13 @@ import Link from 'next/link';
 
 const contactMethods = [
   {
+    icon: MessageCircle,
+    title: 'WhatsApp Community',
+    description: 'Join our WhatsApp for updates and fellowship',
+    value: 'overcomersglobalnetwork',
+    href: 'https://wa.me/1234567890',
+  },
+  {
     icon: Mail,
     title: 'Email Us',
     description: 'Send us a message anytime',
@@ -14,8 +21,8 @@ const contactMethods = [
   {
     icon: MapPin,
     title: 'Visit Us',
-    description: 'Our main office location',
-    value: '7519 Mentor Ave, Suite A106, Painesville, OH 44077',
+    description: 'Our locations - Ohio & Tampa',
+    value: '7519 Mentor Ave, Suite A106, Painesville, OH 44077 • Tampa, FL',
     href: '#',
   },
   {

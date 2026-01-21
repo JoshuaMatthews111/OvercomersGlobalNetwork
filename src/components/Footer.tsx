@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Facebook, Instagram, Youtube, Twitter, Mail, MapPin, Phone, Globe } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Twitter, Mail, MapPin, Phone, Globe, MessageCircle, Music } from 'lucide-react';
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -22,10 +22,11 @@ const connectLinks = [
 ];
 
 const socialLinks = [
-  { icon: Facebook, href: '#', label: 'Facebook' },
-  { icon: Instagram, href: '#', label: 'Instagram' },
+  { icon: Facebook, href: 'https://facebook.com/overcomersglobalnetwork', label: 'Facebook' },
+  { icon: Instagram, href: 'https://instagram.com/overcomersglobalnetwork', label: 'Instagram' },
+  { icon: Music, href: 'https://tiktok.com/@overcomersglobalnetwork', label: 'TikTok' },
   { icon: Youtube, href: '#', label: 'YouTube' },
-  { icon: Twitter, href: '#', label: 'Twitter' },
+  { icon: MessageCircle, href: 'https://wa.me/1234567890', label: 'WhatsApp' },
 ];
 
 export function Footer() {
@@ -83,6 +84,8 @@ export function Footer() {
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
               A global discipleship network gathering from home to home, 
               making disciples who make disciples across the nations.
+              <br /><br />
+              <span className="text-amber-400 font-medium">Join our WhatsApp community for updates!</span>
             </p>
             {/* Social Links */}
             <div className="flex gap-3">
@@ -141,7 +144,8 @@ export function Footer() {
                 <MapPin className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">
                   7519 Mentor Ave, Suite A106<br />
-                  Painesville, OH 44077
+                  Painesville, OH 44077<br />
+                  <span className="text-amber-400 font-medium">• Tampa, FL Location</span>
                 </span>
               </li>
               <li className="flex items-center gap-3">
