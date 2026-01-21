@@ -26,10 +26,9 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError('');
 
-    // In production, this should validate against a secure backend
-    // For now, we check against environment variables or a simple hash
-    const validEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@ogn.org';
-    const validPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123';
+    // Admin credentials
+    const validEmail = 'mr.matthews2022@gmail.com';
+    const validPassword = 'JoshFlaww96!!';
 
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
