@@ -51,24 +51,9 @@ export default function GivePage() {
     setError('');
 
     try {
-      const response = await fetch('/api/donate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: amount,
-          donationType: 'General Donation',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      // Use Stripe Payment Link for static site
+      // Redirect to Givelify for donations (works without server)
+      window.location.href = 'https://giv.li/b5jpv9';
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);

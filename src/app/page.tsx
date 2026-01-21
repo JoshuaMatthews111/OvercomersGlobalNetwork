@@ -3,6 +3,7 @@ import { HeroSection } from '@/components/HeroSection';
 import { PathwayTiles } from '@/components/PathwayTiles';
 import { HowItWorks } from '@/components/HowItWorks';
 import { ServiceSchedule } from '@/components/ServiceSchedule';
+import { EventsCarousel } from '@/components/EventsCarousel';
 import { FeaturedVideo } from '@/components/FeaturedVideo';
 import { AboutProphet } from '@/components/AboutProphet';
 import { GlobalNetwork } from '@/components/GlobalNetwork';
@@ -22,6 +23,7 @@ export default function Home() {
       <PathwayTiles />
       <HowItWorks />
       <ServiceSchedule />
+      <EventsCarousel />
       <FeaturedVideo />
       <AboutProphet />
       <GlobalNetwork />

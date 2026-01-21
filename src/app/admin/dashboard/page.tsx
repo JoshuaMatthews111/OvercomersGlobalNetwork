@@ -15,7 +15,9 @@ import {
   TrendingUp,
   Clock,
   ChevronRight,
-  Bell
+  Bell,
+  BookOpen,
+  ImageIcon
 } from 'lucide-react';
 
 interface Order {
@@ -104,6 +106,20 @@ export default function AdminDashboard() {
           >
             <FileText className="w-5 h-5" />
             Content
+          </Link>
+          <Link
+            href="/admin/blog"
+            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+          >
+            <BookOpen className="w-5 h-5" />
+            Blog Posts
+          </Link>
+          <Link
+            href="/admin/events-flyers"
+            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+          >
+            <ImageIcon className="w-5 h-5" />
+            Event Flyers
           </Link>
           <Link
             href="/admin/settings"
@@ -245,14 +261,23 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-6 mt-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           <Link
-            href="/admin/events"
+            href="/admin/blog"
             className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-6 text-white hover:shadow-lg transition-shadow"
           >
-            <Calendar className="w-8 h-8 mb-4" />
-            <h3 className="font-bold text-lg mb-1">Post Event</h3>
-            <p className="text-white/80 text-sm">Create and publish new events</p>
+            <BookOpen className="w-8 h-8 mb-4" />
+            <h3 className="font-bold text-lg mb-1">Write Blog Post</h3>
+            <p className="text-white/80 text-sm">Create and publish blog content</p>
+          </Link>
+
+          <Link
+            href="/admin/events-flyers"
+            className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-6 text-white hover:shadow-lg transition-shadow"
+          >
+            <ImageIcon className="w-8 h-8 mb-4" />
+            <h3 className="font-bold text-lg mb-1">Add Event Flyer</h3>
+            <p className="text-white/80 text-sm">Upload event flyers for carousel</p>
           </Link>
 
           <Link

@@ -262,3 +262,62 @@
     pointer-events: none;
   }
 }
+
+/* Mobile Responsiveness Fixes */
+@layer base {
+  /* Ensure full site displays on mobile */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* Fix for mobile viewport */
+  @media screen and (max-width: 768px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    /* Ensure text doesn't overflow */
+    h1, h2, h3, h4, h5, h6, p {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* Fix navigation on mobile */
+    nav {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    /* Ensure images scale properly */
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Fix grid layouts on mobile */
+    .grid {
+      gap: 1rem;
+    }
+  }
+
+  /* Small mobile devices */
+  @media screen and (max-width: 480px) {
+    .container {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+  }
+}

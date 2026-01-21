@@ -23,6 +23,7 @@ export function Navigation() {
     { label: 'Discipleship', href: '/discipleship' },
     { label: 'Watch', href: '/watch' },
     { label: 'Resources', href: '/resources' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Events', href: '/events' },
     { label: 'Give', href: '/give' },
     { label: 'Connect', href: '/connect' },

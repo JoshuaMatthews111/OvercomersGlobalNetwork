@@ -29,7 +29,7 @@ const resources = [
     cover: '/images/books/book-2.png',
     description: 'Practical wisdom for time management and productivity.',
     author: 'Prophet Joshua Matthews',
-    price: 15.99,
+    price: 50.00,
     preOrder: false,
   },
   {

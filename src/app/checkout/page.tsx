@@ -67,31 +67,13 @@ export default function CheckoutPage() {
       orders.push(newOrder);
       localStorage.setItem('ogn-orders', JSON.stringify(orders));
 
-      // Create Stripe checkout session
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: cartItems,
-          customerEmail: formData.email,
-          shippingAddress: formData,
-          orderId: orderId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Clear cart before redirect
+      // Clear cart
       localStorage.removeItem('ogn-cart');
 
-      // Redirect to Stripe checkout
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      // For static site, redirect to Givelify with order info
+      // Show order submitted page which directs to Givelify
+      setOrderSubmitted(true);
+      setIsLoading(false);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);
