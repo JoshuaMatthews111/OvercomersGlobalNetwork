@@ -6,6 +6,27 @@ import Link from 'next/link';
 
 export function HeroSection() {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      headline: "Overcomers Global Network is a movement of believers gathering in local assemblies and homes, making disciples, and advancing God's Kingdom—one person at a time.",
+      isScripture: false
+    },
+    {
+      headline: "And Jesus came and spake unto them, saying,\nAll power is given unto me in heaven and in earth.\nGo ye therefore, and teach all nations.",
+      isScripture: true,
+      reference: "Matthew 28:18–19 (KJV)"
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 7000); // 7 seconds transition
+
+    return () => clearInterval(interval);
+  }, [slides.length]);
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-gray-900 mb-0">
@@ -51,11 +72,59 @@ export function HeroSection() {
             <span className="text-white">Across the Nations</span>
           </h1>
 
-          {/* Subtext */}
-          <p className="text-white/80 text-lg md:text-xl leading-relaxed animate-fadeInUp delay-200 max-w-2xl">
-            Overcomers Global Network is a movement of believers gathering in homes, 
-            making disciples, and advancing God's Kingdom — one house church at a time.
-          </p>
+          {/* Sliding Text Content */}
+          <div className="relative h-24 md:h-20 overflow-hidden">
+            <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
+              {slides.map((slide, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+                    index === currentSlide
+                      ? 'opacity-100 translate-y-0'
+                      : index < currentSlide
+                      ? 'opacity-0 -translate-y-4'
+                      : 'opacity-0 translate-y-4'
+                  }`}
+                >
+                  <p 
+                    className={`text-white/80 leading-relaxed max-w-3xl ${
+                      slide.isScripture 
+                        ? 'text-lg md:text-xl italic font-light' 
+                        : 'text-xl md:text-2xl font-semibold'
+                    }`}
+                  >
+                    {slide.headline.split('\n').map((line, lineIndex) => (
+                      <span key={lineIndex}>
+                        {line}
+                        {lineIndex < slide.headline.split('\n').length - 1 && <br />}
+                      </span>
+                    ))}
+                    {slide.isScripture && (
+                      <span className="block text-amber-400 text-base md:text-lg mt-2 not-italic">
+                        — {slide.reference}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Slide Indicators */}
+          <div className="flex gap-2 animate-fadeInUp delay-250">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentSlide
+                    ? 'bg-amber-400 w-8'
+                    : 'bg-white/30 hover:bg-white/50'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 animate-fadeInUp delay-300">
