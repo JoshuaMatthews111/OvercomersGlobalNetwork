@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Overcomers Global Network
+
+[![Deploy to GitHub Pages](https://github.com/JoshuaMatthews111/OvercomersGlobalNetwork/actions/workflows/deploy.yml/badge.svg)](https://github.com/JoshuaMatthews111/OvercomersGlobalNetwork/actions/workflows/deploy.yml)
+
+This is the official website for Overcomers Global Network, built with [Next.js](https://nextjs.org).
 
 ## Getting Started
 
@@ -29,8 +33,25 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Live Site
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Main Website**: https://overcomersglobalnetwork.com
+- **GitHub Pages**: https://joshuamatthews111.github.io/OvercomersGlobalNetwork
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Admin Access
+
+- **URL**: https://overcomersglobalnetwork.com/admin
+- **Email**: admin@overcomers.org
+- **Password**: OGN2026Admin!
+
+## Deployment
+
+This site is automatically deployed to GitHub Pages using GitHub Actions. The workflow builds the Next.js application and deploys the static files to GitHub Pages.
+
+## Features
+
+- ✅ Stripe payment integration
+- ✅ Admin dashboard
+- ✅ Responsive design
+- ✅ Custom domain support
+- ✅ SEO optimization
