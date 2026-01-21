@@ -9,7 +9,7 @@ const contactMethods = [
     title: 'WhatsApp Community',
     description: 'Join our WhatsApp for updates and fellowship',
     value: 'overcomersglobalnetwork',
-    href: 'https://wa.me/1234567890',
+    href: 'https://chat.whatsapp.com/IiYmE72JkpFGALLN87smHi',
   },
   {
     icon: Mail,

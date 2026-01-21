@@ -26,7 +26,7 @@ const socialLinks = [
   { icon: Instagram, href: 'https://instagram.com/overcomersglobalnetwork', label: 'Instagram' },
   { icon: Music, href: 'https://tiktok.com/@overcomersglobalnetwork', label: 'TikTok' },
   { icon: Youtube, href: '#', label: 'YouTube' },
-  { icon: MessageCircle, href: 'https://wa.me/1234567890', label: 'WhatsApp' },
+  { icon: MessageCircle, href: 'https://chat.whatsapp.com/IiYmE72JkpFGALLN87smHi', label: 'WhatsApp' },
 ];
 
 export function Footer() {
