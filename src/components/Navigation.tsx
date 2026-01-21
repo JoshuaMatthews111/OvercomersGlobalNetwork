@@ -32,7 +32,7 @@ export function Navigation() {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? 'bg-black/10 backdrop-blur-xl border-b border-white/10' 
+        ? 'bg-black/60 backdrop-blur-xl border-b border-amber-500/20' 
         : 'bg-transparent backdrop-blur-sm'
     }`}>
       <div className="container mx-auto px-4">
@@ -57,7 +57,7 @@ export function Navigation() {
                 href={item.href}
                 className={`transition-colors text-sm font-medium ${
                   scrolled 
-                    ? 'text-gray-800 hover:text-amber-600' 
+                    ? 'text-white hover:text-amber-400' 
                     : 'text-white hover:text-amber-400'
                 }`}
               >
@@ -73,7 +73,7 @@ export function Navigation() {
               className={`px-6 py-2.5 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-amber-500/30 ${
                   scrolled 
                     ? 'bg-amber-500 hover:bg-amber-600 text-white' 
-                    : 'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30'
+                    : 'bg-amber-500 hover:bg-amber-600 text-white'
                 }`}
             >
               Join Our Network
@@ -85,7 +85,7 @@ export function Navigation() {
             onClick={() => setIsOpen(!isOpen)}
             className={`lg:hidden p-2 ${
               scrolled 
-                ? 'text-gray-900' 
+                ? 'text-white' 
                 : 'text-white'
             }`}
             aria-label="Toggle menu"
