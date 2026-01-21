@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Bell,
   BookOpen,
-  ImageIcon
+  ImageIcon,
+  Video
 } from 'lucide-react';
 
 interface Order {
@@ -120,6 +121,13 @@ export default function AdminDashboard() {
           >
             <ImageIcon className="w-5 h-5" />
             Event Flyers
+          </Link>
+          <Link
+            href="/admin/prophet-schedule"
+            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+          >
+            <Video className="w-5 h-5" />
+            Prophet Schedule
           </Link>
           <Link
             href="/admin/settings"
@@ -278,6 +286,15 @@ export default function AdminDashboard() {
             <ImageIcon className="w-8 h-8 mb-4" />
             <h3 className="font-bold text-lg mb-1">Add Event Flyer</h3>
             <p className="text-white/80 text-sm">Upload event flyers for carousel</p>
+          </Link>
+
+          <Link
+            href="/admin/prophet-schedule"
+            className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 text-white hover:shadow-lg transition-shadow"
+          >
+            <Video className="w-8 h-8 mb-4" />
+            <h3 className="font-bold text-lg mb-1">Prophet Schedule</h3>
+            <p className="text-white/80 text-sm">Manage 1-on-1 session availability</p>
           </Link>
 
           <Link

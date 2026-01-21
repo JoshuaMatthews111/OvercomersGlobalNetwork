@@ -51,9 +51,9 @@ export default function GivePage() {
     setError('');
 
     try {
-      // Use Stripe Payment Link for static site
-      // Redirect to Givelify for donations (works without server)
-      window.location.href = 'https://giv.li/b5jpv9';
+      // Redirect to Stripe Payment Link
+      const stripeLink = `https://donate.stripe.com/test_YOURLINK?amount=${Math.round(amount * 100)}`;
+      window.location.href = stripeLink;
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);
@@ -160,7 +160,7 @@ export default function GivePage() {
                       key={option.amount}
                       onClick={() => {
                         setSelectedAmount(option.amount);
-                        setCustomAmount('');
+                        setCustomAmount(option.amount.toString());
                       }}
                       className={`p-4 border-2 rounded-xl transition-all text-left ${
                         selectedAmount === option.amount
@@ -272,11 +272,12 @@ export default function GivePage() {
             </div>
           </div>
 
-          {/* Givelify Option */}
+          {/* Direct Givelify Option */}
           <div className="mt-8 max-w-md mx-auto text-center">
-            <p className="text-gray-500 text-sm mb-3">You can also give through Givelify:</p>
+            <p className="text-gray-500 text-sm mb-3">Or give directly through Givelify:</p>
             <a 
               target="_blank" 
+              rel="noopener noreferrer"
               href="https://giv.li/b5jpv9"
               className="inline-block hover:opacity-90 transition-opacity"
             >
@@ -286,6 +287,7 @@ export default function GivePage() {
                 className="h-12 mx-auto"
               />
             </a>
+            <p className="text-gray-400 text-xs mt-2">Opens in new window</p>
           </div>
         </div>
       </section>
