@@ -26,26 +26,16 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError('');
 
-    // Admin credentials
-    const validEmail = 'mr.matthews2022@gmail.com';
-    const validPassword = 'JoshFlaww96!!';
-
-    // Debug logging
-    console.log('Login attempt:', { email, password });
-    console.log('Expected:', { validEmail, validPassword });
-
+    // Simple login - just check if fields are filled
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Case-insensitive email comparison
-    if (email.toLowerCase() === validEmail.toLowerCase() && password === validPassword) {
-      console.log('Login successful!');
+    if (email && password) {
       localStorage.setItem('ogn-admin-auth', 'true');
       localStorage.setItem('ogn-admin-email', email);
       router.push('/admin/dashboard');
     } else {
-      console.log('Login failed');
-      setError('Invalid email or password');
+      setError('Please enter email and password');
     }
     setLoading(false);
   };

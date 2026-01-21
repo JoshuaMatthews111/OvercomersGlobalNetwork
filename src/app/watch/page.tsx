@@ -29,50 +29,6 @@ const videos = [
     category: 'Leadership',
     featured: false,
   },
-  {
-    id: 3,
-    title: 'Prayer That Moves Mountains',
-    description: 'Unlocking the power of intercession in your life.',
-    thumbnail: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=600&h=340&fit=crop',
-    youtubeId: 'Ic2upPmt5lQ',
-    duration: '52:00',
-    date: 'Jan 1, 2025',
-    category: 'Prayer',
-    featured: false,
-  },
-  {
-    id: 4,
-    title: 'Kingdom Economics',
-    description: 'Biblical principles for stewardship and generosity.',
-    thumbnail: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&h=340&fit=crop',
-    youtubeId: 'MJhFu-xDZm8',
-    duration: '41:00',
-    date: 'Dec 25, 2024',
-    category: 'Kingdom',
-    featured: false,
-  },
-  {
-    id: 5,
-    title: 'Raising Kingdom Families',
-    description: 'Discipling the next generation in your home.',
-    thumbnail: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600&h=340&fit=crop',
-    youtubeId: 'Ic2upPmt5lQ',
-    duration: '47:00',
-    date: 'Dec 18, 2024',
-    category: 'Family',
-    featured: false,
-  },
-  {
-    id: 6,
-    title: 'The Overcomer\'s Mindset',
-    description: 'Developing a victorious perspective in every circumstance.',
-    thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&h=340&fit=crop',
-    youtubeId: 'MJhFu-xDZm8',
-    duration: '35:00',
-    date: 'Dec 11, 2024',
-    category: 'Discipleship',
-    featured: false,
-  },
 ];
 
 export default function WatchPage() {
@@ -109,12 +65,14 @@ export default function WatchPage() {
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-center justify-center">
-                  <Link
-                    href={`/watch/${featuredVideo.id}`}
+                  <a
+                    href={`https://www.youtube.com/watch?v=${featuredVideo.youtubeId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-20 h-20 bg-amber-500 hover:bg-amber-600 rounded-full flex items-center justify-center transition-all hover:scale-110"
                   >
                     <Play className="w-8 h-8 text-white ml-1" fill="white" />
-                  </Link>
+                  </a>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent">
                   <span className="inline-block bg-amber-500 text-white text-xs font-medium px-3 py-1 rounded-full mb-3">
@@ -179,9 +137,11 @@ export default function WatchPage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {regularVideos.map((video) => (
-              <Link
+              <a
                 key={video.id}
-                href={`/watch/${video.id}`}
+                href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group"
               >
                 <div className="relative aspect-video rounded-xl overflow-hidden mb-4">
@@ -217,7 +177,7 @@ export default function WatchPage() {
                     {video.date}
                   </span>
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
 
