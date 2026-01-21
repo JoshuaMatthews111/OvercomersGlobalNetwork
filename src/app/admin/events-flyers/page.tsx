@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Plus, Trash2, GripVertical, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, ImageIcon, Upload, Link as LinkIcon } from 'lucide-react';
 
 interface EventFlyer {
   id: number;
@@ -31,6 +31,22 @@ export default function AdminEventsFlyersPage() {
     eventDate: new Date().toISOString().split('T')[0],
   });
   const [showAddForm, setShowAddForm] = useState(false);
+  const [imageInputType, setImageInputType] = useState<'url' | 'stock'>('url');
+
+  const stockEventImages = [
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800',
+    'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800',
+    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
+    'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800',
+    'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800',
+    'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800',
+    'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800',
+    'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800',
+    'https://images.unsplash.com/photo-1559223607-a43c990c692c?w=800',
+    'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800',
+    'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800',
+  ];
 
   useEffect(() => {
     const auth = localStorage.getItem('ogn-admin-auth');
@@ -213,18 +229,68 @@ export default function AdminEventsFlyersPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Flyer Image URL
+                  Flyer Image
                 </label>
-                <input
-                  type="text"
-                  value={newFlyer.image}
-                  onChange={(e) => setNewFlyer({ ...newFlyer, image: e.target.value })}
-                  placeholder="https://... or /images/events/flyer.jpg"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none"
-                />
-                <p className="text-gray-500 text-xs mt-1">
-                  Upload your flyer image to /public/images/events/ folder and use the path like /images/events/your-flyer.jpg
-                </p>
+                
+                {/* Image Input Type Toggle */}
+                <div className="flex gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setImageInputType('url')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      imageInputType === 'url'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    URL / Path
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageInputType('stock')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      imageInputType === 'stock'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                    Stock Images
+                  </button>
+                </div>
+
+                {imageInputType === 'url' ? (
+                  <>
+                    <input
+                      type="text"
+                      value={newFlyer.image}
+                      onChange={(e) => setNewFlyer({ ...newFlyer, image: e.target.value })}
+                      placeholder="https://... or /images/events/flyer.jpg"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none"
+                    />
+                    <p className="text-gray-500 text-xs mt-1">
+                      Upload your flyer to /public/images/events/ folder and use path like /images/events/your-flyer.jpg
+                    </p>
+                  </>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2 p-3 bg-gray-50 rounded-xl max-h-48 overflow-y-auto">
+                    {stockEventImages.map((img, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setNewFlyer({ ...newFlyer, image: img })}
+                        className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+                          newFlyer.image === img
+                            ? 'border-amber-500 ring-2 ring-amber-500/30'
+                            : 'border-transparent hover:border-gray-300'
+                        }`}
+                      >
+                        <Image src={img} alt="" fill className="object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {newFlyer.image && (
