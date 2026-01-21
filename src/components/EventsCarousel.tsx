@@ -15,21 +15,27 @@ interface Event {
 const defaultEvents: Event[] = [
   {
     id: 1,
-    image: '/images/events/event-1.jpg',
-    title: 'Upcoming Event',
-    date: 'Coming Soon',
+    image: '/images/events/Church Service (1).jpg',
+    title: 'Church Service',
+    date: 'Every Sunday',
   },
   {
     id: 2,
-    image: '/images/events/event-2.jpg',
-    title: 'Upcoming Event',
+    image: '/images/events/Freshhand Fire (3).jpg',
+    title: 'Fresh Fire Conference',
     date: 'Coming Soon',
   },
   {
     id: 3,
-    image: '/images/events/event-3.jpg',
-    title: 'Upcoming Event',
-    date: 'Coming Soon',
+    image: '/images/events/FOLLOW US ON TIKTOK.jpg',
+    title: 'Follow Us Online',
+    date: 'Daily Content',
+  },
+  {
+    id: 4,
+    image: '/images/events/Church (1).mp4',
+    title: 'Service Highlights',
+    date: 'Weekly',
   },
 ];
 
