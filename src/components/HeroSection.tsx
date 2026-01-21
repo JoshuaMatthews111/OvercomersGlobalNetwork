@@ -55,8 +55,8 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 min-h-screen flex items-center relative z-10 pt-20">
-        <div className="max-w-4xl space-y-8">
+      <div className="container mx-auto px-4 sm:px-6 min-h-screen flex items-center relative z-10 pt-16 sm:pt-20 pb-20 sm:pb-8">
+        <div className="max-w-4xl space-y-4 sm:space-y-6 md:space-y-8">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 animate-fadeIn">
             <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
@@ -73,7 +73,7 @@ export function HeroSection() {
           </h1>
 
           {/* Sliding Text Content */}
-          <div className="relative h-48 sm:h-40 md:h-32 overflow-hidden">
+          <div className="relative h-36 sm:h-32 md:h-28 overflow-visible">
             <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
               {slides.map((slide, index) => (
                 <div
@@ -86,12 +86,12 @@ export function HeroSection() {
                       : 'opacity-0 translate-y-4'
                   }`}
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-1 sm:space-y-2">
                     <p 
-                      className={`text-white/80 leading-relaxed max-w-4xl ${
+                      className={`text-white/90 leading-snug max-w-4xl ${
                         slide.isScripture 
-                          ? 'text-sm sm:text-base md:text-lg lg:text-xl italic font-light' 
-                          : 'text-sm sm:text-base md:text-lg lg:text-xl font-normal'
+                          ? 'text-base sm:text-lg md:text-xl lg:text-2xl italic font-light' 
+                          : 'text-base sm:text-lg md:text-xl lg:text-2xl font-normal'
                       }`}
                     >
                       {slide.headline.split('\n').map((line, lineIndex) => (
@@ -102,7 +102,7 @@ export function HeroSection() {
                       ))}
                     </p>
                     {slide.isScripture && (
-                      <p className="text-amber-400 text-xs sm:text-sm md:text-base lg:text-lg not-italic font-medium">
+                      <p className="text-amber-400 text-sm sm:text-base md:text-lg lg:text-xl not-italic font-semibold">
                         — {slide.reference}
                       </p>
                     )}
@@ -147,25 +147,25 @@ export function HeroSection() {
           </div>
 
           {/* Quick Stats */}
-          <div className="flex flex-wrap gap-4 sm:gap-6 md:gap-8 pt-1 animate-fadeIn delay-400 relative z-20">
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6 md:gap-8 pt-2 animate-fadeIn delay-400 relative z-20">
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-400">50+</div>
-              <div className="text-white text-xs sm:text-sm md:text-base font-bold">Nations Reached</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">50+</div>
+              <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Nations Reached</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-400">200+</div>
-              <div className="text-white text-xs sm:text-sm md:text-base font-bold">House Churches</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">200+</div>
+              <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">House Churches</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-400">5,000+</div>
-              <div className="text-white text-xs sm:text-sm md:text-base font-bold">Disciples Trained</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">5,000+</div>
+              <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Disciples Trained</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+      {/* Scroll Indicator - hidden on mobile */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce hidden sm:block">
         <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
           <div className="w-1.5 h-3 bg-white/50 rounded-full animate-pulse" />
         </div>
