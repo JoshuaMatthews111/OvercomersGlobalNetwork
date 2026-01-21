@@ -2,6 +2,7 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
+  basePath: '/OvercomersGlobalNetwork',
   allowedDevOrigins: ["*.preview.same-app.com"],
   images: {
     unoptimized: true,
