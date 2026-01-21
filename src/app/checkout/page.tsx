@@ -70,10 +70,8 @@ export default function CheckoutPage() {
       // Clear cart
       localStorage.removeItem('ogn-cart');
 
-      // For static site, redirect to Givelify with order info
-      // Show order submitted page which directs to Givelify
-      setOrderSubmitted(true);
-      setIsLoading(false);
+      // Redirect to Stripe checkout
+      window.location.href = 'https://buy.stripe.com/3cI3cw5xM5Hj3VLbg5co000';
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);

@@ -52,8 +52,7 @@ export default function GivePage() {
 
     try {
       // Redirect to Stripe Payment Link
-      const stripeLink = `https://donate.stripe.com/test_YOURLINK?amount=${Math.round(amount * 100)}`;
-      window.location.href = stripeLink;
+      window.location.href = 'https://buy.stripe.com/3cI3cw5xM5Hj3VLbg5co000';
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);
