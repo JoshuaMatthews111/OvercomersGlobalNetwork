@@ -2,7 +2,7 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
-  basePath: '/OvercomersGlobalNetwork',
+  // basePath: '/OvercomersGlobalNetwork', // Commented out for custom domain
   allowedDevOrigins: ["*.preview.same-app.com"],
   images: {
     unoptimized: true,
