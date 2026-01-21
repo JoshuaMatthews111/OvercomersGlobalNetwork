@@ -65,16 +65,9 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-6">
-              <Image
-                src="https://ext.same-assets.com/1353966518/2429820712.png"
-                alt="Overcomers Global Network"
-                width={48}
-                height={48}
-                className="w-12 h-12"
-              />
               <div>
                 <div className="font-bold text-lg">
-                  <span className="gold-shimmer-light">Overcomers</span>
+                  <span className="text-amber-400">Overcomers</span>
                 </div>
                 <div className="text-xs text-gray-400 tracking-wide">
                   Global Network
