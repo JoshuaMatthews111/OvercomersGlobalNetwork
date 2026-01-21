@@ -8,6 +8,7 @@ import Image from 'next/image';
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isDarkPage, setIsDarkPage] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +16,13 @@ export function Navigation() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Check if we're on a page with dark background
+    const darkPages = ['/'];
+    const currentPath = window.location.pathname;
+    setIsDarkPage(darkPages.includes(currentPath));
   }, []);
 
   const menuItems = [
@@ -33,7 +41,9 @@ export function Navigation() {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
         ? 'bg-black/60 backdrop-blur-xl border-b border-amber-500/20' 
-        : 'bg-transparent backdrop-blur-sm'
+        : isDarkPage 
+        ? 'bg-transparent backdrop-blur-sm'
+        : 'bg-white/90 backdrop-blur-xl border-b border-gray-200'
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-28">
@@ -58,7 +68,9 @@ export function Navigation() {
                 className={`transition-colors text-sm font-medium ${
                   scrolled 
                     ? 'text-white hover:text-amber-400' 
-                    : 'text-white hover:text-amber-400'
+                    : isDarkPage
+                    ? 'text-white hover:text-amber-400'
+                    : 'text-gray-900 hover:text-amber-600'
                 }`}
               >
                 {item.label}
@@ -73,6 +85,8 @@ export function Navigation() {
               className={`px-6 py-2.5 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-amber-500/30 ${
                   scrolled 
                     ? 'bg-amber-500 hover:bg-amber-600 text-white' 
+                    : isDarkPage
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white'
                     : 'bg-amber-500 hover:bg-amber-600 text-white'
                 }`}
             >
@@ -86,7 +100,9 @@ export function Navigation() {
             className={`lg:hidden p-2 ${
               scrolled 
                 ? 'text-white' 
-                : 'text-white'
+                : isDarkPage
+                ? 'text-white'
+                : 'text-gray-900'
             }`}
             aria-label="Toggle menu"
           >
