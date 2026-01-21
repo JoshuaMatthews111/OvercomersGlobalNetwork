@@ -66,14 +66,14 @@ export function HeroSection() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] animate-fadeInUp delay-100">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight animate-fadeInUp delay-100">
             <span className="shimmer-text-light">From Home to Home</span>
             <br />
             <span className="text-white">Across the Nations</span>
           </h1>
 
           {/* Sliding Text Content */}
-          <div className="relative h-32 md:h-28 overflow-hidden">
+          <div className="relative h-48 sm:h-40 md:h-32 overflow-hidden">
             <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
               {slides.map((slide, index) => (
                 <div
@@ -90,8 +90,8 @@ export function HeroSection() {
                     <p 
                       className={`text-white/80 leading-relaxed max-w-4xl ${
                         slide.isScripture 
-                          ? 'text-lg md:text-xl italic font-light' 
-                          : 'text-lg md:text-xl font-normal'
+                          ? 'text-sm sm:text-base md:text-lg lg:text-xl italic font-light' 
+                          : 'text-sm sm:text-base md:text-lg lg:text-xl font-normal'
                       }`}
                     >
                       {slide.headline.split('\n').map((line, lineIndex) => (
@@ -102,7 +102,7 @@ export function HeroSection() {
                       ))}
                     </p>
                     {slide.isScripture && (
-                      <p className="text-amber-400 text-base md:text-lg not-italic font-medium">
+                      <p className="text-amber-400 text-xs sm:text-sm md:text-base lg:text-lg not-italic font-medium">
                         — {slide.reference}
                       </p>
                     )}
@@ -129,36 +129,36 @@ export function HeroSection() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 animate-fadeInUp delay-300">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 animate-fadeInUp delay-300">
             <Link
               href="/discipleship"
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg transition-all hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
             >
-              <Users size={20} />
+              <Users size={18} className="sm:w-5 sm:h-5" />
               Join a House Church
             </Link>
             <Link
               href="/watch"
-              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg transition-all hover:scale-105"
             >
-              <Play size={20} />
+              <Play size={18} className="sm:w-5 sm:h-5" />
               Watch Now
             </Link>
           </div>
 
           {/* Quick Stats */}
-          <div className="flex flex-wrap gap-8 pt-1 animate-fadeIn delay-400 relative z-20">
+          <div className="flex flex-wrap gap-4 sm:gap-6 md:gap-8 pt-1 animate-fadeIn delay-400 relative z-20">
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-amber-400">50+</div>
-              <div className="text-white text-base font-bold">Nations Reached</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-400">50+</div>
+              <div className="text-white text-xs sm:text-sm md:text-base font-bold">Nations Reached</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-amber-400">200+</div>
-              <div className="text-white text-base font-bold">House Churches</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-400">200+</div>
+              <div className="text-white text-xs sm:text-sm md:text-base font-bold">House Churches</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-amber-400">5,000+</div>
-              <div className="text-white text-base font-bold">Disciples Trained</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-400">5,000+</div>
+              <div className="text-white text-xs sm:text-sm md:text-base font-bold">Disciples Trained</div>
             </div>
           </div>
         </div>
