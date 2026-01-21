@@ -20,8 +20,8 @@ const videos = [
   },
   {
     id: 2,
-    title: 'Building the House Church',
-    description: 'Practical wisdom for leading home gatherings.',
+    title: 'The Revelation of the Son of God',
+    description: 'Understanding the divine nature and revelation of Jesus Christ as the Son of God.',
     thumbnail: 'https://img.youtube.com/vi/MJhFu-xDZm8/maxresdefault.jpg',
     youtubeId: 'MJhFu-xDZm8',
     duration: '38:00',
