@@ -51,8 +51,9 @@ export default function GivePage() {
     setError('');
 
     try {
-      // Redirect to Stripe Payment Link
-      window.location.href = 'https://buy.stripe.com/3cI3cw5xM5Hj3VLbg5co000';
+      // Redirect to Stripe Payment Link with quantity (amount in dollars)
+      const quantity = Math.round(amount);
+      window.location.href = `https://donate.stripe.com/eVq7sM5xMd9LeAp83Tco002?quantity=${quantity}`;
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);

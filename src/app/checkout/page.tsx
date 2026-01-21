@@ -70,8 +70,9 @@ export default function CheckoutPage() {
       // Clear cart
       localStorage.removeItem('ogn-cart');
 
-      // Redirect to Stripe checkout
-      window.location.href = 'https://buy.stripe.com/3cI3cw5xM5Hj3VLbg5co000';
+      // Redirect to Stripe checkout with quantity (total amount in dollars)
+      const quantity = Math.round(total);
+      window.location.href = `https://donate.stripe.com/eVq7sM5xMd9LeAp83Tco002?quantity=${quantity}`;
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);

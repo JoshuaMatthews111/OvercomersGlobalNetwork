@@ -88,8 +88,8 @@ export default function ScheduleProphetJoshuaPage() {
       bookings.push(newBooking);
       localStorage.setItem('ogn-prophet-bookings', JSON.stringify(bookings));
 
-      // Redirect to Stripe payment
-      window.location.href = 'https://buy.stripe.com/3cI3cw5xM5Hj3VLbg5co000';
+      // Redirect to Stripe payment for 1-on-1 sessions
+      window.location.href = 'https://buy.stripe.com/28EbJ2gcq6LnfEt2Jzco001';
     } catch (error) {
       console.error('Booking error:', error);
       setIsSubmitting(false);
