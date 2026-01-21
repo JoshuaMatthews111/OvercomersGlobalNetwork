@@ -88,10 +88,9 @@ export default function ScheduleProphetJoshuaPage() {
       bookings.push(newBooking);
       localStorage.setItem('ogn-prophet-bookings', JSON.stringify(bookings));
 
-      // Redirect to Stripe payment for 1-on-1 sessions
+      // Redirect to Stripe payment for 1-on-1 sessions ($150)
       if (!selectedSession) return;
-      const quantity = selectedSession.price;
-      window.location.href = `https://buy.stripe.com/14AaEY6BQglXfEtfwlco003?quantity=${quantity}`;
+      window.location.href = 'https://buy.stripe.com/28EbJ2gcq6LnfEt2Jzco001';
     } catch (error) {
       console.error('Booking error:', error);
       setIsSubmitting(false);

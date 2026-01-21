@@ -15,7 +15,7 @@ export default function BooksPage() {
       title: 'Master Your Days, Weeks, Months',
       description: '2026 Hand-guide to Success',
       image: '/images/books/book-2.png',
-      price: '$15.99',
+      price: '$50.00',
       preOrder: false,
     },
     {

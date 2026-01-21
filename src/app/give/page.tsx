@@ -25,12 +25,13 @@ const impactAreas = [
 ];
 
 const givingOptions = [
-  { amount: 25, label: '$25', description: 'Provides study materials for one house church' },
-  { amount: 50, label: '$50', description: 'Supports a leader training session' },
-  { amount: 100, label: '$100', description: 'Sponsors a new believer\'s discipleship journey' },
-  { amount: 250, label: '$250', description: 'Helps launch a new house church' },
-  { amount: 500, label: '$500', description: 'Funds a regional leadership summit' },
-  { amount: 1000, label: '$1000', description: 'Supports a month of global missions' },
+  { amount: 25, label: '$25', description: 'Provides study materials for one house church', stripeLink: 'https://donate.stripe.com/14A3cw6BQ6Ln0Jz4RHco007' },
+  { amount: 50, label: '$50', description: 'Supports a leader training session', stripeLink: 'https://donate.stripe.com/bJeeVe8JY9Xz63T1Fvco005' },
+  { amount: 100, label: '$100', description: 'Sponsors a new believer\'s discipleship journey', stripeLink: 'https://donate.stripe.com/00w9AUf8m7Pr77Xbg5co006' },
+  { amount: 150, label: '$150', description: '1-on-1 session with Prophet Joshua', stripeLink: 'https://buy.stripe.com/28EbJ2gcq6LnfEt2Jzco001' },
+  { amount: 250, label: '$250', description: 'Helps launch a new house church', stripeLink: 'https://donate.stripe.com/dRm6oIgcq2v763Tac1co009' },
+  { amount: 500, label: '$500', description: 'Funds a regional leadership summit', stripeLink: 'https://donate.stripe.com/aFadRa6BQ7Pr8c1fwlco00a' },
+  { amount: 1000, label: '$1000', description: 'Supports a month of global missions', stripeLink: 'https://donate.stripe.com/6oU5kEgcqglXfEt6ZPco008' },
 ];
 
 export default function GivePage() {
@@ -51,9 +52,16 @@ export default function GivePage() {
     setError('');
 
     try {
-      // Redirect to Stripe Payment Link with quantity (amount in dollars)
-      const quantity = Math.round(amount);
-      window.location.href = `https://buy.stripe.com/14AaEY6BQglXfEtfwlco003?quantity=${quantity}`;
+      // Find matching Stripe link for selected amount
+      const matchingOption = givingOptions.find(opt => opt.amount === amount);
+      
+      if (matchingOption) {
+        // Use direct Stripe link for preset amounts
+        window.location.href = matchingOption.stripeLink;
+      } else {
+        // Use custom amount link for tithe/offering or any custom amount
+        window.location.href = 'https://donate.stripe.com/9B64gA2lAfhT63T1Fvco00b';
+      }
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);
@@ -153,62 +161,34 @@ export default function GivePage() {
                   </div>
                 )}
 
-                {/* Amount Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                {/* Amount Grid - Direct Links */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
                   {givingOptions.map((option) => (
-                    <button
+                    <a
                       key={option.amount}
-                      onClick={() => {
-                        setSelectedAmount(option.amount);
-                        setCustomAmount(option.amount.toString());
-                      }}
-                      className={`p-4 border-2 rounded-xl transition-all text-left ${
-                        selectedAmount === option.amount
-                          ? 'border-amber-500 bg-amber-50'
-                          : 'border-gray-200 hover:border-amber-300'
-                      }`}
+                      href={option.stripeLink}
+                      className="p-4 border-2 rounded-xl transition-all text-left border-gray-200 hover:border-amber-500 hover:bg-amber-50 block"
                     >
-                      <div className={`text-2xl font-bold transition-colors ${
-                        selectedAmount === option.amount ? 'text-amber-600' : 'text-gray-900'
-                      }`}>
+                      <div className="text-2xl font-bold text-gray-900 hover:text-amber-600 transition-colors">
                         {option.label}
                       </div>
                       <div className="text-gray-500 text-sm mt-1">{option.description}</div>
-                    </button>
+                    </a>
                   ))}
                 </div>
 
-                {/* Custom Amount */}
-                <div className="mb-8">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Or enter a custom amount:</label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">$</span>
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Enter amount"
-                      value={customAmount}
-                      onChange={(e) => {
-                        setCustomAmount(e.target.value);
-                        setSelectedAmount(null);
-                      }}
-                      className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none text-lg"
-                    />
-                  </div>
+                {/* Tithe & Offering / Custom Amount */}
+                <div className="mb-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
+                  <h3 className="font-bold text-gray-900 mb-2 text-center">Tithe & Offering</h3>
+                  <p className="text-gray-600 text-sm text-center mb-4">Enter any custom amount for tithes, offerings, or special gifts</p>
+                  <a
+                    href="https://donate.stripe.com/9B64gA2lAfhT63T1Fvco00b"
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                  >
+                    <Heart className="w-5 h-5" />
+                    Give Custom Amount
+                  </a>
                 </div>
-
-                {/* Stripe Donate Button */}
-                <button
-                  onClick={handleStripeDonation}
-                  disabled={isLoading || (!selectedAmount && !customAmount)}
-                  className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 text-white py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 mb-4"
-                >
-                  {isLoading ? (
-                    <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
-                  ) : (
-                    <><Heart className="w-5 h-5" /> Give {selectedAmount ? `$${selectedAmount}` : customAmount ? `$${customAmount}` : 'Now'}</>
-                  )}
-                </button>
 
                 <div className="flex items-center justify-center gap-2 text-gray-500 text-sm mb-6">
                   <Lock className="w-4 h-4" />

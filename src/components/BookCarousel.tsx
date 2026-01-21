@@ -21,7 +21,7 @@ const books = [
     subtitle: '2026 Hand-guide to Success',
     author: 'Prophet Joshua Matthews',
     cover: '/images/books/book-2.png',
-    price: '$15.99',
+    price: '$50.00',
     preOrder: false,
   },
   {

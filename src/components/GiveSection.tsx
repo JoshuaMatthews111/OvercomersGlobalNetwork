@@ -83,59 +83,32 @@ export function GiveSection() {
                 Make a Difference Today
               </h3>
 
-              {/* Amount Options */}
+              {/* Amount Options - Direct Stripe Links */}
               <div className="grid grid-cols-3 gap-3 mb-6">
-                {['$25', '$50', '$100'].map((amount) => (
-                  <button
-                    key={amount}
-                    className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all"
-                  >
-                    {amount}
-                  </button>
-                ))}
+                <a href="https://donate.stripe.com/14A3cw6BQ6Ln0Jz4RHco007" className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 hover:bg-amber-50 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all text-center">$25</a>
+                <a href="https://donate.stripe.com/bJeeVe8JY9Xz63T1Fvco005" className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 hover:bg-amber-50 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all text-center">$50</a>
+                <a href="https://donate.stripe.com/00w9AUf8m7Pr77Xbg5co006" className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 hover:bg-amber-50 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all text-center">$100</a>
               </div>
               <div className="grid grid-cols-3 gap-3 mb-6">
-                {['$250', '$500', '$1000'].map((amount) => (
-                  <button
-                    key={amount}
-                    className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all"
-                  >
-                    {amount}
-                  </button>
-                ))}
+                <a href="https://donate.stripe.com/dRm6oIgcq2v763Tac1co009" className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 hover:bg-amber-50 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all text-center">$250</a>
+                <a href="https://donate.stripe.com/aFadRa6BQ7Pr8c1fwlco00a" className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 hover:bg-amber-50 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all text-center">$500</a>
+                <a href="https://donate.stripe.com/6oU5kEgcqglXfEt6ZPco008" className="py-3 px-4 border-2 border-gray-200 hover:border-amber-500 hover:bg-amber-50 rounded-xl font-bold text-gray-700 hover:text-amber-600 transition-all text-center">$1000</a>
               </div>
 
-              {/* Custom Amount */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Custom Amount
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
-                  <input
-                    type="number"
-                    placeholder="Enter amount"
-                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors"
-                  />
-                </div>
-              </div>
-
-              {/* Frequency */}
-              <div className="flex gap-3 mb-6">
-                <button className="flex-1 py-3 bg-amber-500 text-white rounded-xl font-semibold">
-                  One-Time
-                </button>
-                <button className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-amber-500 transition-colors">
-                  Monthly
-                </button>
-              </div>
+              {/* Custom Amount / Tithe & Offering */}
+              <a
+                href="https://donate.stripe.com/9B64gA2lAfhT63T1Fvco00b"
+                className="block w-full bg-gray-900 hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-center transition-all mb-4"
+              >
+                Tithe & Offering (Custom Amount)
+              </a>
 
               {/* Give Button */}
               <Link
                 href="/give"
-                className="block w-full bg-gray-900 hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-center transition-all"
+                className="block w-full border-2 border-amber-500 text-amber-600 hover:bg-amber-50 py-3 rounded-xl font-bold text-center transition-all"
               >
-                Continue to Give
+                View All Giving Options
               </Link>
 
               <p className="text-center text-gray-500 text-sm mt-4">
