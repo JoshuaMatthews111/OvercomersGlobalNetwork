@@ -91,7 +91,7 @@ export function HeroSection() {
                       className={`text-white/80 leading-relaxed max-w-4xl ${
                         slide.isScripture 
                           ? 'text-lg md:text-xl italic font-light' 
-                          : 'text-xl md:text-2xl font-semibold'
+                          : 'text-lg md:text-xl font-normal'
                       }`}
                     >
                       {slide.headline.split('\n').map((line, lineIndex) => (
