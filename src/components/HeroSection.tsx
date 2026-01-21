@@ -73,7 +73,7 @@ export function HeroSection() {
           </h1>
 
           {/* Sliding Text Content */}
-          <div className="relative h-24 md:h-20 overflow-hidden">
+          <div className="relative h-32 md:h-28 overflow-hidden">
             <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
               {slides.map((slide, index) => (
                 <div
@@ -86,25 +86,27 @@ export function HeroSection() {
                       : 'opacity-0 translate-y-4'
                   }`}
                 >
-                  <p 
-                    className={`text-white/80 leading-relaxed max-w-3xl ${
-                      slide.isScripture 
-                        ? 'text-lg md:text-xl italic font-light' 
-                        : 'text-xl md:text-2xl font-semibold'
-                    }`}
-                  >
-                    {slide.headline.split('\n').map((line, lineIndex) => (
-                      <span key={lineIndex}>
-                        {line}
-                        {lineIndex < slide.headline.split('\n').length - 1 && <br />}
-                      </span>
-                    ))}
+                  <div className="space-y-2">
+                    <p 
+                      className={`text-white/80 leading-relaxed max-w-4xl ${
+                        slide.isScripture 
+                          ? 'text-lg md:text-xl italic font-light' 
+                          : 'text-xl md:text-2xl font-semibold'
+                      }`}
+                    >
+                      {slide.headline.split('\n').map((line, lineIndex) => (
+                        <span key={lineIndex}>
+                          {line}
+                          {lineIndex < slide.headline.split('\n').length - 1 && <br />}
+                        </span>
+                      ))}
+                    </p>
                     {slide.isScripture && (
-                      <span className="block text-amber-400 text-base md:text-lg mt-2 not-italic">
+                      <p className="text-amber-400 text-base md:text-lg not-italic font-medium">
                         — {slide.reference}
-                      </span>
+                      </p>
                     )}
-                  </p>
+                  </div>
                 </div>
               ))}
             </div>
