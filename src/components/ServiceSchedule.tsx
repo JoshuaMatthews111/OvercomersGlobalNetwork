@@ -40,8 +40,8 @@ const services = [
 
 export function ServiceSchedule() {
   return (
-    <section className="py-24 bg-gray-50">
-      <div className="container mx-auto px-4">
+    <section className="py-24 bg-gray-50 overflow-x-hidden">
+      <div className="container mx-auto px-4 max-w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left - Schedule */}
           <div>
@@ -73,11 +73,11 @@ export function ServiceSchedule() {
                   <a
                     key={service.day}
                     href={`/services/${service.day.toLowerCase()}`}
-                    className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex items-center gap-4 hover:-translate-y-1 cursor-pointer border border-gray-100 hover:border-gray-200"
+                    className="group bg-white rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex items-center gap-3 sm:gap-4 hover:-translate-y-1 cursor-pointer border border-gray-100 hover:border-gray-200 w-full"
                   >
                     {/* Icon Container */}
-                    <div className={`w-16 h-16 bg-gradient-to-br ${service.gradient} rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className="w-8 h-8" />
+                    <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${service.gradient} rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="w-6 h-6 sm:w-8 sm:h-8" />
                     </div>
 
                     {/* Content */}
@@ -87,7 +87,7 @@ export function ServiceSchedule() {
                           {service.day}
                         </span>
                       </div>
-                      <h3 className="font-bold text-gray-900 text-lg truncate group-hover:text-gray-700 transition-colors">
+                      <h3 className="font-bold text-gray-900 text-base sm:text-lg truncate group-hover:text-gray-700 transition-colors">
                         {service.title}
                       </h3>
                       <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
@@ -134,8 +134,8 @@ export function ServiceSchedule() {
           </div>
 
           {/* Right - Ministry Images */}
-          <div className="relative">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="relative overflow-x-hidden">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
               <div className="space-y-4">
                 <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-lg">
                   <Image
@@ -175,13 +175,13 @@ export function ServiceSchedule() {
             </div>
 
             {/* Floating Badge */}
-            <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl p-4 flex items-center gap-3">
-              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-amber-600" />
+            <div className="absolute -bottom-4 -left-2 sm:-bottom-4 sm:-left-4 bg-white rounded-2xl shadow-xl p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
               </div>
               <div>
-                <p className="font-bold text-gray-900">Join Us Weekly</p>
-                <p className="text-gray-500 text-sm">In-Person & Online</p>
+                <p className="font-bold text-gray-900 text-sm sm:text-base">Join Us Weekly</p>
+                <p className="text-gray-500 text-xs sm:text-sm">In-Person & Online</p>
               </div>
             </div>
           </div>
