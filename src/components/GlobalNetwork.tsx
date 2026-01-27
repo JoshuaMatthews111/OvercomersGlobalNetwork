@@ -3,9 +3,9 @@
 import { Globe, Users, MapPin, Award } from 'lucide-react';
 
 const stats = [
-  { icon: Globe, value: '50+', label: 'Nations Reached' },
-  { icon: MapPin, value: '200+', label: 'House Churches' },
-  { icon: Users, value: '5,000+', label: 'Disciples Trained' },
+  { icon: Globe, value: '13+', label: 'Nations Reached' },
+  { icon: MapPin, value: '75+', label: 'House Churches' },
+  { icon: Users, value: '100+', label: 'Disciples Trained' },
   { icon: Award, value: '100+', label: 'Leaders Raised' },
 ];
 
