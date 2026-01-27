@@ -178,9 +178,11 @@ export default function AdminBlogPage() {
   };
 
   const handleNewPost = () => {
+    // Use sequential ID based on existing posts (max ID + 1)
+    const maxId = posts.length > 0 ? Math.max(...posts.map(p => p.id)) : 0;
+    const newId = maxId + 1;
     setCurrentPost({
-      id: Date.now(), title: '', excerpt: '', content: '',
-      image: stockImages.default[Math.floor(Math.random() * stockImages.default.length)],
+      id: newId, title: '', excerpt: '', content: '', image: stockImages.default[0],
       author: 'Prophet Joshua Matthews', date: new Date().toISOString().split('T')[0],
       category: 'Message', published: false, fontTheme: 'hillsong', videoUrl: '', videoType: null, videoId: '',
     });
@@ -406,8 +408,8 @@ export default function AdminBlogPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-wrap gap-3 mb-8">
           <Link href="/admin/dashboard" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100"><LayoutDashboard className="w-4 h-4" /> Dashboard</Link>
+          <Link href="/admin/scheduler" className="flex items-center gap-2 px-4 py-2 bg-amber-100 rounded-xl text-amber-700 hover:shadow-md border border-amber-200"><Calendar className="w-4 h-4" /> Post Scheduler</Link>
           <Link href="/admin/events" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100"><Calendar className="w-4 h-4" /> Events</Link>
-          <Link href="/admin/prophet-schedule" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100"><Clock className="w-4 h-4" /> Scheduling</Link>
         </div>
 
         {/* Blog Dashboard Stats */}
