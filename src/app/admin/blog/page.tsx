@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, Save, X, ImageIcon, Palette, Youtube, Facebook, Play, Sparkles, FileText, Clock, Wand2, ExternalLink, LayoutDashboard, ShoppingBag, Calendar, Settings, LogOut, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, Save, X, ImageIcon, Palette, Youtube, Facebook, Play, Sparkles, FileText, Clock, Wand2, ExternalLink, LayoutDashboard, ShoppingBag, Calendar, Settings, LogOut, ChevronDown, Copy, CheckCircle, Share2, BarChart3 } from 'lucide-react';
 
 interface BlogPost {
   id: number;
@@ -71,6 +71,7 @@ export default function AdminBlogPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [contentLength, setContentLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [topicInput, setTopicInput] = useState('');
+  const [copiedId, setCopiedId] = useState<number | null>(null);
   const [currentPost, setCurrentPost] = useState<BlogPost>({
     id: 0, title: '', excerpt: '', content: '', image: stockImages.default[0],
     author: 'Prophet Joshua Matthews', date: new Date().toISOString().split('T')[0],
@@ -216,6 +217,16 @@ export default function AdminBlogPage() {
   const handleTogglePublish = (id: number) => {
     savePosts(posts.map((p) => p.id === id ? { ...p, published: !p.published } : p));
   };
+
+  const handleCopyLink = (id: number) => {
+    const url = `${window.location.origin}/blog/${id}`;
+    navigator.clipboard.writeText(url);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const publishedCount = posts.filter(p => p.published).length;
+  const draftCount = posts.filter(p => !p.published).length;
 
   const getThemeStyles = (theme: typeof fontThemes[0]) => {
     switch (theme.style) {
@@ -399,6 +410,38 @@ export default function AdminBlogPage() {
           <Link href="/admin/prophet-schedule" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100"><Clock className="w-4 h-4" /> Scheduling</Link>
         </div>
 
+        {/* Blog Dashboard Stats */}
+        <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-2">
+              <BarChart3 className="w-8 h-8 opacity-80" />
+              <span className="text-3xl font-bold">{posts.length}</span>
+            </div>
+            <p className="text-sm font-medium opacity-90">Total Posts</p>
+          </div>
+          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Eye className="w-8 h-8 opacity-80" />
+              <span className="text-3xl font-bold">{publishedCount}</span>
+            </div>
+            <p className="text-sm font-medium opacity-90">Published</p>
+          </div>
+          <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-2">
+              <FileText className="w-8 h-8 opacity-80" />
+              <span className="text-3xl font-bold">{draftCount}</span>
+            </div>
+            <p className="text-sm font-medium opacity-90">Drafts</p>
+          </div>
+          <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-2">
+              <Share2 className="w-8 h-8 opacity-80" />
+              <span className="text-3xl font-bold">{posts.filter(p => p.videoUrl).length}</span>
+            </div>
+            <p className="text-sm font-medium opacity-90">With Video</p>
+          </div>
+        </div>
+
         {posts.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
             <FileText className="w-16 h-16 text-gray-200 mx-auto mb-4" />
@@ -419,10 +462,19 @@ export default function AdminBlogPage() {
                   <span className="text-xs font-semibold text-amber-600 uppercase">{post.category}</span>
                   <h3 className="font-bold text-gray-900 mt-1 line-clamp-2">{post.title}</h3>
                   <p className="text-gray-500 text-sm mt-1 line-clamp-2">{post.excerpt}</p>
-                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
-                    <button onClick={() => handleEditPost(post)} className="flex-1 flex items-center justify-center gap-1 py-2 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium"><Edit className="w-4 h-4" /> Edit</button>
-                    <button onClick={() => handleTogglePublish(post.id)} className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-sm font-medium ${post.published ? 'text-amber-600 hover:bg-amber-50' : 'text-green-600 hover:bg-green-50'}`}>{post.published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />} {post.published ? 'Hide' : 'Publish'}</button>
-                    <button onClick={() => handleDeletePost(post.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                  <div className="space-y-2 mt-4 pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleEditPost(post)} className="flex-1 flex items-center justify-center gap-1 py-2 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium"><Edit className="w-4 h-4" /> Edit</button>
+                      <Link href={`/blog/${post.id}`} target="_blank" className="flex-1 flex items-center justify-center gap-1 py-2 text-purple-600 hover:bg-purple-50 rounded-lg text-sm font-medium"><ExternalLink className="w-4 h-4" /> View</Link>
+                      <button onClick={() => handleTogglePublish(post.id)} className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-sm font-medium ${post.published ? 'text-amber-600 hover:bg-amber-50' : 'text-green-600 hover:bg-green-50'}`}>{post.published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />} {post.published ? 'Hide' : 'Publish'}</button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleCopyLink(post.id)} className="flex-1 flex items-center justify-center gap-1 py-2 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-medium">
+                        {copiedId === post.id ? <CheckCircle className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                        {copiedId === post.id ? 'Copied!' : 'Copy Link'}
+                      </button>
+                      <button onClick={() => handleDeletePost(post.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                    </div>
                   </div>
                 </div>
               </div>

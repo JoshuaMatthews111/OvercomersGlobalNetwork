@@ -5,7 +5,7 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowLeft, Facebook, Twitter } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Facebook, Twitter, Link as LinkIcon, CheckCircle, Share2, Linkedin, Mail } from 'lucide-react';
 
 interface BlogPost {
   id: number;
@@ -114,6 +114,7 @@ Walk in these principles and watch God open the windows of heaven over your fina
 export default function BlogPostClient({ id }: { id: string }) {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     const postId = parseInt(id);
@@ -148,6 +149,18 @@ export default function BlogPostClient({ id }: { id: string }) {
       day: 'numeric',
     });
   };
+
+  const handleCopyLink = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(window.location.href);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    }
+  };
+
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareTitle = post?.title || '';
+  const shareText = post?.excerpt || '';
 
   if (!post) {
     return (
@@ -259,25 +272,53 @@ export default function BlogPostClient({ id }: { id: string }) {
 
             {/* Share */}
             <div className="mt-12 pt-8 border-t border-gray-200">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-600 font-medium">Share this post:</span>
-                <div className="flex gap-2">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <Share2 className="w-5 h-5 text-gray-600" />
+                  <span className="text-gray-900 font-bold text-lg">Share this message</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
                   <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
                   >
                     <Facebook className="w-5 h-5" />
+                    Facebook
                   </a>
                   <a
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&text=${encodeURIComponent(post.title)}`}
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-sky-500 text-white rounded-full flex items-center justify-center hover:bg-sky-600 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-sky-500 text-white rounded-xl hover:bg-sky-600 transition-colors font-medium"
                   >
                     <Twitter className="w-5 h-5" />
+                    Twitter
                   </a>
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition-colors font-medium"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                    LinkedIn
+                  </a>
+                  <a
+                    href={`mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors font-medium"
+                  >
+                    <Mail className="w-5 h-5" />
+                    Email
+                  </a>
+                  <button
+                    onClick={handleCopyLink}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors font-medium"
+                  >
+                    {linkCopied ? <CheckCircle className="w-5 h-5" /> : <LinkIcon className="w-5 h-5" />}
+                    {linkCopied ? 'Link Copied!' : 'Copy Link'}
+                  </button>
                 </div>
               </div>
             </div>
