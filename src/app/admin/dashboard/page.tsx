@@ -18,7 +18,9 @@ import {
   Bell,
   BookOpen,
   ImageIcon,
-  Video
+  Video,
+  Heart,
+  UserPlus
 } from 'lucide-react';
 
 interface Order {
@@ -36,6 +38,8 @@ interface Order {
 
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
@@ -50,6 +54,14 @@ export default function AdminDashboard() {
     // Load orders
     const savedOrders = JSON.parse(localStorage.getItem('ogn-orders') || '[]');
     setOrders(savedOrders);
+
+    // Load discipleship enrollments
+    const savedEnrollments = JSON.parse(localStorage.getItem('ogn-discipleship-enrollments') || '[]');
+    setEnrollments(savedEnrollments);
+
+    // Load prophet bookings
+    const savedBookings = JSON.parse(localStorage.getItem('ogn-prophet-bookings') || '[]');
+    setBookings(savedBookings);
   }, [router]);
 
   const handleLogout = () => {
@@ -64,6 +76,9 @@ export default function AdminDashboard() {
 
   const pendingOrders = orders.filter(o => o.status === 'pending_payment').length;
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+  const pendingEnrollments = enrollments.filter(e => e.status === 'pending').length;
+  const pendingBookings = bookings.filter(b => b.status === 'pending_payment' || !b.isPaid).length;
+  const totalNotifications = pendingOrders + pendingEnrollments + pendingBookings;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -128,6 +143,23 @@ export default function AdminDashboard() {
           >
             <Video className="w-5 h-5" />
             Prophet Schedule
+            {pendingBookings > 0 && (
+              <span className="ml-auto bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {pendingBookings}
+              </span>
+            )}
+          </Link>
+          <Link
+            href="/admin/discipleship"
+            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+          >
+            <Heart className="w-5 h-5" />
+            Discipleship
+            {pendingEnrollments > 0 && (
+              <span className="ml-auto bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {pendingEnrollments}
+              </span>
+            )}
           </Link>
           <Link
             href="/admin/settings"
@@ -160,8 +192,10 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-4">
             <button className="relative p-2 text-gray-500 hover:text-gray-700">
               <Bell className="w-6 h-6" />
-              {pendingOrders > 0 && (
-                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+              {totalNotifications > 0 && (
+                <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
+                  {totalNotifications}
+                </span>
               )}
             </button>
           </div>
@@ -211,6 +245,26 @@ export default function AdminDashboard() {
             </div>
             <h3 className="text-3xl font-bold text-gray-900">{pendingOrders}</h3>
             <p className="text-gray-500 text-sm">Pending Orders</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <Heart className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900">{enrollments.length}</h3>
+            <p className="text-gray-500 text-sm">Discipleship Enrollments</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <Video className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900">{bookings.length}</h3>
+            <p className="text-gray-500 text-sm">1-on-1 Bookings</p>
           </div>
         </div>
 
@@ -308,13 +362,120 @@ export default function AdminDashboard() {
 
           <Link
             href="/admin/orders"
-            className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 text-white hover:shadow-lg transition-shadow"
+            className="bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl p-6 text-white hover:shadow-lg transition-shadow"
           >
             <ShoppingBag className="w-8 h-8 mb-4" />
             <h3 className="font-bold text-lg mb-1">Manage Orders</h3>
             <p className="text-white/80 text-sm">View and process orders</p>
           </Link>
+
+          <Link
+            href="/admin/discipleship"
+            className="bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl p-6 text-white hover:shadow-lg transition-shadow"
+          >
+            <Heart className="w-8 h-8 mb-4" />
+            <h3 className="font-bold text-lg mb-1">Discipleship</h3>
+            <p className="text-white/80 text-sm">View new enrollments</p>
+            {pendingEnrollments > 0 && (
+              <span className="mt-2 inline-block bg-white/20 px-2 py-1 rounded text-xs">
+                {pendingEnrollments} pending
+              </span>
+            )}
+          </Link>
         </div>
+
+        {/* Recent Enrollments */}
+        {enrollments.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm mt-8">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">Recent Discipleship Enrollments</h2>
+                <Link
+                  href="/admin/discipleship"
+                  className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center gap-1"
+                >
+                  View All <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {enrollments.slice(0, 3).map((enrollment: any) => (
+                <div key={enrollment.id} className="p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <UserPlus className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {enrollment.firstName} {enrollment.lastName}
+                      </p>
+                      <p className="text-gray-500 text-sm">{enrollment.city}, {enrollment.country}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      enrollment.status === 'pending' 
+                        ? 'bg-amber-100 text-amber-700'
+                        : enrollment.status === 'contacted'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-green-100 text-green-700'
+                    }`}>
+                      {enrollment.status === 'pending' ? 'Needs Contact' : enrollment.status}
+                    </span>
+                    <p className="text-gray-400 text-xs mt-1">
+                      {new Date(enrollment.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recent Bookings */}
+        {bookings.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm mt-8">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">Recent 1-on-1 Bookings</h2>
+                <Link
+                  href="/admin/prophet-schedule"
+                  className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center gap-1"
+                >
+                  View All <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {bookings.slice(0, 3).map((booking: any) => (
+                <div key={booking.id} className="p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                      <Video className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {booking.customer?.firstName} {booking.customer?.lastName}
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        {new Date(booking.date).toLocaleDateString()} at {booking.time}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      booking.isPaid 
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {booking.isPaid ? 'Paid' : 'Pending Payment'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

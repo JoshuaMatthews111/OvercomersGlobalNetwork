@@ -90,18 +90,18 @@ export default function DiscipleshipPage() {
               Following the pattern of Acts, we gather from home to home to worship, learn, and grow together.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="#find"
+              <Link
+                href="/discipleship/enroll"
                 className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold transition-all"
               >
-                Find a House Church
+                Enroll in Discipleship
                 <ArrowRight className="w-5 h-5" />
-              </a>
+              </Link>
               <a
-                href="#start"
+                href="#find"
                 className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 rounded-full font-semibold transition-all"
               >
-                Become a Leader
+                Find a House Church
               </a>
             </div>
           </div>
