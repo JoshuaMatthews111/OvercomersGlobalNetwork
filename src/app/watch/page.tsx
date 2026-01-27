@@ -13,8 +13,8 @@ const videos = [
     description: 'Revealing the power of the new creation',
     thumbnail: 'https://img.youtube.com/vi/default.jpg',
     youtubeId: '',
-    facebookUrl: 'https://www.facebook.com/joshua.grace.matthews/videos/2690854674606913/',
-    facebookVideoId: '2690854674606913',
+    facebookUrl: 'https://www.facebook.com/share/v/1Gw6oMvFXT/',
+    facebookVideoId: '1Gw6oMvFXT',
     duration: '45:00',
     date: 'Jan 26, 2026',
     category: 'Sunday Message',
@@ -74,7 +74,7 @@ export default function WatchPage() {
                 {featuredVideo.facebookVideoId ? (
                   // Facebook Video Embed
                   <iframe 
-                    src={`https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fjoshua.grace.matthews%2Fvideos%2F${featuredVideo.facebookVideoId}%2F&show_text=true&width=560&t=0`} 
+                    src={`https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F${featuredVideo.facebookVideoId}%2F&show_text=true&width=560&t=0`} 
                     width="560" 
                     height="429" 
                     style={{border: 'none', overflow: 'hidden', width: '100%', height: '100%'}}
