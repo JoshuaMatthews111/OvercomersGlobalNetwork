@@ -149,15 +149,15 @@ export function HeroSection() {
           {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6 md:gap-8 pt-2 animate-fadeIn delay-400 relative z-20">
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">50+</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">13+</div>
               <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Nations Reached</div>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">200+</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">75+</div>
               <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">House Churches</div>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">5,000+</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">100+</div>
               <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Disciples Trained</div>
             </div>
           </div>
