@@ -22,16 +22,28 @@ export function FeaturedVideo() {
         {/* Video Container */}
         <div className="max-w-5xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-            <VideoPlayer 
-              videoId="Ic2upPmt5lQ" 
-              title="The Power of Kingdom Discipleship"
-            />
+            {/* Facebook Video Embed */}
+            <div className="relative aspect-video bg-black">
+              <iframe 
+                src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fjoshua.grace.matthews%2Fvideos%2F2690854674606913%2F&show_text=false&width=560&t=0" 
+                width="560" 
+                height="314" 
+                style={{border: 'none', overflow: 'hidden', width: '100%', height: '100%'}}
+                scrolling="no" 
+                frameBorder="0" 
+                allowFullScreen={true}
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              />
+            </div>
             {/* Video Info Overlay */}
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent pointer-events-none">
-              <span className="text-amber-400 text-sm font-medium">Featured Teaching</span>
+              <span className="text-amber-400 text-sm font-medium">Sunday Service • January 25, 2026</span>
               <h3 className="text-white text-xl md:text-2xl font-bold mt-1">
-                The Power of Kingdom Discipleship
+                ADVANCING KINGDOM CULTURE
               </h3>
+              <p className="text-white/80 text-sm mt-1">
+                Revealing the power of the new creation
+              </p>
             </div>
           </div>
 
