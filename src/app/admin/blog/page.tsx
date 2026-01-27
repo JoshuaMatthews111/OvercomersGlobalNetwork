@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, Save, X, ImageIcon, Palette, Youtube, Facebook, Play, Sparkles, FileText, Clock, Wand2, ExternalLink, LayoutDashboard, ShoppingBag, Calendar, Settings, LogOut, ChevronDown, Copy, CheckCircle, Share2, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, Save, X, ImageIcon, Palette, Youtube, Facebook, Play, Sparkles, FileText, Clock, Wand2, ExternalLink, LayoutDashboard, ShoppingBag, Calendar, Settings, LogOut, ChevronDown, Copy, CheckCircle, Share2, BarChart3, AlertCircle } from 'lucide-react';
 
 interface BlogPost {
   id: number;
@@ -72,6 +72,8 @@ export default function AdminBlogPage() {
   const [contentLength, setContentLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [topicInput, setTopicInput] = useState('');
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [showMigrationNotice, setShowMigrationNotice] = useState(false);
+  const [migrationComplete, setMigrationComplete] = useState(false);
   const [currentPost, setCurrentPost] = useState<BlogPost>({
     id: 0, title: '', excerpt: '', content: '', image: stockImages.default[0],
     author: 'Prophet Joshua Matthews', date: new Date().toISOString().split('T')[0],
@@ -83,7 +85,15 @@ export default function AdminBlogPage() {
     if (auth === 'true') setIsAuthenticated(true);
     else window.location.href = '/admin';
     const savedPosts = localStorage.getItem('ogn-blog-posts');
-    if (savedPosts) setPosts(JSON.parse(savedPosts));
+    if (savedPosts) {
+      const parsed = JSON.parse(savedPosts);
+      setPosts(parsed);
+      // Check if any posts have timestamp IDs (IDs > 1000)
+      const hasTimestampIds = parsed.some((p: BlogPost) => p.id > 1000);
+      if (hasTimestampIds) {
+        setShowMigrationNotice(true);
+      }
+    }
   }, []);
 
   const savePosts = (newPosts: BlogPost[]) => {
@@ -229,6 +239,32 @@ export default function AdminBlogPage() {
 
   const publishedCount = posts.filter(p => p.published).length;
   const draftCount = posts.filter(p => !p.published).length;
+
+  const handleMigrateBlogIds = () => {
+    if (!confirm('This will convert all blog post IDs to sequential numbers (1, 2, 3...). This is necessary for blog posts to work properly. Continue?')) {
+      return;
+    }
+
+    // Sort posts by creation date (oldest first)
+    const sortedPosts = [...posts].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return dateA - dateB;
+    });
+
+    // Assign sequential IDs starting from 1
+    const migratedPosts = sortedPosts.map((post, index) => ({
+      ...post,
+      id: index + 1
+    }));
+
+    // Save migrated posts
+    savePosts(migratedPosts);
+    setShowMigrationNotice(false);
+    setMigrationComplete(true);
+    setTimeout(() => setMigrationComplete(false), 5000);
+    alert(`Successfully migrated ${migratedPosts.length} blog posts! All posts now have sequential IDs.`);
+  };
 
   const getThemeStyles = (theme: typeof fontThemes[0]) => {
     switch (theme.style) {
@@ -406,6 +442,51 @@ export default function AdminBlogPage() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Migration Notice */}
+        {showMigrationNotice && (
+          <div className="mb-6 bg-amber-50 border-2 border-amber-200 rounded-2xl p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Blog ID Migration Required</h3>
+                <p className="text-gray-700 mb-4">
+                  Some of your blog posts have timestamp-based IDs which cause 404 errors. Click the button below to automatically convert all blog posts to use sequential IDs (1, 2, 3...). This will fix the 404 errors and make all blog posts accessible.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleMigrateBlogIds}
+                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-colors"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                    Fix Blog IDs Now
+                  </button>
+                  <button
+                    onClick={() => setShowMigrationNotice(false)}
+                    className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors"
+                  >
+                    Remind Me Later
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Migration Success */}
+        {migrationComplete && (
+          <div className="mb-6 bg-green-50 border-2 border-green-200 rounded-2xl p-6">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+              <div>
+                <h3 className="text-lg font-bold text-green-900">Migration Complete!</h3>
+                <p className="text-green-700">All blog posts now have sequential IDs and will work properly.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-3 mb-8">
           <Link href="/admin/dashboard" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100"><LayoutDashboard className="w-4 h-4" /> Dashboard</Link>
           <Link href="/admin/scheduler" className="flex items-center gap-2 px-4 py-2 bg-amber-100 rounded-xl text-amber-700 hover:shadow-md border border-amber-200"><Calendar className="w-4 h-4" /> Post Scheduler</Link>
