@@ -22,17 +22,18 @@ export function FeaturedVideo() {
         {/* Video Container */}
         <div className="max-w-5xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-            {/* Facebook Video Embed */}
+            {/* YouTube Video Embed */}
             <div className="relative aspect-video bg-black">
               <iframe 
-                src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F1Gw6oMvFXT%2F&show_text=true&width=560&t=0" 
                 width="560" 
-                height="429" 
-                style={{border: 'none', overflow: 'hidden', width: '100%', height: '100%', maxWidth: '800px', margin: '0 auto'}}
-                scrolling="no" 
+                height="315" 
+                src="https://www.youtube.com/embed/wFBCrcAckig?si=NTWn9eIRCEB_84cn" 
+                title="YouTube video player" 
                 frameBorder="0" 
-                allowFullScreen={true}
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerPolicy="strict-origin-when-cross-origin" 
+                allowFullScreen
+                style={{width: '100%', height: '100%', maxWidth: '800px', margin: '0 auto'}}
               />
             </div>
             {/* Video Info Overlay */}

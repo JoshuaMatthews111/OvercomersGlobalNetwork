@@ -11,10 +11,10 @@ const videos = [
     id: 1,
     title: 'ADVANCING KINGDOM CULTURE',
     description: 'Revealing the power of the new creation',
-    thumbnail: 'https://img.youtube.com/vi/default.jpg',
-    youtubeId: '',
-    facebookUrl: 'https://www.facebook.com/share/v/1Gw6oMvFXT/',
-    facebookVideoId: '1Gw6oMvFXT',
+    thumbnail: 'https://img.youtube.com/vi/wFBCrcAckig/maxresdefault.jpg',
+    youtubeId: 'wFBCrcAckig',
+    facebookUrl: '',
+    facebookVideoId: '',
     duration: '45:00',
     date: 'Jan 26, 2026',
     category: 'Sunday Message',
@@ -71,17 +71,18 @@ export default function WatchPage() {
           {featuredVideo && (
             <div className="max-w-5xl mx-auto">
               <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl group">
-                {featuredVideo.facebookVideoId ? (
-                  // Facebook Video Embed
+                {featuredVideo.youtubeId ? (
+                  // YouTube Video Embed
                   <iframe 
-                    src={`https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F${featuredVideo.facebookVideoId}%2F&show_text=true&width=560&t=0`} 
                     width="560" 
-                    height="429" 
-                    style={{border: 'none', overflow: 'hidden', width: '100%', height: '100%'}}
-                    scrolling="no" 
+                    height="315" 
+                    src={`https://www.youtube.com/embed/${featuredVideo.youtubeId}?si=NTWn9eIRCEB_84cn`} 
+                    title="YouTube video player" 
                     frameBorder="0" 
-                    allowFullScreen={true}
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    referrerPolicy="strict-origin-when-cross-origin" 
+                    allowFullScreen
+                    style={{width: '100%', height: '100%'}}
                   />
                 ) : (
                   // YouTube Video Thumbnail
@@ -122,9 +123,9 @@ export default function WatchPage() {
                       {featuredVideo.date}
                     </span>
                   </div>
-                  {featuredVideo.facebookUrl && (
+                  {featuredVideo.youtubeId && (
                     <a
-                      href={featuredVideo.facebookUrl}
+                      href={`https://www.youtube.com/watch?v=${featuredVideo.youtubeId}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 mt-3 text-amber-400 hover:text-amber-300 transition-colors"
@@ -132,7 +133,7 @@ export default function WatchPage() {
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                       </svg>
-                      Watch on Facebook
+                      Watch on YouTube
                     </a>
                   )}
                 </div>
@@ -182,31 +183,18 @@ export default function WatchPage() {
             {regularVideos.map((video) => (
               <a
                 key={video.id}
-                href={video.facebookUrl || `https://www.youtube.com/watch?v=${video.youtubeId}`}
+                href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group"
               >
                 <div className="relative aspect-video rounded-xl overflow-hidden mb-4">
-                  {video.facebookVideoId ? (
-                    // Facebook Video Thumbnail
-                    <div className="w-full h-full bg-gray-900 flex items-center justify-center">
-                      <div className="text-center">
-                        <svg className="w-16 h-16 text-amber-500 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                        <p className="text-white text-sm">Facebook Video</p>
-                      </div>
-                    </div>
-                  ) : (
-                    // YouTube Video Thumbnail
-                    <Image
-                      src={video.thumbnail}
-                      alt={video.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
+                  <Image
+                    src={video.thumbnail}
+                    alt={video.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                     <div className="w-14 h-14 bg-amber-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Play className="w-6 h-6 text-white ml-0.5" fill="white" />
@@ -232,15 +220,7 @@ export default function WatchPage() {
                     <Calendar className="w-4 h-4" />
                     {video.date}
                   </span>
-                  {video.facebookUrl && (
-                    <span className="flex items-center gap-1 text-blue-600">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                      </svg>
-                      Facebook
-                    </span>
-                  )}
-                </div>
+                                  </div>
               </a>
             ))}
           </div>
