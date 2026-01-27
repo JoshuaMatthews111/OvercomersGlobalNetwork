@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { Calendar, Clock, DollarSign, Video, CheckCircle, User, Link as LinkIcon, Copy, CalendarPlus } from 'lucide-react';
+import { Calendar, Clock, DollarSign, Video, CheckCircle, User, CalendarPlus, Copy } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { createBookingNotification } from '@/lib/notifications';
 
 interface TimeSlot {
   time: string;
@@ -70,6 +71,9 @@ export default function ScheduleProphetJoshuaPage() {
       const bookings = JSON.parse(localStorage.getItem('ogn-prophet-bookings') || '[]');
       bookings.push(booking);
       localStorage.setItem('ogn-prophet-bookings', JSON.stringify(bookings));
+
+      // Create notification for admin panel and send email
+      createBookingNotification(booking);
 
       setBookingDetails(booking);
       setSubmitted(true);
@@ -533,32 +537,6 @@ END:VCALENDAR`;
                 </>
               )}
             </form>
-          </div>
-        </div>
-      </section>
-
-      {/* Admin Link Generator Info */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Scheduling Links</h3>
-            <p className="text-gray-600 mb-6">
-              Share these links with those who want to schedule a session:
-            </p>
-            <div className="space-y-4">
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                <p className="text-sm text-green-800 font-medium mb-2">With Payment Required ($150):</p>
-                <code className="text-xs bg-white px-2 py-1 rounded border break-all">
-                  {typeof window !== 'undefined' ? `${window.location.origin}/schedule-prophet-joshua` : '/schedule-prophet-joshua'}
-                </code>
-              </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <p className="text-sm text-blue-800 font-medium mb-2">Pre-Paid / Admin Approved:</p>
-                <code className="text-xs bg-white px-2 py-1 rounded border break-all">
-                  {typeof window !== 'undefined' ? `${window.location.origin}/schedule-prophet-joshua?paid=true` : '/schedule-prophet-joshua?paid=true'}
-                </code>
-              </div>
-            </div>
           </div>
         </div>
       </section>
