@@ -25,9 +25,9 @@ export function FeaturedVideo() {
             {/* Facebook Video Embed */}
             <div className="relative aspect-video bg-black">
               <iframe 
-                src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Fjoshua.grace.matthews%2Fvideos%2F2690854674606913%2F&show_text=false&width=476&t=0" 
-                width="476" 
-                height="476" 
+                src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fjoshua.grace.matthews%2Fvideos%2F2690854674606913%2F&show_text=true&width=560&t=0" 
+                width="560" 
+                height="429" 
                 style={{border: 'none', overflow: 'hidden', width: '100%', height: '100%', maxWidth: '800px', margin: '0 auto'}}
                 scrolling="no" 
                 frameBorder="0" 
