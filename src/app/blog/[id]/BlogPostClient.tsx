@@ -143,17 +143,19 @@ export default function BlogPostClient({ id }: { id: string }) {
   useEffect(() => {
     const postId = parseInt(id);
     
-    // Try to get posts from localStorage first
+    // Load posts from localStorage - prioritize admin posts
     const savedPosts = localStorage.getItem('ogn-blog-posts');
-    let allPosts = defaultPosts;
+    let allPosts: BlogPost[] = [];
     
     if (savedPosts) {
       const parsed = JSON.parse(savedPosts);
-      if (parsed.length > 0) {
-        allPosts = parsed;
-      }
+      allPosts = parsed.length > 0 ? parsed : defaultPosts;
+    } else {
+      // Only use defaults if localStorage doesn't exist yet
+      allPosts = defaultPosts;
     }
 
+    // Find the post by ID - must be published
     const foundPost = allPosts.find((p) => p.id === postId && p.published);
     setPost(foundPost || null);
 

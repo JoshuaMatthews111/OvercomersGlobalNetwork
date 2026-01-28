@@ -59,7 +59,7 @@ const defaultPosts: BlogPost[] = [
 const categories = ['All', 'Teaching', 'Ministry', 'Finance', 'Testimony', 'Events'];
 
 export default function BlogPage() {
-  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -68,8 +68,15 @@ export default function BlogPage() {
     if (savedPosts) {
       const parsed = JSON.parse(savedPosts);
       if (parsed.length > 0) {
+        // ALWAYS use admin posts if they exist
         setPosts(parsed.filter((p: BlogPost) => p.published));
+      } else {
+        // Only use defaults if no admin posts exist
+        setPosts(defaultPosts.filter((p: BlogPost) => p.published));
       }
+    } else {
+      // Only use defaults if localStorage is empty
+      setPosts(defaultPosts.filter((p: BlogPost) => p.published));
     }
   }, []);
 
