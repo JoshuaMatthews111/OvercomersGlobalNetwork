@@ -5,7 +5,7 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowLeft, Facebook, Twitter, Link as LinkIcon, CheckCircle, Share2, Linkedin, Mail } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Facebook, Twitter, Link as LinkIcon, CheckCircle, Share2, Linkedin, Mail, MessageSquare, MapPin, Send, LogIn } from 'lucide-react';
 
 interface BlogPost {
   id: number;
@@ -17,6 +17,26 @@ interface BlogPost {
   date: string;
   category: string;
   published: boolean;
+}
+
+interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  location: string;
+  avatar?: string;
+  provider: 'google' | 'apple' | 'email';
+  createdAt: string;
+}
+
+interface Comment {
+  id: string;
+  postId: number;
+  userId: string;
+  userName: string;
+  userLocation: string;
+  content: string;
+  createdAt: string;
 }
 
 const defaultPosts: BlogPost[] = [
@@ -115,6 +135,10 @@ export default function BlogPostClient({ id }: { id: string }) {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [commentSubmitted, setCommentSubmitted] = useState(false);
 
   useEffect(() => {
     const postId = parseInt(id);
@@ -140,6 +164,22 @@ export default function BlogPostClient({ id }: { id: string }) {
         .slice(0, 2);
       setRelatedPosts(related);
     }
+
+    // Check if user is logged in
+    const savedUser = localStorage.getItem('ogn-user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+
+    // Load comments for this post
+    const savedComments = localStorage.getItem('ogn-blog-comments');
+    if (savedComments) {
+      const allComments = JSON.parse(savedComments);
+      const postComments = allComments.filter((c: Comment) => c.postId === postId);
+      setComments(postComments.sort((a: Comment, b: Comment) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ));
+    }
   }, [id]);
 
   const formatDate = (dateString: string) => {
@@ -156,6 +196,45 @@ export default function BlogPostClient({ id }: { id: string }) {
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
     }
+  };
+
+  const handleSubmitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !newComment.trim() || !post) return;
+
+    const comment: Comment = {
+      id: Date.now().toString(),
+      postId: post.id,
+      userId: user.id,
+      userName: user.name,
+      userLocation: user.location,
+      content: newComment.trim(),
+      createdAt: new Date().toISOString(),
+    };
+
+    const allComments = JSON.parse(localStorage.getItem('ogn-blog-comments') || '[]');
+    allComments.unshift(comment);
+    localStorage.setItem('ogn-blog-comments', JSON.stringify(allComments));
+    
+    setComments([comment, ...comments]);
+    setNewComment('');
+    setCommentSubmitted(true);
+    setTimeout(() => setCommentSubmitted(false), 3000);
+  };
+
+  const formatCommentDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -335,6 +414,123 @@ export default function BlogPostClient({ id }: { id: string }) {
                     Founder of Overcomers Global Network, author, and international speaker dedicated to raising disciples and advancing the Kingdom of God across nations.
                   </p>
                 </div>
+              </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <MessageSquare className="w-6 h-6 text-amber-500" />
+                  Comments ({comments.length})
+                </h3>
+                {!user && (
+                  <Link
+                    href={`/auth?redirect=/blog/${post.id}`}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors text-sm font-medium"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Sign in to Comment
+                  </Link>
+                )}
+              </div>
+
+              {/* Comment Form */}
+              {user ? (
+                <form onSubmit={handleSubmitComment} className="mb-8">
+                  <div className="bg-gray-50 rounded-2xl p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">{user.name}</p>
+                        <p className="text-sm text-gray-500 flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {user.location}
+                        </p>
+                      </div>
+                    </div>
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Share your thoughts..."
+                      rows={4}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-500 focus:outline-none resize-none"
+                    />
+                    <div className="flex items-center justify-between mt-4">
+                      <Link
+                        href="/profile"
+                        className="text-sm text-gray-600 hover:text-amber-600"
+                      >
+                        View Profile
+                      </Link>
+                      <button
+                        type="submit"
+                        disabled={!newComment.trim()}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium shadow-lg shadow-amber-500/30 hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Send className="w-4 h-4" />
+                        Post Comment
+                      </button>
+                    </div>
+                    {commentSubmitted && (
+                      <div className="mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        Comment posted successfully!
+                      </div>
+                    )}
+                  </div>
+                </form>
+              ) : (
+                <div className="mb-8 p-8 bg-gray-50 rounded-2xl text-center">
+                  <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">Sign in to join the conversation</p>
+                  <Link
+                    href={`/auth?redirect=/blog/${post.id}`}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium shadow-lg shadow-amber-500/30 hover:shadow-xl transition-all"
+                  >
+                    <LogIn className="w-5 h-5" />
+                    Sign In or Create Account
+                  </Link>
+                </div>
+              )}
+
+              {/* Comments List */}
+              <div className="space-y-6">
+                {comments.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium">No comments yet</p>
+                    <p className="text-sm">Be the first to share your thoughts!</p>
+                  </div>
+                ) : (
+                  comments.map((comment) => (
+                    <div key={comment.id} className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                          {comment.userName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <p className="font-bold text-gray-900">{comment.userName}</p>
+                              <div className="flex items-center gap-3 text-sm text-gray-500">
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {comment.userLocation}
+                                </span>
+                                <span>•</span>
+                                <span>{formatCommentDate(comment.createdAt)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-gray-700 leading-relaxed">{comment.content}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
