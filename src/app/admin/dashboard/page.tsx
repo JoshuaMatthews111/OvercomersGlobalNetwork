@@ -131,6 +131,13 @@ export default function AdminDashboard() {
             Blog Posts
           </Link>
           <Link
+            href="/admin/enrollments"
+            className="flex items-center gap-3 px-4 py-3 text-amber-400 hover:bg-white/5 rounded-xl transition-colors font-medium"
+          >
+            <Users className="w-5 h-5" />
+            Enrollments
+          </Link>
+          <Link
             href="/admin/scheduler"
             className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
           >

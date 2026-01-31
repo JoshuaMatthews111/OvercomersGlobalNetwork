@@ -94,15 +94,16 @@ export default function DiscipleshipPage() {
                 href="/discipleship/enroll"
                 className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold transition-all"
               >
-                Enroll in Discipleship
+                Join Our Network
                 <ArrowRight className="w-5 h-5" />
               </Link>
-              <a
-                href="#find"
+              <Link
+                href="/discipleship/enroll"
                 className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 rounded-full font-semibold transition-all"
               >
-                Find a House Church
-              </a>
+                <Home className="w-5 h-5" />
+                Start a House Church
+              </Link>
             </div>
           </div>
         </div>
