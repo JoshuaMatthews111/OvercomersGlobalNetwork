@@ -2,7 +2,7 @@
 
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { CheckCircle, Heart, Phone, Mail, ArrowRight } from 'lucide-react';
+import { CheckCircle, Heart, Mail, ArrowRight, Clock, Package, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DiscipleshipThankYouPage() {
@@ -26,7 +26,7 @@ export default function DiscipleshipThankYouPage() {
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 mb-8">
               <div className="flex items-center justify-center gap-2 text-amber-600 mb-4">
                 <Heart className="w-6 h-6" />
-                <span className="font-semibold text-lg">You Are Loved</span>
+                <span className="font-semibold text-lg">We Love You!</span>
               </div>
 
               <p className="text-xl text-gray-600 leading-relaxed mb-6">
@@ -34,37 +34,72 @@ export default function DiscipleshipThankYouPage() {
                 and we are excited to welcome you into the Overcomers Global Network family.
               </p>
 
+              {/* Important Notice */}
+              <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl p-6 mb-6">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <Clock className="w-6 h-6" />
+                  <span className="font-bold text-lg">Someone Will Be Reaching Out!</span>
+                </div>
+                <p className="text-amber-100 mb-4">
+                  Please <strong className="text-white">check your email address within 24-48 hours</strong>. 
+                  A member of our team will contact you to welcome you personally and help you get started.
+                </p>
+                <div className="flex items-center justify-center gap-2 text-amber-200">
+                  <Mail className="w-5 h-5" />
+                  <span className="text-sm">Check your inbox (and spam folder)</span>
+                </div>
+              </div>
+
               <div className="bg-amber-50 rounded-xl p-6 mb-6">
-                <h3 className="font-bold text-gray-900 mb-3">What Happens Next:</h3>
-                <ul className="text-left space-y-3 text-gray-700">
+                <h3 className="font-bold text-gray-900 mb-4">What Happens Next:</h3>
+                <ul className="text-left space-y-4 text-gray-700">
                   <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5">1</div>
-                    <span>You will receive a <strong>phone call from a leader</strong> in our fellowship to personally welcome you and answer any questions.</span>
+                    <div className="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-gray-900">Check Your Email (24-48 hrs)</strong>
+                      <p className="text-sm text-gray-600">Someone from our team will reach out to welcome you and answer any questions.</p>
+                    </div>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5">2</div>
-                    <span>Your <strong>right hand of fellowship materials</strong> will be mailed to the address you provided.</span>
+                    <div className="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                      <Package className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-gray-900">Receive Your Disciple Starter Pack</strong>
+                      <p className="text-sm text-gray-600">Your email will be used to send you your starter pack as a new disciple in Overcomers!</p>
+                    </div>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5">3</div>
-                    <span>You&apos;ll be connected with a <strong>house church</strong> in your area or our online community.</span>
+                    <div className="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <strong className="text-gray-900">Get Connected</strong>
+                      <p className="text-sm text-gray-600">You&apos;ll be connected with a house church in your area or our online community.</p>
+                    </div>
                   </li>
                 </ul>
               </div>
 
               {/* Scripture */}
-              <div className="border-l-4 border-amber-500 pl-4 py-2 text-left mb-6">
-                <p className="text-gray-700 italic mb-2">
-                  &quot;Behold, I stand at the door and knock. If anyone hears My voice and opens the door, 
-                  I will come in to him and dine with him, and he with Me.&quot;
+              <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                <p className="text-gray-700 italic text-lg mb-3">
+                  &quot;Therefore, if anyone is in Christ, he is a new creation; old things have passed away; 
+                  behold, all things have become new.&quot;
                 </p>
-                <p className="text-amber-600 font-semibold text-sm">— Revelation 3:20</p>
+                <p className="text-amber-600 font-semibold">— 2 Corinthians 5:17</p>
               </div>
 
-              <p className="text-lg text-gray-800 font-medium">
-                You are loved in the name of Jesus Christ. <br />
-                <span className="text-amber-600">It&apos;s time to advance!</span>
-              </p>
+              <div className="border-t border-gray-100 pt-6">
+                <p className="text-xl text-gray-800 font-medium mb-2">
+                  You are loved in the name of Jesus Christ!
+                </p>
+                <p className="text-amber-600 font-bold text-lg">
+                  Welcome to the family — It&apos;s time to advance!
+                </p>
+              </div>
             </div>
 
             {/* Contact Info */}
