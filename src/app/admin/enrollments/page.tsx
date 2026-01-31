@@ -77,6 +77,8 @@ export default function EnrollmentsAdminPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [newNote, setNewNote] = useState('');
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     loadEnrollments();
   }, []);
@@ -86,10 +88,13 @@ export default function EnrollmentsAdminPage() {
   }, [enrollments, searchQuery, statusFilter, typeFilter, churchFilter]);
 
   const loadEnrollments = () => {
+    setIsLoading(true);
+    // Load from localStorage
     const saved = localStorage.getItem('ogn-enrollments');
     if (saved) {
       setEnrollments(JSON.parse(saved));
     }
+    setIsLoading(false);
   };
 
   const filterEnrollments = () => {
@@ -152,22 +157,21 @@ export default function EnrollmentsAdminPage() {
   const addNote = (id: string) => {
     if (!newNote.trim()) return;
     
+    const newNoteObj = { date: new Date().toISOString(), note: newNote.trim(), author: 'Admin' };
+    
     const updated = enrollments.map(e => {
       if (e.id === id) {
         return {
           ...e,
-          adminNotes: [
-            ...e.adminNotes,
-            { date: new Date().toISOString(), note: newNote.trim(), author: 'Admin' }
-          ],
+          adminNotes: [...e.adminNotes, newNoteObj],
           lastUpdated: new Date().toISOString(),
         };
       }
       return e;
     });
     setEnrollments(updated);
-    localStorage.setItem('ogn-enrollments', JSON.stringify(updated));
     setNewNote('');
+    localStorage.setItem('ogn-enrollments', JSON.stringify(updated));
     
     if (selectedEnrollment?.id === id) {
       setSelectedEnrollment(updated.find(e => e.id === id) || null);
@@ -440,7 +444,13 @@ export default function EnrollmentsAdminPage() {
 
         {/* Enrollments Table */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {filteredEnrollments.length === 0 ? (
+          {isLoading ? (
+            <div className="p-12 text-center">
+              <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Enrollments...</h3>
+              <p className="text-gray-500">Fetching data from server</p>
+            </div>
+          ) : filteredEnrollments.length === 0 ? (
             <div className="p-12 text-center">
               <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No Enrollments Found</h3>

@@ -176,11 +176,36 @@ export default function DiscipleshipEnrollPage() {
 
     // Save enrollment to localStorage
     const enrollments = JSON.parse(localStorage.getItem('ogn-enrollments') || '[]');
-    enrollments.unshift(newEnrollment); // Add to beginning so newest is first
+    enrollments.unshift(newEnrollment);
     localStorage.setItem('ogn-enrollments', JSON.stringify(enrollments));
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Send email notification with enrollment details using Formspree
+    try {
+      await fetch('https://formspree.io/f/xpwzgvkn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `New OGN Enrollment: ${newEnrollment.personalInfo.fullName}`,
+          enrollmentNumber: newEnrollment.enrollmentNumber,
+          name: newEnrollment.personalInfo.fullName,
+          email: newEnrollment.personalInfo.email,
+          phone: newEnrollment.personalInfo.phone,
+          address: newEnrollment.address.fullAddress,
+          churchAffiliation: newEnrollment.churchAffiliation.hasChurch,
+          churchName: newEnrollment.churchAffiliation.churchName || 'N/A',
+          houseChurchInterest: newEnrollment.houseChurch.interest,
+          reasonsForJoining: newEnrollment.reasonsForJoining.selected.join(', '),
+          prayerRequest: newEnrollment.prayerRequest || 'None',
+          submittedAt: newEnrollment.submittedAt,
+          // Full JSON for reference
+          fullData: JSON.stringify(newEnrollment, null, 2),
+        }),
+      });
+    } catch (error) {
+      console.error('Error sending email notification:', error);
+    }
 
     // Redirect to thank you page
     router.push('/discipleship/thank-you');
