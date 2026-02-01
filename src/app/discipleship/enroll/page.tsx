@@ -5,6 +5,7 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { User, Mail, Phone, MapPin, Home, Send, Heart, BookOpen, Globe, Users, Church, CheckCircle, Star, Shield, Sparkles, HandHeart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { addEnrollment } from '@/lib/firebase';
 
 const networkBenefits = [
   {
@@ -174,38 +175,22 @@ export default function DiscipleshipEnrollPage() {
       lastUpdated: new Date().toISOString(),
     };
 
-    // Save enrollment to localStorage
+    // Save enrollment to Firebase (primary storage - cloud)
+    try {
+      const result = await addEnrollment(newEnrollment);
+      if (result.success) {
+        console.log('Enrollment saved to Firebase successfully!');
+      } else {
+        console.error('Failed to save to Firebase, using localStorage backup');
+      }
+    } catch (error) {
+      console.error('Firebase error:', error);
+    }
+
+    // Also save to localStorage as backup
     const enrollments = JSON.parse(localStorage.getItem('ogn-enrollments') || '[]');
     enrollments.unshift(newEnrollment);
     localStorage.setItem('ogn-enrollments', JSON.stringify(enrollments));
-
-    // Send email notification with enrollment details using Formspree
-    try {
-      await fetch('https://formspree.io/f/xpwzgvkn', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          _subject: `New OGN Enrollment: ${newEnrollment.personalInfo.fullName}`,
-          enrollmentNumber: newEnrollment.enrollmentNumber,
-          name: newEnrollment.personalInfo.fullName,
-          email: newEnrollment.personalInfo.email,
-          phone: newEnrollment.personalInfo.phone,
-          address: newEnrollment.address.fullAddress,
-          churchAffiliation: newEnrollment.churchAffiliation.hasChurch,
-          churchName: newEnrollment.churchAffiliation.churchName || 'N/A',
-          houseChurchInterest: newEnrollment.houseChurch.interest,
-          reasonsForJoining: newEnrollment.reasonsForJoining.selected.join(', '),
-          prayerRequest: newEnrollment.prayerRequest || 'None',
-          submittedAt: newEnrollment.submittedAt,
-          // Full JSON for reference
-          fullData: JSON.stringify(newEnrollment, null, 2),
-        }),
-      });
-    } catch (error) {
-      console.error('Error sending email notification:', error);
-    }
 
     // Redirect to thank you page
     router.push('/discipleship/thank-you');

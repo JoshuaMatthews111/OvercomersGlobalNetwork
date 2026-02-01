@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Users, Home, Search, Filter, Eye, CheckCircle, Clock, 
   MessageSquare, Phone, Mail, MapPin, Church, Calendar,
   ChevronDown, X, FileText, Download, RefreshCw, Star,
-  UserCheck, Building, Globe, Heart, ArrowLeft
+  UserCheck, Building, Globe, Heart, ArrowLeft, Loader2
 } from 'lucide-react';
+import { getEnrollments, updateEnrollment } from '@/lib/firebase';
 
 interface Enrollment {
   id: string;
@@ -78,19 +79,34 @@ export default function EnrollmentsAdminPage() {
   const [newNote, setNewNote] = useState('');
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [dataSource, setDataSource] = useState<'firebase' | 'local'>('local');
 
-  useEffect(() => {
-    loadEnrollments();
-  }, []);
-
-  useEffect(() => {
-    filterEnrollments();
-  }, [enrollments, searchQuery, statusFilter, typeFilter, churchFilter]);
-
-  const loadEnrollments = () => {
-    setIsLoading(true);
+  const loadEnrollments = useCallback(async (showRefreshIndicator = false) => {
+    if (showRefreshIndicator) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
     
-    // Load from BOTH localStorage keys (old and new format)
+    // Try to load from Firebase first
+    try {
+      const result = await getEnrollments();
+      if (result.success && result.enrollments && result.enrollments.length > 0) {
+        setEnrollments(result.enrollments as Enrollment[]);
+        setDataSource('firebase');
+        setLastRefresh(new Date());
+        console.log(`Loaded ${result.enrollments.length} enrollments from Firebase`);
+        setIsLoading(false);
+        setIsRefreshing(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Firebase fetch error:', error);
+    }
+    
+    // Fallback: Load from BOTH localStorage keys (old and new format)
     const newEnrollments = JSON.parse(localStorage.getItem('ogn-enrollments') || '[]');
     const oldEnrollments = JSON.parse(localStorage.getItem('ogn-discipleship-enrollments') || '[]');
     
@@ -174,10 +190,30 @@ export default function EnrollmentsAdminPage() {
     );
     
     setEnrollments(allEnrollments);
+    setDataSource('local');
+    setLastRefresh(new Date());
     setIsLoading(false);
+    setIsRefreshing(false);
     
-    console.log(`Loaded ${newEnrollments.length} new format + ${oldEnrollments.length} old format = ${allEnrollments.length} total enrollments`);
-  };
+    console.log(`Loaded ${newEnrollments.length} new format + ${oldEnrollments.length} old format = ${allEnrollments.length} total enrollments (localStorage)`);
+  }, []);
+
+  useEffect(() => {
+    loadEnrollments();
+  }, [loadEnrollments]);
+
+  // Auto-refresh every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadEnrollments(true);
+    }, 60000); // 60 seconds
+    
+    return () => clearInterval(interval);
+  }, [loadEnrollments]);
+
+  useEffect(() => {
+    filterEnrollments();
+  }, [enrollments, searchQuery, statusFilter, typeFilter, churchFilter]);
 
   const filterEnrollments = () => {
     let filtered = [...enrollments];
@@ -357,12 +393,27 @@ export default function EnrollmentsAdminPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {/* Data source indicator */}
+              <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full">
+                <div className={`w-2 h-2 rounded-full ${dataSource === 'firebase' ? 'bg-green-500' : 'bg-amber-500'}`} />
+                {dataSource === 'firebase' ? 'Firebase' : 'Local'}
+                {lastRefresh && (
+                  <span className="text-gray-400">
+                    • {lastRefresh.toLocaleTimeString()}
+                  </span>
+                )}
+              </div>
               <button
-                onClick={loadEnrollments}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
-                title="Refresh"
+                onClick={() => loadEnrollments(true)}
+                disabled={isRefreshing}
+                className="flex items-center gap-2 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg disabled:opacity-50"
+                title="Refresh data"
               >
-                <RefreshCw className="w-5 h-5" />
+                {isRefreshing ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-5 h-5" />
+                )}
               </button>
               <button
                 onClick={exportToCSV}
