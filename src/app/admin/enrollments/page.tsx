@@ -8,10 +8,11 @@ import {
   ChevronDown, X, FileText, Download, RefreshCw, Star,
   UserCheck, Building, Globe, Heart, ArrowLeft, Loader2
 } from 'lucide-react';
-import { getEnrollments, updateEnrollment } from '@/lib/firebase';
+import { getEnrollments, updateEnrollment, getAllAdmins, type AdminUser } from '@/lib/firebase';
 
 interface Enrollment {
   id: string;
+  firebaseId?: string;
   enrollmentNumber: string;
   submittedAt: string;
   status: 'new' | 'contacted' | 'in-progress' | 'completed';
@@ -63,6 +64,8 @@ interface Enrollment {
   adminNotes: Array<{ date: string; note: string; author: string }>;
   contactedDate: string | null;
   assignedTo: string | null;
+  assignedToName?: string | null;
+  assignedAt?: string | null;
   followUpDate: string | null;
   lastUpdated: string;
 }
@@ -82,6 +85,30 @@ export default function EnrollmentsAdminPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [dataSource, setDataSource] = useState<'firebase' | 'local'>('local');
+  
+  // Admin assignment state
+  const [currentAdminUid, setCurrentAdminUid] = useState<string>('');
+  const [currentAdminName, setCurrentAdminName] = useState<string>('');
+  const [currentAdminRole, setCurrentAdminRole] = useState<string>('');
+  const [allAdmins, setAllAdmins] = useState<AdminUser[]>([]);
+  const [assignmentFilter, setAssignmentFilter] = useState('all');
+
+  // Load current admin info
+  useEffect(() => {
+    const uid = localStorage.getItem('ogn-admin-uid') || '';
+    const name = localStorage.getItem('ogn-admin-name') || 'Admin';
+    const role = localStorage.getItem('ogn-admin-role') || '';
+    setCurrentAdminUid(uid);
+    setCurrentAdminName(name);
+    setCurrentAdminRole(role);
+    
+    // Load all admins for assignment display
+    getAllAdmins().then(result => {
+      if (result.success) {
+        setAllAdmins(result.admins);
+      }
+    });
+  }, []);
 
   const loadEnrollments = useCallback(async (showRefreshIndicator = false) => {
     if (showRefreshIndicator) {
@@ -213,7 +240,7 @@ export default function EnrollmentsAdminPage() {
 
   useEffect(() => {
     filterEnrollments();
-  }, [enrollments, searchQuery, statusFilter, typeFilter, churchFilter]);
+  }, [enrollments, searchQuery, statusFilter, typeFilter, churchFilter, assignmentFilter]);
 
   const filterEnrollments = () => {
     let filtered = [...enrollments];
@@ -249,6 +276,17 @@ export default function EnrollmentsAdminPage() {
       }
     }
 
+    // Assignment filter
+    if (assignmentFilter !== 'all') {
+      if (assignmentFilter === 'mine') {
+        filtered = filtered.filter(e => e.assignedTo === currentAdminUid);
+      } else if (assignmentFilter === 'unassigned') {
+        filtered = filtered.filter(e => !e.assignedTo);
+      } else if (assignmentFilter === 'assigned') {
+        filtered = filtered.filter(e => e.assignedTo);
+      }
+    }
+
     setFilteredEnrollments(filtered);
   };
 
@@ -275,7 +313,7 @@ export default function EnrollmentsAdminPage() {
   const addNote = (id: string) => {
     if (!newNote.trim()) return;
     
-    const newNoteObj = { date: new Date().toISOString(), note: newNote.trim(), author: 'Admin' };
+    const newNoteObj = { date: new Date().toISOString(), note: newNote.trim(), author: currentAdminName };
     
     const updated = enrollments.map(e => {
       if (e.id === id) {
@@ -291,9 +329,81 @@ export default function EnrollmentsAdminPage() {
     setNewNote('');
     localStorage.setItem('ogn-enrollments', JSON.stringify(updated));
     
+    // Also update in Firebase if it has a firebaseId
+    const enrollment = enrollments.find(e => e.id === id);
+    if (enrollment?.firebaseId) {
+      updateEnrollment(enrollment.firebaseId, { 
+        adminNotes: [...(enrollment.adminNotes || []), newNoteObj],
+        lastUpdated: new Date().toISOString()
+      });
+    }
+    
     if (selectedEnrollment?.id === id) {
       setSelectedEnrollment(updated.find(e => e.id === id) || null);
     }
+  };
+
+  // Assign enrollment to current admin
+  const assignToMe = async (enrollment: Enrollment) => {
+    const updates = {
+      assignedTo: currentAdminUid,
+      assignedToName: currentAdminName,
+      assignedAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+    };
+    
+    const updated = enrollments.map(e => 
+      e.id === enrollment.id ? { ...e, ...updates } : e
+    );
+    setEnrollments(updated);
+    localStorage.setItem('ogn-enrollments', JSON.stringify(updated));
+    
+    // Update in Firebase
+    if (enrollment.firebaseId) {
+      await updateEnrollment(enrollment.firebaseId, updates);
+    }
+    
+    if (selectedEnrollment?.id === enrollment.id) {
+      setSelectedEnrollment({ ...enrollment, ...updates });
+    }
+  };
+
+  // Unassign enrollment (master can unassign anyone, admin can only unassign self)
+  const unassignEnrollment = async (enrollment: Enrollment) => {
+    // Check permission
+    if (currentAdminRole !== 'master' && enrollment.assignedTo !== currentAdminUid) {
+      alert('You can only unassign yourself from enrollments');
+      return;
+    }
+    
+    const updates = {
+      assignedTo: null,
+      assignedToName: null,
+      assignedAt: null,
+      lastUpdated: new Date().toISOString(),
+    };
+    
+    const updated = enrollments.map(e => 
+      e.id === enrollment.id ? { ...e, ...updates } : e
+    );
+    setEnrollments(updated);
+    localStorage.setItem('ogn-enrollments', JSON.stringify(updated));
+    
+    // Update in Firebase
+    if (enrollment.firebaseId) {
+      await updateEnrollment(enrollment.firebaseId, updates);
+    }
+    
+    if (selectedEnrollment?.id === enrollment.id) {
+      setSelectedEnrollment({ ...enrollment, ...updates });
+    }
+  };
+
+  // Get admin name by UID
+  const getAdminName = (uid: string | null) => {
+    if (!uid) return null;
+    const admin = allAdmins.find(a => a.uid === uid);
+    return admin?.name || 'Unknown Admin';
   };
 
   const formatDate = (dateString: string) => {
@@ -565,6 +675,19 @@ export default function EnrollmentsAdminPage() {
                     <option value="no-church">No Church</option>
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Assignment</label>
+                  <select
+                    value={assignmentFilter}
+                    onChange={(e) => setAssignmentFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-amber-500 focus:outline-none"
+                  >
+                    <option value="all">All Enrollments</option>
+                    <option value="mine">Assigned to Me</option>
+                    <option value="unassigned">Unassigned</option>
+                    <option value="assigned">All Assigned</option>
+                  </select>
+                </div>
               </div>
             )}
           </div>
@@ -600,9 +723,9 @@ export default function EnrollmentsAdminPage() {
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Person</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Church</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Interest</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
@@ -628,16 +751,6 @@ export default function EnrollmentsAdminPage() {
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        {enrollment.churchAffiliation.hasChurch === 'Yes, I attend a church' ? (
-                          <div className="flex items-center gap-1 text-sm">
-                            <Church className="w-4 h-4 text-green-500" />
-                            <span className="text-green-700">Yes</span>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-gray-500">No</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-4">
                         <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${getTypeColor(enrollment.houseChurch.interest)}`}>
                           {getTypeLabel(enrollment.houseChurch.interest)}
                         </span>
@@ -646,6 +759,20 @@ export default function EnrollmentsAdminPage() {
                         <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(enrollment.status)}`}>
                           {enrollment.status}
                         </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        {enrollment.assignedTo ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center">
+                              <UserCheck className="w-3 h-3 text-amber-600" />
+                            </div>
+                            <span className="text-sm text-gray-700">
+                              {enrollment.assignedToName || getAdminName(enrollment.assignedTo)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-400">Unassigned</span>
+                        )}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
                         {formatShortDate(enrollment.submittedAt)}
@@ -695,6 +822,51 @@ export default function EnrollmentsAdminPage() {
 
             {/* Modal Content */}
             <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              {/* Assignment Section */}
+              <div className="bg-amber-50 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <UserCheck className="w-4 h-4 text-amber-600" />
+                  Assignment
+                </h3>
+                {selectedEnrollment.assignedTo ? (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                        <UserCheck className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {selectedEnrollment.assignedToName || getAdminName(selectedEnrollment.assignedTo)}
+                        </p>
+                        {selectedEnrollment.assignedAt && (
+                          <p className="text-xs text-gray-500">
+                            Assigned {formatDate(selectedEnrollment.assignedAt)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {(currentAdminRole === 'master' || selectedEnrollment.assignedTo === currentAdminUid) && (
+                      <button
+                        onClick={() => unassignEnrollment(selectedEnrollment)}
+                        className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200"
+                      >
+                        Unassign
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <p className="text-gray-500">This enrollment is not assigned to anyone.</p>
+                    <button
+                      onClick={() => assignToMe(selectedEnrollment)}
+                      className="px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600"
+                    >
+                      Assign to Me
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Status Actions */}
               <div className="flex flex-wrap gap-2">
                 <span className="text-sm text-gray-500 mr-2">Update Status:</span>

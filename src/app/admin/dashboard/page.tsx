@@ -20,8 +20,11 @@ import {
   ImageIcon,
   Video,
   Heart,
-  UserPlus
+  UserPlus,
+  ShieldCheck,
+  MessageSquare
 } from 'lucide-react';
+import { signOutAdmin } from '@/lib/firebase';
 
 interface Order {
   id: number;
@@ -64,9 +67,23 @@ export default function AdminDashboard() {
     setBookings(savedBookings);
   }, [router]);
 
-  const handleLogout = () => {
+  const [adminRole, setAdminRole] = useState<string>('');
+  const [adminName, setAdminName] = useState<string>('');
+
+  useEffect(() => {
+    const role = localStorage.getItem('ogn-admin-role') || '';
+    const name = localStorage.getItem('ogn-admin-name') || 'Admin';
+    setAdminRole(role);
+    setAdminName(name);
+  }, []);
+
+  const handleLogout = async () => {
+    await signOutAdmin();
     localStorage.removeItem('ogn-admin-auth');
     localStorage.removeItem('ogn-admin-email');
+    localStorage.removeItem('ogn-admin-role');
+    localStorage.removeItem('ogn-admin-name');
+    localStorage.removeItem('ogn-admin-uid');
     router.push('/admin');
   };
 
@@ -83,23 +100,26 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white p-6">
-        <div className="mb-8">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white p-4 flex flex-col">
+        <div className="mb-4">
           <h1 className="text-xl font-bold text-amber-400">OGN Admin</h1>
-          <p className="text-gray-400 text-sm">Master Dashboard</p>
+          <p className="text-gray-400 text-xs flex items-center gap-1">
+            {adminRole === 'master' && <ShieldCheck className="w-3 h-3 text-amber-400" />}
+            {adminRole === 'master' ? 'Master Admin' : 'Admin'} • {adminName}
+          </p>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-1 flex-1 overflow-y-auto">
           <Link
             href="/admin/dashboard"
-            className="flex items-center gap-3 px-4 py-3 bg-amber-500/20 text-amber-400 rounded-xl"
+            className="flex items-center gap-2 px-3 py-2 bg-amber-500/20 text-amber-400 rounded-lg text-sm"
           >
             <LayoutDashboard className="w-5 h-5" />
             Dashboard
           </Link>
           <Link
             href="/admin/orders"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <ShoppingBag className="w-5 h-5" />
             Orders
@@ -111,49 +131,49 @@ export default function AdminDashboard() {
           </Link>
           <Link
             href="/admin/events"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <Calendar className="w-5 h-5" />
             Events
           </Link>
           <Link
             href="/admin/content"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <FileText className="w-5 h-5" />
             Content
           </Link>
           <Link
             href="/admin/blog"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <BookOpen className="w-5 h-5" />
             Blog Posts
           </Link>
           <Link
             href="/admin/enrollments"
-            className="flex items-center gap-3 px-4 py-3 text-amber-400 hover:bg-white/5 rounded-xl transition-colors font-medium"
+            className="flex items-center gap-2 px-3 py-2 text-amber-400 hover:bg-white/5 rounded-lg text-sm transition-colors font-medium"
           >
             <Users className="w-5 h-5" />
             Enrollments
           </Link>
           <Link
             href="/admin/scheduler"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <Clock className="w-5 h-5" />
             Post Scheduler
           </Link>
           <Link
             href="/admin/events-flyers"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <ImageIcon className="w-5 h-5" />
             Event Flyers
           </Link>
           <Link
             href="/admin/prophet-schedule"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <Video className="w-5 h-5" />
             Prophet Schedule
@@ -165,7 +185,7 @@ export default function AdminDashboard() {
           </Link>
           <Link
             href="/admin/discipleship"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <Heart className="w-5 h-5" />
             Discipleship
@@ -176,20 +196,43 @@ export default function AdminDashboard() {
             )}
           </Link>
           <Link
+            href="/admin/prayer-requests"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+          >
+            <Heart className="w-5 h-5" />
+            Prayer Requests
+          </Link>
+          <Link
+            href="/admin/ask-prophet"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+          >
+            <MessageSquare className="w-5 h-5" />
+            Ask The Prophet
+          </Link>
+          <Link
             href="/admin/settings"
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
           >
             <Settings className="w-5 h-5" />
             Settings
           </Link>
+          {adminRole === 'master' && (
+            <Link
+              href="/admin/users"
+              className="flex items-center gap-2 px-3 py-2 text-amber-400 hover:bg-white/5 rounded-lg text-sm transition-colors font-medium"
+            >
+              <ShieldCheck className="w-5 h-5" />
+              Manage Admins
+            </Link>
+          )}
         </nav>
 
-        <div className="absolute bottom-6 left-6 right-6">
+        <div className="mt-4 pt-4 border-t border-gray-700">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white w-full rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white w-full rounded-lg text-sm transition-colors"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-4 h-4" />
             Sign Out
           </button>
         </div>

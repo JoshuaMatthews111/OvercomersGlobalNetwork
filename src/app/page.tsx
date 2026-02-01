@@ -13,6 +13,7 @@ import { Testimonials } from '@/components/Testimonials';
 import { GiveSection } from '@/components/GiveSection';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { Footer } from '@/components/Footer';
+import { QuickLinks } from '@/components/QuickLinks';
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
       <Navigation />
       <HeroSection />
       <PathwayTiles />
+      <QuickLinks />
       <HowItWorks />
       <ServiceSchedule />
       <EventsCarousel />
