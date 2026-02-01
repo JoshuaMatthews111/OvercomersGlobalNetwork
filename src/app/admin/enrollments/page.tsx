@@ -89,12 +89,94 @@ export default function EnrollmentsAdminPage() {
 
   const loadEnrollments = () => {
     setIsLoading(true);
-    // Load from localStorage
-    const saved = localStorage.getItem('ogn-enrollments');
-    if (saved) {
-      setEnrollments(JSON.parse(saved));
+    
+    // Load from BOTH localStorage keys (old and new format)
+    const newEnrollments = JSON.parse(localStorage.getItem('ogn-enrollments') || '[]');
+    const oldEnrollments = JSON.parse(localStorage.getItem('ogn-discipleship-enrollments') || '[]');
+    
+    // Convert old format enrollments to new format
+    const convertedOldEnrollments = oldEnrollments.map((old: {
+      id: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      address: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      country: string;
+      howDidYouHear: string;
+      prayerRequest: string;
+      date: string;
+      status: string;
+    }) => ({
+      id: old.id?.toString() || Date.now().toString(),
+      enrollmentNumber: `OGN-${old.id?.toString().slice(-8) || Date.now().toString().slice(-8)}`,
+      submittedAt: old.date || new Date().toISOString(),
+      status: old.status === 'completed' ? 'completed' : old.status === 'contacted' ? 'contacted' : 'new',
+      personalInfo: {
+        firstName: old.firstName || '',
+        lastName: old.lastName || '',
+        fullName: `${old.firstName || ''} ${old.lastName || ''}`.trim(),
+        email: old.email || '',
+        phone: old.phone || '',
+      },
+      address: {
+        street: old.address || '',
+        city: old.city || '',
+        state: old.state || '',
+        zipCode: old.zipCode || '',
+        country: old.country || '',
+        fullAddress: `${old.address || ''}, ${old.city || ''}, ${old.state || ''} ${old.zipCode || ''}, ${old.country || ''}`,
+      },
+      churchAffiliation: {
+        hasChurch: 'Not specified',
+        churchName: null,
+        churchLocation: null,
+        pastorName: null,
+        attendanceDuration: null,
+      },
+      reasonsForJoining: {
+        selected: ['Discipleship'],
+        other: null,
+      },
+      houseChurch: {
+        interest: 'Not specified',
+        startingDetails: null,
+        joiningDetails: null,
+        previousExperience: '',
+        fellowshipGoals: '',
+      },
+      howDidYouHear: old.howDidYouHear || '',
+      prayerRequest: old.prayerRequest || null,
+      adminNotes: [],
+      contactedDate: null,
+      assignedTo: null,
+      followUpDate: null,
+      lastUpdated: old.date || new Date().toISOString(),
+    }));
+    
+    // Merge and deduplicate by email
+    const allEnrollments = [...newEnrollments];
+    const existingEmails = new Set(newEnrollments.map((e: Enrollment) => e.personalInfo?.email?.toLowerCase()));
+    
+    for (const converted of convertedOldEnrollments) {
+      if (!existingEmails.has(converted.personalInfo.email.toLowerCase())) {
+        allEnrollments.push(converted);
+        existingEmails.add(converted.personalInfo.email.toLowerCase());
+      }
     }
+    
+    // Sort by date (newest first)
+    allEnrollments.sort((a: Enrollment, b: Enrollment) => 
+      new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+    );
+    
+    setEnrollments(allEnrollments);
     setIsLoading(false);
+    
+    console.log(`Loaded ${newEnrollments.length} new format + ${oldEnrollments.length} old format = ${allEnrollments.length} total enrollments`);
   };
 
   const filterEnrollments = () => {
