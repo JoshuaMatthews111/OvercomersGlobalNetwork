@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, Save, X, ImageIcon, Palette, Youtube, Facebook, Play, Sparkles, FileText, Clock, Wand2, ExternalLink, LayoutDashboard, ShoppingBag, Calendar, Settings, LogOut, ChevronDown, Copy, CheckCircle, Share2, BarChart3, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, Save, X, ImageIcon, Palette, Youtube, Facebook, Play, Sparkles, FileText, Clock, Wand2, ExternalLink, LayoutDashboard, ShoppingBag, Calendar, Settings, LogOut, ChevronDown, Copy, CheckCircle, Share2, BarChart3, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
+import { getBlogPosts, addBlogPost, updateBlogPost, deleteBlogPost, type BlogPost as FirebaseBlogPost } from '@/lib/firebase';
 
 interface BlogPost {
-  id: number;
+  id: string;
+  firebaseId?: string;
   title: string;
   excerpt: string;
   content: string;
@@ -71,35 +73,50 @@ export default function AdminBlogPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [contentLength, setContentLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [topicInput, setTopicInput] = useState('');
-  const [copiedId, setCopiedId] = useState<number | null>(null);
-  const [showMigrationNotice, setShowMigrationNotice] = useState(false);
-  const [migrationComplete, setMigrationComplete] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [currentPost, setCurrentPost] = useState<BlogPost>({
-    id: 0, title: '', excerpt: '', content: '', image: stockImages.default[0],
+    id: '', title: '', excerpt: '', content: '', image: stockImages.default[0],
     author: 'Prophet Joshua Matthews', date: new Date().toISOString().split('T')[0],
     category: 'Message', published: false, fontTheme: 'hillsong', videoUrl: '', videoType: null, videoId: '',
   });
 
-  useEffect(() => {
-    const auth = localStorage.getItem('ogn-admin-auth');
-    if (auth === 'true') setIsAuthenticated(true);
-    else window.location.href = '/admin';
-    const savedPosts = localStorage.getItem('ogn-blog-posts');
-    if (savedPosts) {
-      const parsed = JSON.parse(savedPosts);
-      setPosts(parsed);
-      // Check if any posts have timestamp IDs (IDs > 1000)
-      const hasTimestampIds = parsed.some((p: BlogPost) => p.id > 1000);
-      if (hasTimestampIds) {
-        setShowMigrationNotice(true);
+  const loadPosts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await getBlogPosts(false); // Get all posts including drafts
+      if (result.success) {
+        const mappedPosts: BlogPost[] = result.posts.map((p: FirebaseBlogPost) => ({
+          id: p.firebaseId || '',
+          firebaseId: p.firebaseId,
+          title: p.title,
+          excerpt: p.excerpt,
+          content: p.content,
+          image: p.coverImage || stockImages.default[0],
+          author: p.author,
+          date: p.publishedAt || p.createdAt,
+          category: p.category,
+          published: p.status === 'published',
+          fontTheme: 'hillsong',
+        }));
+        setPosts(mappedPosts);
       }
+    } catch (error) {
+      console.error('Error loading posts:', error);
     }
+    setIsLoading(false);
   }, []);
 
-  const savePosts = (newPosts: BlogPost[]) => {
-    localStorage.setItem('ogn-blog-posts', JSON.stringify(newPosts));
-    setPosts(newPosts);
-  };
+  useEffect(() => {
+    const auth = localStorage.getItem('ogn-admin-auth');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+      loadPosts();
+    } else {
+      window.location.href = '/admin';
+    }
+  }, [loadPosts]);
 
   const parseVideoUrl = (url: string) => {
     const youtubePatterns = [/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/, /youtube\.com\/shorts\/([^&\n?#]+)/];
@@ -188,11 +205,8 @@ export default function AdminBlogPage() {
   };
 
   const handleNewPost = () => {
-    // Use sequential ID based on existing posts (max ID + 1)
-    const maxId = posts.length > 0 ? Math.max(...posts.map(p => p.id)) : 0;
-    const newId = maxId + 1;
     setCurrentPost({
-      id: newId, title: '', excerpt: '', content: '', image: stockImages.default[0],
+      id: '', title: '', excerpt: '', content: '', image: stockImages.default[0],
       author: 'Prophet Joshua Matthews', date: new Date().toISOString().split('T')[0],
       category: 'Message', published: false, fontTheme: 'hillsong', videoUrl: '', videoType: null, videoId: '',
     });
@@ -208,29 +222,79 @@ export default function AdminBlogPage() {
     setShowPreview(false);
   };
 
-  const handleSavePost = () => {
+  const handleSavePost = async () => {
     if (!currentPost.title) { alert('Please enter a title'); return; }
+    setIsSaving(true);
+    
     const postToSave = { ...currentPost, fontTheme: selectedTheme.id };
     if (!postToSave.excerpt && postToSave.content) {
       postToSave.excerpt = postToSave.content.substring(0, 150).replace(/[#*]/g, '') + '...';
     }
-    const existingIndex = posts.findIndex((p) => p.id === currentPost.id);
-    const newPosts = existingIndex >= 0 
-      ? posts.map((p, i) => i === existingIndex ? postToSave : p)
-      : [...posts, postToSave];
-    savePosts(newPosts);
-    setIsEditing(false);
+
+    try {
+      const adminUid = localStorage.getItem('ogn-admin-uid') || '';
+      
+      if (currentPost.firebaseId) {
+        // Update existing post
+        await updateBlogPost(currentPost.firebaseId, {
+          title: postToSave.title,
+          excerpt: postToSave.excerpt,
+          content: postToSave.content,
+          coverImage: postToSave.image,
+          author: postToSave.author,
+          category: postToSave.category,
+          status: postToSave.published ? 'published' : 'draft',
+          publishedAt: postToSave.published ? new Date().toISOString() : null,
+        });
+      } else {
+        // Create new post
+        await addBlogPost({
+          title: postToSave.title,
+          slug: postToSave.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          excerpt: postToSave.excerpt,
+          content: postToSave.content,
+          coverImage: postToSave.image,
+          author: postToSave.author,
+          authorUid: adminUid,
+          category: postToSave.category,
+          tags: [],
+          status: postToSave.published ? 'published' : 'draft',
+          publishedAt: postToSave.published ? new Date().toISOString() : null,
+        });
+      }
+      
+      await loadPosts();
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving post:', error);
+      alert('Failed to save post. Please try again.');
+    }
+    
+    setIsSaving(false);
   };
 
-  const handleDeletePost = (id: number) => {
-    if (confirm('Delete this post?')) savePosts(posts.filter((p) => p.id !== id));
+  const handleDeletePost = async (id: string) => {
+    if (!confirm('Delete this post?')) return;
+    const post = posts.find(p => p.id === id);
+    if (post?.firebaseId) {
+      await deleteBlogPost(post.firebaseId);
+      await loadPosts();
+    }
   };
 
-  const handleTogglePublish = (id: number) => {
-    savePosts(posts.map((p) => p.id === id ? { ...p, published: !p.published } : p));
+  const handleTogglePublish = async (id: string) => {
+    const post = posts.find(p => p.id === id);
+    if (post?.firebaseId) {
+      const newStatus = post.published ? 'draft' : 'published';
+      await updateBlogPost(post.firebaseId, {
+        status: newStatus,
+        publishedAt: newStatus === 'published' ? new Date().toISOString() : null,
+      });
+      await loadPosts();
+    }
   };
 
-  const handleCopyLink = (id: number) => {
+  const handleCopyLink = (id: string) => {
     const url = `${window.location.origin}/blog/${id}`;
     navigator.clipboard.writeText(url);
     setCopiedId(id);
@@ -239,32 +303,6 @@ export default function AdminBlogPage() {
 
   const publishedCount = posts.filter(p => p.published).length;
   const draftCount = posts.filter(p => !p.published).length;
-
-  const handleMigrateBlogIds = () => {
-    if (!confirm('This will convert all blog post IDs to sequential numbers (1, 2, 3...). This is necessary for blog posts to work properly. Continue?')) {
-      return;
-    }
-
-    // Sort posts by creation date (oldest first)
-    const sortedPosts = [...posts].sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      return dateA - dateB;
-    });
-
-    // Assign sequential IDs starting from 1
-    const migratedPosts = sortedPosts.map((post, index) => ({
-      ...post,
-      id: index + 1
-    }));
-
-    // Save migrated posts
-    savePosts(migratedPosts);
-    setShowMigrationNotice(false);
-    setMigrationComplete(true);
-    setTimeout(() => setMigrationComplete(false), 5000);
-    alert(`Successfully migrated ${migratedPosts.length} blog posts! All posts now have sequential IDs.`);
-  };
 
   const getThemeStyles = (theme: typeof fontThemes[0]) => {
     switch (theme.style) {
@@ -442,52 +480,19 @@ export default function AdminBlogPage() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Migration Notice */}
-        {showMigrationNotice && (
-          <div className="mb-6 bg-amber-50 border-2 border-amber-200 rounded-2xl p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                <AlertCircle className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Blog ID Migration Required</h3>
-                <p className="text-gray-700 mb-4">
-                  Some of your blog posts have timestamp-based IDs which cause 404 errors. Click the button below to automatically convert all blog posts to use sequential IDs (1, 2, 3...). This will fix the 404 errors and make all blog posts accessible.
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleMigrateBlogIds}
-                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-colors"
-                  >
-                    <CheckCircle className="w-5 h-5" />
-                    Fix Blog IDs Now
-                  </button>
-                  <button
-                    onClick={() => setShowMigrationNotice(false)}
-                    className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors"
-                  >
-                    Remind Me Later
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Migration Success */}
-        {migrationComplete && (
-          <div className="mb-6 bg-green-50 border-2 border-green-200 rounded-2xl p-6">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-              <div>
-                <h3 className="text-lg font-bold text-green-900">Migration Complete!</h3>
-                <p className="text-green-700">All blog posts now have sequential IDs and will work properly.</p>
-              </div>
-            </div>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="mb-6 text-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin text-amber-500 mx-auto mb-4" />
+            <p className="text-gray-500">Loading blog posts from Firebase...</p>
           </div>
         )}
 
         <div className="flex flex-wrap gap-3 mb-8">
+          <button onClick={() => loadPosts()} className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100">
+            <RefreshCw className="w-4 h-4" /> Refresh
+          </button>
           <Link href="/admin/dashboard" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100"><LayoutDashboard className="w-4 h-4" /> Dashboard</Link>
           <Link href="/admin/scheduler" className="flex items-center gap-2 px-4 py-2 bg-amber-100 rounded-xl text-amber-700 hover:shadow-md border border-amber-200"><Calendar className="w-4 h-4" /> Post Scheduler</Link>
           <Link href="/admin/events" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-gray-600 hover:text-amber-600 hover:shadow-md border border-gray-100"><Calendar className="w-4 h-4" /> Events</Link>

@@ -5,10 +5,11 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowRight, Search } from 'lucide-react';
+import { Calendar, User, ArrowRight, Search, Loader2 } from 'lucide-react';
+import { getBlogPosts, type BlogPost as FirebaseBlogPost } from '@/lib/firebase';
 
 interface BlogPost {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   content: string;
@@ -19,65 +20,42 @@ interface BlogPost {
   published: boolean;
 }
 
-// Default blog posts - will be replaced by admin-created posts
-const defaultPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: 'Walking in Kingdom Authority',
-    excerpt: 'Discover how to exercise the authority that Christ has given every believer in their daily walk.',
-    content: '',
-    image: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800',
-    author: 'Prophet Joshua Matthews',
-    date: '2026-01-15',
-    category: 'Teaching',
-    published: true,
-  },
-  {
-    id: 2,
-    title: 'The Power of House Churches',
-    excerpt: 'Why the house church model is transforming communities and bringing revival to nations.',
-    content: '',
-    image: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=800',
-    author: 'Prophet Joshua Matthews',
-    date: '2026-01-10',
-    category: 'Ministry',
-    published: true,
-  },
-  {
-    id: 3,
-    title: 'Financial Freedom God\'s Way',
-    excerpt: 'Biblical principles for managing your finances and walking in supernatural provision.',
-    content: '',
-    image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800',
-    author: 'Prophet Joshua Matthews',
-    date: '2026-01-05',
-    category: 'Finance',
-    published: true,
-  },
-];
-
-const categories = ['All', 'Teaching', 'Ministry', 'Finance', 'Testimony', 'Events'];
+const categories = ['All', 'Teaching', 'Ministry', 'Finance', 'Testimony', 'Events', 'Prophetic'];
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedPosts = localStorage.getItem('ogn-blog-posts');
-    if (savedPosts) {
-      const parsed = JSON.parse(savedPosts);
-      if (parsed.length > 0) {
-        // ALWAYS use admin posts if they exist
-        setPosts(parsed.filter((p: BlogPost) => p.published));
-      } else {
-        // Only use defaults if no admin posts exist
-        setPosts(defaultPosts.filter((p: BlogPost) => p.published));
+    async function loadPosts() {
+      setIsLoading(true);
+      try {
+        // Fetch published posts from Firebase
+        const result = await getBlogPosts(true); // true = published only
+        if (result.success && result.posts.length > 0) {
+          // Map Firebase posts to display format
+          const mappedPosts: BlogPost[] = result.posts.map((post: FirebaseBlogPost) => ({
+            id: post.firebaseId || post.id || '',
+            title: post.title,
+            excerpt: post.excerpt,
+            content: post.content,
+            image: post.coverImage || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800',
+            author: post.author,
+            date: post.publishedAt || post.createdAt,
+            category: post.category,
+            published: post.status === 'published',
+          }));
+          setPosts(mappedPosts);
+        }
+      } catch (error) {
+        console.error('Error loading blog posts:', error);
       }
-    } else {
-      // Only use defaults if localStorage is empty
-      setPosts(defaultPosts.filter((p: BlogPost) => p.published));
+      setIsLoading(false);
     }
+    
+    loadPosts();
   }, []);
 
   const filteredPosts = posts.filter((post) => {
@@ -156,7 +134,12 @@ export default function BlogPage() {
       {/* Blog Grid */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          {filteredPosts.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-amber-500 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg">Loading posts...</p>
+            </div>
+          ) : filteredPosts.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-gray-500 text-lg">No posts found. Check back soon!</p>
             </div>

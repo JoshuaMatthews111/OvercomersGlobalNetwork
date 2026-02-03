@@ -5,10 +5,11 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowLeft, Facebook, Twitter, Link as LinkIcon, CheckCircle, Share2, Linkedin, Mail, MessageSquare, MapPin, Send, LogIn } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Facebook, Twitter, Link as LinkIcon, CheckCircle, Share2, Linkedin, Mail, MessageSquare, MapPin, Send, LogIn, Loader2 } from 'lucide-react';
+import { getBlogPosts, type BlogPost as FirebaseBlogPost } from '@/lib/firebase';
 
 interface BlogPost {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   content: string;
@@ -31,105 +32,13 @@ interface UserProfile {
 
 interface Comment {
   id: string;
-  postId: number;
+  postId: string;
   userId: string;
   userName: string;
   userLocation: string;
   content: string;
   createdAt: string;
 }
-
-const defaultPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: 'Walking in Kingdom Authority',
-    excerpt: 'Discover how to exercise the authority that Christ has given every believer in their daily walk.',
-    content: `The authority of the believer is one of the most powerful yet misunderstood truths in Scripture. Jesus declared in Matthew 28:18, "All authority in heaven and on earth has been given to me." And then He commissioned us to go in that same authority.
-
-As believers, we are not merely observers in the spiritual realm—we are active participants with delegated authority from the King of Kings. This authority is not based on our own merit or strength, but on the finished work of Christ at Calvary.
-
-**Understanding Your Position**
-
-Ephesians 2:6 tells us that God "raised us up with Christ and seated us with him in the heavenly realms." This positional truth is foundational to walking in authority. You are seated far above all principalities and powers.
-
-**Exercising Authority Daily**
-
-1. **In Prayer** - Approach the throne of grace with boldness
-2. **Over Circumstances** - Speak to mountains in faith
-3. **Against the Enemy** - Resist the devil and he will flee
-4. **In Ministry** - Heal the sick, cast out demons, proclaim the Gospel
-
-The key is not trying to gain authority, but recognizing and exercising the authority you already have in Christ. Walk in it today!`,
-    image: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800',
-    author: 'Prophet Joshua Matthews',
-    date: '2026-01-15',
-    category: 'Teaching',
-    published: true,
-  },
-  {
-    id: 2,
-    title: 'The Power of House Churches',
-    excerpt: 'Why the house church model is transforming communities and bringing revival to nations.',
-    content: `The early church didn't meet in grand cathedrals or purpose-built facilities. They gathered in homes, breaking bread together, sharing life, and experiencing the power of God in intimate community.
-
-Today, we're seeing a global return to this biblical model, and the results are extraordinary. House churches are multiplying across nations, reaching people who would never step foot in a traditional church building.
-
-**Why House Churches Work**
-
-The house church model offers several distinct advantages:
-
-1. **Intimacy** - Small gatherings allow for deeper relationships and accountability
-2. **Flexibility** - Meetings can adapt to the needs of the community
-3. **Multiplication** - Easy to replicate and plant new groups
-4. **Accessibility** - No building costs or barriers to entry
-5. **Discipleship** - Natural environment for mentoring and growth
-
-**The OGN Vision**
-
-At Overcomers Global Network, we believe every believer can be a disciple-maker. Our house church network spans over 50 nations, with ordinary people doing extraordinary things for the Kingdom.
-
-Whether you're in a high-rise apartment in New York or a village in Africa, you can start a house church. All you need is a heart for God and a willingness to gather others.
-
-Join the movement. Start a house church in your community today.`,
-    image: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=800',
-    author: 'Prophet Joshua Matthews',
-    date: '2026-01-10',
-    category: 'Ministry',
-    published: true,
-  },
-  {
-    id: 3,
-    title: 'Financial Freedom God\'s Way',
-    excerpt: 'Biblical principles for managing your finances and walking in supernatural provision.',
-    content: `God wants His children to prosper. 3 John 1:2 declares, "Beloved, I pray that you may prosper in all things and be in health, just as your soul prospers."
-
-But prosperity in God's Kingdom looks different from the world's definition. It's not about accumulation for self—it's about stewardship for Kingdom purposes.
-
-**Biblical Principles for Financial Freedom**
-
-**1. Honor God First**
-"Honor the Lord with your wealth, with the firstfruits of all your crops" (Proverbs 3:9). Tithing isn't about giving God a portion—it's about acknowledging that everything belongs to Him.
-
-**2. Live Within Your Means**
-"The borrower is slave to the lender" (Proverbs 22:7). Debt creates bondage. Freedom comes through discipline and contentment.
-
-**3. Save and Invest Wisely**
-"The wise store up choice food and olive oil, but fools gulp theirs down" (Proverbs 21:20). Building reserves honors God and prepares for opportunities.
-
-**4. Give Generously**
-"Give, and it will be given to you. A good measure, pressed down, shaken together and running over" (Luke 6:38). Generosity unlocks supernatural provision.
-
-**5. Trust God as Your Source**
-"And my God will meet all your needs according to the riches of his glory in Christ Jesus" (Philippians 4:19). Your job is not your source—God is.
-
-Walk in these principles and watch God open the windows of heaven over your finances!`,
-    image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800',
-    author: 'Prophet Joshua Matthews',
-    date: '2026-01-05',
-    category: 'Finance',
-    published: true,
-  },
-];
 
 export default function BlogPostClient({ id }: { id: string }) {
   const [post, setPost] = useState<BlogPost | null>(null);
@@ -139,33 +48,47 @@ export default function BlogPostClient({ id }: { id: string }) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [commentSubmitted, setCommentSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const postId = parseInt(id);
-    
-    // Load posts from localStorage - prioritize admin posts
-    const savedPosts = localStorage.getItem('ogn-blog-posts');
-    let allPosts: BlogPost[] = [];
-    
-    if (savedPosts) {
-      const parsed = JSON.parse(savedPosts);
-      allPosts = parsed.length > 0 ? parsed : defaultPosts;
-    } else {
-      // Only use defaults if localStorage doesn't exist yet
-      allPosts = defaultPosts;
+    async function loadPost() {
+      setIsLoading(true);
+      try {
+        // Fetch all published posts from Firebase
+        const result = await getBlogPosts(true);
+        if (result.success && result.posts.length > 0) {
+          // Map Firebase posts to display format
+          const allPosts: BlogPost[] = result.posts.map((p: FirebaseBlogPost) => ({
+            id: p.firebaseId || p.id || '',
+            title: p.title,
+            excerpt: p.excerpt,
+            content: p.content,
+            image: p.coverImage || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800',
+            author: p.author,
+            date: p.publishedAt || p.createdAt,
+            category: p.category,
+            published: p.status === 'published',
+          }));
+
+          // Find the post by ID
+          const foundPost = allPosts.find((p) => p.id === id && p.published);
+          setPost(foundPost || null);
+
+          // Get related posts (same category, different post)
+          if (foundPost) {
+            const related = allPosts
+              .filter((p) => p.category === foundPost.category && p.id !== foundPost.id && p.published)
+              .slice(0, 2);
+            setRelatedPosts(related);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading blog post:', error);
+      }
+      setIsLoading(false);
     }
 
-    // Find the post by ID - must be published
-    const foundPost = allPosts.find((p) => p.id === postId && p.published);
-    setPost(foundPost || null);
-
-    // Get related posts (same category, different post)
-    if (foundPost) {
-      const related = allPosts
-        .filter((p) => p.category === foundPost.category && p.id !== foundPost.id && p.published)
-        .slice(0, 2);
-      setRelatedPosts(related);
-    }
+    loadPost();
 
     // Check if user is logged in
     const savedUser = localStorage.getItem('ogn-user');
@@ -177,7 +100,7 @@ export default function BlogPostClient({ id }: { id: string }) {
     const savedComments = localStorage.getItem('ogn-blog-comments');
     if (savedComments) {
       const allComments = JSON.parse(savedComments);
-      const postComments = allComments.filter((c: Comment) => c.postId === postId);
+      const postComments = allComments.filter((c: Comment) => c.postId === id);
       setComments(postComments.sort((a: Comment, b: Comment) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ));
@@ -242,6 +165,21 @@ export default function BlogPostClient({ id }: { id: string }) {
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareTitle = post?.title || '';
   const shareText = post?.excerpt || '';
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-white">
+        <Navigation />
+        <div className="pt-32 pb-20">
+          <div className="container mx-auto px-4 text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-amber-500 mx-auto mb-4" />
+            <p className="text-gray-500">Loading post...</p>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
 
   if (!post) {
     return (
