@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, query, orderBy, getDoc, setDoc, deleteDoc, where } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, type User } from "firebase/auth";
 
@@ -14,7 +14,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
 const auth = getAuth(app);
 

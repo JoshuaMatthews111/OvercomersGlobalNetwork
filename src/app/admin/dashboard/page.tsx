@@ -12,7 +12,6 @@ import {
   LogOut,
   Users,
   DollarSign,
-  TrendingUp,
   Clock,
   ChevronRight,
   Bell,
@@ -22,7 +21,8 @@ import {
   Heart,
   UserPlus,
   ShieldCheck,
-  MessageSquare
+  MessageSquare,
+  Loader2
 } from 'lucide-react';
 import { signOutAdmin, MASTER_ADMIN_PERMISSIONS, type AdminPermissions } from '@/lib/firebase';
 
@@ -44,6 +44,9 @@ export default function AdminDashboard() {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [totalDonations, setTotalDonations] = useState(0);
+  const [donationCount, setDonationCount] = useState(0);
+  const [donationsLoading, setDonationsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -65,6 +68,18 @@ export default function AdminDashboard() {
     // Load prophet bookings
     const savedBookings = JSON.parse(localStorage.getItem('ogn-prophet-bookings') || '[]');
     setBookings(savedBookings);
+
+    // Fetch donation totals from Stripe
+    fetch('/api/donations/total')
+      .then(res => res.json())
+      .then(data => {
+        if (data.total !== undefined) {
+          setTotalDonations(data.total);
+          setDonationCount(data.count || 0);
+        }
+      })
+      .catch(() => { /* Stripe not configured yet */ })
+      .finally(() => setDonationsLoading(false));
   }, [router]);
 
   const [adminRole, setAdminRole] = useState<string>('');
@@ -298,49 +313,19 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                <ShoppingBag className="w-6 h-6 text-amber-600" />
+                <DollarSign className="w-6 h-6 text-amber-600" />
               </div>
-              <span className="text-green-500 text-sm font-medium flex items-center gap-1">
-                <TrendingUp className="w-4 h-4" />
-                +12%
-              </span>
+              {donationsLoading && <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />}
             </div>
-            <h3 className="text-3xl font-bold text-gray-900">{orders.length}</h3>
-            <p className="text-gray-500 text-sm">Total Orders</p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900">${totalRevenue.toFixed(2)}</h3>
-            <p className="text-gray-500 text-sm">Total Revenue</p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900">{orders.length}</h3>
-            <p className="text-gray-500 text-sm">Customers</p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-orange-600" />
-              </div>
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900">{pendingOrders}</h3>
-            <p className="text-gray-500 text-sm">Pending Orders</p>
+            <h3 className="text-3xl font-bold text-gray-900">
+              {donationsLoading ? '...' : `$${totalDonations.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            </h3>
+            <p className="text-gray-500 text-sm">Total Donations</p>
+            <p className="text-gray-400 text-xs mt-1">{donationCount} donation{donationCount !== 1 ? 's' : ''} via Stripe</p>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -362,60 +347,6 @@ export default function AdminDashboard() {
             <h3 className="text-3xl font-bold text-gray-900">{bookings.length}</h3>
             <p className="text-gray-500 text-sm">1-on-1 Bookings</p>
           </div>
-        </div>
-
-        {/* Recent Orders */}
-        <div className="bg-white rounded-2xl shadow-sm">
-          <div className="p-6 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Recent Orders</h2>
-              <Link
-                href="/admin/orders"
-                className="text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center gap-1"
-              >
-                View All <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-          
-          {orders.length === 0 ? (
-            <div className="p-12 text-center">
-              <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No orders yet</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-100">
-              {orders.slice(0, 5).map((order) => (
-                <div key={order.id} className="p-6 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                      <span className="text-gray-600 font-medium text-sm">
-                        {order.customer.firstName[0]}{order.customer.lastName[0]}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {order.customer.firstName} {order.customer.lastName}
-                      </p>
-                      <p className="text-gray-500 text-sm">{order.customer.email}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-900">${order.total.toFixed(2)}</p>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      order.status === 'pending_payment' 
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : order.status === 'completed'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}>
-                      {order.status === 'pending_payment' ? 'Pending Payment' : order.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Quick Actions */}
