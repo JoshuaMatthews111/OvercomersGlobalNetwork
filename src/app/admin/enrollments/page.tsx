@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import { 
   Users, Home, Search, Filter, Eye, CheckCircle, Clock, 
   MessageSquare, Phone, Mail, MapPin, Church, Calendar,
@@ -95,6 +96,9 @@ export default function EnrollmentsAdminPage() {
 
   // Load current admin info
   useEffect(() => {
+    const auth = localStorage.getItem('ogn-admin-auth');
+    if (!auth) { window.location.href = '/admin'; return; }
+    if (!checkAdminPermission('enrollments')) { window.location.href = '/admin/dashboard'; return; }
     const uid = localStorage.getItem('ogn-admin-uid') || '';
     const name = localStorage.getItem('ogn-admin-name') || 'Admin';
     const role = localStorage.getItem('ogn-admin-role') || '';

@@ -24,7 +24,7 @@ import {
   ShieldCheck,
   MessageSquare
 } from 'lucide-react';
-import { signOutAdmin } from '@/lib/firebase';
+import { signOutAdmin, MASTER_ADMIN_PERMISSIONS, type AdminPermissions } from '@/lib/firebase';
 
 interface Order {
   id: number;
@@ -69,12 +69,21 @@ export default function AdminDashboard() {
 
   const [adminRole, setAdminRole] = useState<string>('');
   const [adminName, setAdminName] = useState<string>('');
+  const [permissions, setPermissions] = useState<AdminPermissions>(MASTER_ADMIN_PERMISSIONS);
 
   useEffect(() => {
     const role = localStorage.getItem('ogn-admin-role') || '';
     const name = localStorage.getItem('ogn-admin-name') || 'Admin';
     setAdminRole(role);
     setAdminName(name);
+    if (role === 'master') {
+      setPermissions(MASTER_ADMIN_PERMISSIONS);
+    } else {
+      try {
+        const stored = localStorage.getItem('ogn-admin-permissions');
+        if (stored) setPermissions(JSON.parse(stored));
+      } catch { /* use defaults */ }
+    }
   }, []);
 
   const handleLogout = async () => {
@@ -84,7 +93,13 @@ export default function AdminDashboard() {
     localStorage.removeItem('ogn-admin-role');
     localStorage.removeItem('ogn-admin-name');
     localStorage.removeItem('ogn-admin-uid');
+    localStorage.removeItem('ogn-admin-permissions');
     router.push('/admin');
+  };
+
+  const hasPermission = (key: keyof AdminPermissions) => {
+    if (adminRole === 'master') return true;
+    return permissions[key] === true;
   };
 
   if (!isAuthenticated) {
@@ -117,105 +132,129 @@ export default function AdminDashboard() {
             <LayoutDashboard className="w-5 h-5" />
             Dashboard
           </Link>
-          <Link
-            href="/admin/orders"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <ShoppingBag className="w-5 h-5" />
-            Orders
-            {pendingOrders > 0 && (
-              <span className="ml-auto bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {pendingOrders}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/admin/events"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <Calendar className="w-5 h-5" />
-            Events
-          </Link>
-          <Link
-            href="/admin/content"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <FileText className="w-5 h-5" />
-            Content
-          </Link>
-          <Link
-            href="/admin/blog"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <BookOpen className="w-5 h-5" />
-            Blog Posts
-          </Link>
-          <Link
-            href="/admin/enrollments"
-            className="flex items-center gap-2 px-3 py-2 text-amber-400 hover:bg-white/5 rounded-lg text-sm transition-colors font-medium"
-          >
-            <Users className="w-5 h-5" />
-            Enrollments
-          </Link>
-          <Link
-            href="/admin/scheduler"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <Clock className="w-5 h-5" />
-            Post Scheduler
-          </Link>
-          <Link
-            href="/admin/events-flyers"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <ImageIcon className="w-5 h-5" />
-            Event Flyers
-          </Link>
-          <Link
-            href="/admin/prophet-schedule"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <Video className="w-5 h-5" />
-            Prophet Schedule
-            {pendingBookings > 0 && (
-              <span className="ml-auto bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {pendingBookings}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/admin/discipleship"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <Heart className="w-5 h-5" />
-            Discipleship
-            {pendingEnrollments > 0 && (
-              <span className="ml-auto bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {pendingEnrollments}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/admin/prayer-requests"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <Heart className="w-5 h-5" />
-            Prayer Requests
-          </Link>
-          <Link
-            href="/admin/ask-prophet"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <MessageSquare className="w-5 h-5" />
-            Ask The Prophet
-          </Link>
-          <Link
-            href="/admin/settings"
-            className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
-          >
-            <Settings className="w-5 h-5" />
-            Settings
-          </Link>
+          {hasPermission('orders') && (
+            <Link
+              href="/admin/orders"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              Orders
+              {pendingOrders > 0 && (
+                <span className="ml-auto bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {pendingOrders}
+                </span>
+              )}
+            </Link>
+          )}
+          {hasPermission('events') && (
+            <Link
+              href="/admin/events"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Calendar className="w-5 h-5" />
+              Events
+            </Link>
+          )}
+          {hasPermission('content') && (
+            <Link
+              href="/admin/content"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <FileText className="w-5 h-5" />
+              Content
+            </Link>
+          )}
+          {hasPermission('blog') && (
+            <Link
+              href="/admin/blog"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <BookOpen className="w-5 h-5" />
+              Blog Posts
+            </Link>
+          )}
+          {hasPermission('enrollments') && (
+            <Link
+              href="/admin/enrollments"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Users className="w-5 h-5" />
+              Enrollments
+            </Link>
+          )}
+          {hasPermission('scheduler') && (
+            <Link
+              href="/admin/scheduler"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Clock className="w-5 h-5" />
+              Post Scheduler
+            </Link>
+          )}
+          {hasPermission('eventFlyers') && (
+            <Link
+              href="/admin/events-flyers"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <ImageIcon className="w-5 h-5" />
+              Event Flyers
+            </Link>
+          )}
+          {hasPermission('prophetSchedule') && (
+            <Link
+              href="/admin/prophet-schedule"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Video className="w-5 h-5" />
+              Prophet Schedule
+              {pendingBookings > 0 && (
+                <span className="ml-auto bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {pendingBookings}
+                </span>
+              )}
+            </Link>
+          )}
+          {hasPermission('discipleship') && (
+            <Link
+              href="/admin/discipleship"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Heart className="w-5 h-5" />
+              Discipleship
+              {pendingEnrollments > 0 && (
+                <span className="ml-auto bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {pendingEnrollments}
+                </span>
+              )}
+            </Link>
+          )}
+          {hasPermission('prayerRequests') && (
+            <Link
+              href="/admin/prayer-requests"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Heart className="w-5 h-5" />
+              Prayer Requests
+            </Link>
+          )}
+          {hasPermission('askProphet') && (
+            <Link
+              href="/admin/ask-prophet"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <MessageSquare className="w-5 h-5" />
+              Ask The Prophet
+            </Link>
+          )}
+          {hasPermission('settings') && (
+            <Link
+              href="/admin/settings"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Settings className="w-5 h-5" />
+              Settings
+            </Link>
+          )}
           {adminRole === 'master' && (
             <Link
               href="/admin/users"

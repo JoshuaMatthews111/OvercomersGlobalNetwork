@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import Link from 'next/link';
 import { 
   LayoutDashboard, 
@@ -56,6 +57,7 @@ export default function AdminOrdersPage() {
       router.push('/admin');
       return;
     }
+    if (!checkAdminPermission('orders')) { router.push('/admin/dashboard'); return; }
     setIsAuthenticated(true);
     loadOrders();
   }, [router]);

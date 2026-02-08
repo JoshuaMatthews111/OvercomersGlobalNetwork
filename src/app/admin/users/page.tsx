@@ -9,7 +9,9 @@ import {
 } from 'lucide-react';
 import { 
   getAllAdmins, inviteAdmin, updateAdminStatus, removeAdmin, 
-  resetAdminPassword, signInAdmin, type AdminUser 
+  resetAdminPassword, signInAdmin, updateAdminPermissions,
+  DEFAULT_ADMIN_PERMISSIONS, MASTER_ADMIN_PERMISSIONS,
+  type AdminUser, type AdminPermissions 
 } from '@/lib/firebase';
 
 export default function AdminUsersPage() {
@@ -31,6 +33,10 @@ export default function AdminUsersPage() {
   // Re-auth state for after invite
   const [masterEmail, setMasterEmail] = useState('');
   const [masterPassword, setMasterPassword] = useState('');
+  
+  // Permission editing state
+  const [editingPermissions, setEditingPermissions] = useState<AdminPermissions | null>(null);
+  const [savingPermissions, setSavingPermissions] = useState(false);
 
   const loadAdmins = useCallback(async () => {
     setIsLoading(true);
@@ -271,7 +277,7 @@ export default function AdminUsersPage() {
                 <div 
                   key={admin.uid} 
                   className={`p-4 hover:bg-gray-50 cursor-pointer ${selectedAdmin?.uid === admin.uid ? 'bg-amber-50' : ''}`}
-                  onClick={() => setSelectedAdmin(admin)}
+                  onClick={() => { setSelectedAdmin(admin); setEditingPermissions(null); }}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -307,33 +313,52 @@ export default function AdminUsersPage() {
           )}
         </div>
 
-        {/* Selected Admin Actions */}
+        {/* Selected Admin Actions & Permissions */}
         {selectedAdmin && selectedAdmin.role !== 'master' && (
-          <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">
-              Actions for {selectedAdmin.name}
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {selectedAdmin.status === 'active' && (
-                <>
-                  <button
-                    onClick={() => handleStatusChange(selectedAdmin.uid, 'paused')}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200"
-                  >
-                    <Pause className="w-4 h-4" />
-                    Pause Account
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(selectedAdmin.uid, 'suspended')}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-                  >
-                    <Ban className="w-4 h-4" />
-                    Suspend Account
-                  </button>
-                </>
-              )}
-              {selectedAdmin.status === 'paused' && (
-                <>
+          <div className="mt-6 space-y-6">
+            {/* Status Actions */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">
+                Actions for {selectedAdmin.name}
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {selectedAdmin.status === 'active' && (
+                  <>
+                    <button
+                      onClick={() => handleStatusChange(selectedAdmin.uid, 'paused')}
+                      className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200"
+                    >
+                      <Pause className="w-4 h-4" />
+                      Pause Account
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange(selectedAdmin.uid, 'suspended')}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                    >
+                      <Ban className="w-4 h-4" />
+                      Suspend Account
+                    </button>
+                  </>
+                )}
+                {selectedAdmin.status === 'paused' && (
+                  <>
+                    <button
+                      onClick={() => handleStatusChange(selectedAdmin.uid, 'active')}
+                      className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+                    >
+                      <Play className="w-4 h-4" />
+                      Reactivate Account
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange(selectedAdmin.uid, 'suspended')}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                    >
+                      <Ban className="w-4 h-4" />
+                      Suspend Account
+                    </button>
+                  </>
+                )}
+                {selectedAdmin.status === 'suspended' && (
                   <button
                     onClick={() => handleStatusChange(selectedAdmin.uid, 'active')}
                     className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
@@ -341,38 +366,125 @@ export default function AdminUsersPage() {
                     <Play className="w-4 h-4" />
                     Reactivate Account
                   </button>
-                  <button
-                    onClick={() => handleStatusChange(selectedAdmin.uid, 'suspended')}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-                  >
-                    <Ban className="w-4 h-4" />
-                    Suspend Account
-                  </button>
-                </>
-              )}
-              {selectedAdmin.status === 'suspended' && (
+                )}
                 <button
-                  onClick={() => handleStatusChange(selectedAdmin.uid, 'active')}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+                  onClick={() => handleResetPassword(selectedAdmin.email)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200"
                 >
-                  <Play className="w-4 h-4" />
-                  Reactivate Account
+                  <Mail className="w-4 h-4" />
+                  Send Password Reset
                 </button>
+                <button
+                  onClick={() => handleRemoveAdmin(selectedAdmin.uid)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Remove Admin
+                </button>
+              </div>
+            </div>
+
+            {/* Permissions Panel */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="font-semibold text-gray-900">Permissions for {selectedAdmin.name}</h3>
+                  <p className="text-sm text-gray-500 mt-1">Toggle which sections this admin can access</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      const allOn = { ...MASTER_ADMIN_PERMISSIONS };
+                      setEditingPermissions(allOn);
+                    }}
+                    className="px-3 py-1.5 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 font-medium"
+                  >
+                    Enable All
+                  </button>
+                  <button
+                    onClick={() => {
+                      const allOff = { ...DEFAULT_ADMIN_PERMISSIONS };
+                      setEditingPermissions(allOff);
+                    }}
+                    className="px-3 py-1.5 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium"
+                  >
+                    Disable All
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {([
+                  { key: 'blog', label: 'Blog Posts', desc: 'Create & edit blog posts' },
+                  { key: 'events', label: 'Events', desc: 'Manage church events' },
+                  { key: 'content', label: 'Content', desc: 'Edit site content' },
+                  { key: 'orders', label: 'Orders', desc: 'View & manage orders' },
+                  { key: 'enrollments', label: 'Enrollments', desc: 'View enrollments' },
+                  { key: 'scheduler', label: 'Post Scheduler', desc: 'Schedule posts' },
+                  { key: 'eventFlyers', label: 'Event Flyers', desc: 'Upload event flyers' },
+                  { key: 'prophetSchedule', label: 'Prophet Schedule', desc: 'Manage 1-on-1 sessions' },
+                  { key: 'discipleship', label: 'Discipleship', desc: 'Manage discipleship' },
+                  { key: 'prayerRequests', label: 'Prayer Requests', desc: 'View prayer requests' },
+                  { key: 'askProphet', label: 'Ask The Prophet', desc: 'View prophet questions' },
+                  { key: 'settings', label: 'Settings', desc: 'Site settings' },
+                ] as { key: keyof AdminPermissions; label: string; desc: string }[]).map((perm) => {
+                  const currentPerms = editingPermissions || selectedAdmin.permissions || DEFAULT_ADMIN_PERMISSIONS;
+                  const isEnabled = currentPerms[perm.key];
+                  return (
+                    <div
+                      key={perm.key}
+                      onClick={() => {
+                        const current = editingPermissions || selectedAdmin.permissions || { ...DEFAULT_ADMIN_PERMISSIONS };
+                        setEditingPermissions({
+                          ...current,
+                          [perm.key]: !current[perm.key],
+                        });
+                      }}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        isEnabled
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-sm text-gray-900">{perm.label}</span>
+                        <div className={`w-10 h-6 rounded-full flex items-center transition-colors ${
+                          isEnabled ? 'bg-green-500 justify-end' : 'bg-gray-300 justify-start'
+                        }`}>
+                          <div className="w-5 h-5 bg-white rounded-full shadow mx-0.5" />
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500">{perm.desc}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {editingPermissions && (
+                <div className="mt-6 flex items-center gap-3 pt-4 border-t border-gray-100">
+                  <button
+                    onClick={async () => {
+                      setSavingPermissions(true);
+                      const result = await updateAdminPermissions(selectedAdmin.uid, editingPermissions);
+                      if (result.success) {
+                        setEditingPermissions(null);
+                        loadAdmins();
+                      }
+                      setSavingPermissions(false);
+                    }}
+                    disabled={savingPermissions}
+                    className="px-6 py-2.5 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600 disabled:bg-amber-300"
+                  >
+                    {savingPermissions ? 'Saving...' : 'Save Permissions'}
+                  </button>
+                  <button
+                    onClick={() => setEditingPermissions(null)}
+                    className="px-6 py-2.5 text-gray-600 hover:text-gray-800"
+                  >
+                    Cancel
+                  </button>
+                </div>
               )}
-              <button
-                onClick={() => handleResetPassword(selectedAdmin.email)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200"
-              >
-                <Mail className="w-4 h-4" />
-                Send Password Reset
-              </button>
-              <button
-                onClick={() => handleRemoveAdmin(selectedAdmin.uid)}
-                className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-              >
-                <Trash2 className="w-4 h-4" />
-                Remove Admin
-              </button>
             </div>
           </div>
         )}

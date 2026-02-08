@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, User, Mail, Phone, MapPin, Calendar, CheckCircle, Clock, Trash2, Eye } from 'lucide-react';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 
 interface Enrollment {
   id: number;
@@ -29,9 +30,11 @@ export default function AdminDiscipleshipPage() {
   useEffect(() => {
     const auth = localStorage.getItem('ogn-admin-auth');
     if (auth === 'true') {
+      if (!checkAdminPermission('discipleship')) { window.location.href = '/admin/dashboard'; return; }
       setIsAuthenticated(true);
     } else {
       window.location.href = '/admin';
+      return;
     }
 
     const saved = localStorage.getItem('ogn-discipleship-enrollments');

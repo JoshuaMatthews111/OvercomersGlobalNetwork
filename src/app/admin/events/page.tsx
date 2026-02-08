@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -76,6 +77,7 @@ export default function AdminEventsPage() {
       router.push('/admin');
       return;
     }
+    if (!checkAdminPermission('events')) { router.push('/admin/dashboard'); return; }
     setIsAuthenticated(true);
     loadData();
 

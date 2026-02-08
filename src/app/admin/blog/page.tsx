@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, Save, X, ImageIcon, Palette, Youtube, Facebook, Play, Sparkles, FileText, Clock, Wand2, ExternalLink, LayoutDashboard, ShoppingBag, Calendar, Settings, LogOut, ChevronDown, Copy, CheckCircle, Share2, BarChart3, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { getBlogPosts, addBlogPost, updateBlogPost, deleteBlogPost, type BlogPost as FirebaseBlogPost } from '@/lib/firebase';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 
 interface BlogPost {
   id: string;
@@ -111,6 +112,7 @@ export default function AdminBlogPage() {
   useEffect(() => {
     const auth = localStorage.getItem('ogn-admin-auth');
     if (auth === 'true') {
+      if (!checkAdminPermission('blog')) { window.location.href = '/admin/dashboard'; return; }
       setIsAuthenticated(true);
       loadPosts();
     } else {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import { ArrowLeft, Plus, Trash2, GripVertical, ImageIcon, Upload, Link as LinkIcon } from 'lucide-react';
 
 interface EventFlyer {
@@ -51,9 +52,11 @@ export default function AdminEventsFlyersPage() {
   useEffect(() => {
     const auth = localStorage.getItem('ogn-admin-auth');
     if (auth === 'true') {
+      if (!checkAdminPermission('eventFlyers')) { window.location.href = '/admin/dashboard'; return; }
       setIsAuthenticated(true);
     } else {
       window.location.href = '/admin';
+      return;
     }
 
     const savedFlyers = localStorage.getItem('ogn-events-flyers');

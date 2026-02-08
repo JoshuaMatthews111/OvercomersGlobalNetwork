@@ -20,6 +20,51 @@ const auth = getAuth(app);
 
 // ==================== AUTHENTICATION ====================
 
+export interface AdminPermissions {
+  blog: boolean;
+  events: boolean;
+  content: boolean;
+  orders: boolean;
+  enrollments: boolean;
+  scheduler: boolean;
+  eventFlyers: boolean;
+  prophetSchedule: boolean;
+  discipleship: boolean;
+  prayerRequests: boolean;
+  askProphet: boolean;
+  settings: boolean;
+}
+
+export const DEFAULT_ADMIN_PERMISSIONS: AdminPermissions = {
+  blog: false,
+  events: false,
+  content: false,
+  orders: false,
+  enrollments: false,
+  scheduler: false,
+  eventFlyers: false,
+  prophetSchedule: false,
+  discipleship: false,
+  prayerRequests: false,
+  askProphet: false,
+  settings: false,
+};
+
+export const MASTER_ADMIN_PERMISSIONS: AdminPermissions = {
+  blog: true,
+  events: true,
+  content: true,
+  orders: true,
+  enrollments: true,
+  scheduler: true,
+  eventFlyers: true,
+  prophetSchedule: true,
+  discipleship: true,
+  prayerRequests: true,
+  askProphet: true,
+  settings: true,
+};
+
 export interface AdminUser {
   uid: string;
   email: string;
@@ -29,6 +74,7 @@ export interface AdminUser {
   createdAt: string;
   lastLogin: string;
   invitedBy?: string;
+  permissions?: AdminPermissions;
 }
 
 // Sign in admin
@@ -147,6 +193,7 @@ export async function inviteAdmin(email: string, name: string, tempPassword: str
       createdAt: new Date().toISOString(),
       lastLogin: '',
       invitedBy: invitedByUid,
+      permissions: DEFAULT_ADMIN_PERMISSIONS,
     });
     
     // Sign back in as the master admin (creating user signs them in)
@@ -188,6 +235,16 @@ export async function removeAdmin(adminUid: string) {
   try {
     await deleteDoc(doc(db, "admins", adminUid));
     // Note: This doesn't delete the Firebase Auth user, just the admin record
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// Update admin permissions (master only)
+export async function updateAdminPermissions(adminUid: string, permissions: AdminPermissions) {
+  try {
+    await updateDoc(doc(db, "admins", adminUid), { permissions });
     return { success: true };
   } catch (error) {
     return { success: false, error };

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import { 
   ArrowLeft, Heart, Search, Filter, Eye, CheckCircle, Clock, 
   AlertTriangle, RefreshCw, Loader2, X, Mail, Phone, User,
@@ -60,6 +61,9 @@ export default function PrayerRequestsAdminPage() {
   }, []);
 
   useEffect(() => {
+    const auth = localStorage.getItem('ogn-admin-auth');
+    if (!auth) { window.location.href = '/admin'; return; }
+    if (!checkAdminPermission('prayerRequests')) { window.location.href = '/admin/dashboard'; return; }
     const name = localStorage.getItem('ogn-admin-name') || 'Admin';
     setAdminName(name);
     loadRequests();

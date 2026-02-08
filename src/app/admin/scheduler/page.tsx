@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import { 
   ArrowLeft, Plus, Calendar, Clock, FileText, Image as ImageIcon, 
   Trash2, Edit, Eye, CheckCircle, AlertCircle, Play, Pause,
@@ -71,8 +72,10 @@ export default function SchedulerPage() {
 
   useEffect(() => {
     const auth = localStorage.getItem('ogn-admin-auth');
-    if (auth === 'true') setIsAuthenticated(true);
-    else window.location.href = '/admin';
+    if (auth === 'true') {
+      if (!checkAdminPermission('scheduler')) { window.location.href = '/admin/dashboard'; return; }
+      setIsAuthenticated(true);
+    } else { window.location.href = '/admin'; return; }
 
     // Load scheduled posts
     const saved = localStorage.getItem('ogn-scheduled-posts');

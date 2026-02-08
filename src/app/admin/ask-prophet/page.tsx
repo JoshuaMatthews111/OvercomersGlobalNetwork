@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import { 
   ArrowLeft, MessageCircle, Search, Eye, CheckCircle, Clock, 
   RefreshCw, Loader2, X, Mail, Phone, User, Globe, Star,
@@ -65,6 +66,9 @@ export default function AskProphetAdminPage() {
   }, []);
 
   useEffect(() => {
+    const auth = localStorage.getItem('ogn-admin-auth');
+    if (!auth) { window.location.href = '/admin'; return; }
+    if (!checkAdminPermission('askProphet')) { window.location.href = '/admin/dashboard'; return; }
     const name = localStorage.getItem('ogn-admin-name') || 'Admin';
     setAdminName(name);
     loadQuestions();

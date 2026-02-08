@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import Link from 'next/link';
 import { 
   LayoutDashboard, 
@@ -57,6 +58,7 @@ export default function AdminContentPage() {
       router.push('/admin');
       return;
     }
+    if (!checkAdminPermission('content')) { router.push('/admin/dashboard'); return; }
     setIsAuthenticated(true);
     
     // Load saved content

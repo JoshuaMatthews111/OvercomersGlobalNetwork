@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Clock, Plus, Trash2, Save, DollarSign, Eye, Link as LinkIcon, Copy, ExternalLink, User, Video, CheckCircle, ChevronLeft, ChevronRight, X, Bell, LayoutDashboard, ShoppingBag, FileText, Users, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
+import { checkAdminPermission } from '@/lib/useAdminPermission';
 import Image from 'next/image';
 import { getUnreadNotificationCount } from '@/lib/notifications';
 
@@ -62,8 +63,10 @@ export default function ProphetScheduleAdmin() {
 
   useEffect(() => {
     const auth = localStorage.getItem('ogn-admin-auth');
-    if (auth === 'true') setIsAuthenticated(true);
-    else window.location.href = '/admin';
+    if (auth === 'true') {
+      if (!checkAdminPermission('prophetSchedule')) { window.location.href = '/admin/dashboard'; return; }
+      setIsAuthenticated(true);
+    } else { window.location.href = '/admin'; return; }
     loadData();
     const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
