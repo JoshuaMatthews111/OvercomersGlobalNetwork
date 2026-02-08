@@ -53,25 +53,48 @@ export default function CheckoutPage() {
     setError('');
 
     try {
-      // Save order to localStorage first
       const orderId = Date.now();
+
+      // Call the Stripe checkout API with actual cart items
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cartItems,
+          customerEmail: formData.email,
+          shippingAddress: {
+            name: `${formData.firstName} ${formData.lastName}`,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+            country: formData.country,
+          },
+          orderId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Save order to localStorage
       const orders = JSON.parse(localStorage.getItem('ogn-orders') || '[]');
-      const newOrder = {
+      orders.push({
         id: orderId,
         date: new Date().toISOString(),
         customer: formData,
         items: cartItems,
         total: total,
         status: 'pending_payment',
-      };
-      orders.push(newOrder);
+      });
       localStorage.setItem('ogn-orders', JSON.stringify(orders));
 
-      // Clear cart
+      // Clear cart and redirect to Stripe
       localStorage.removeItem('ogn-cart');
-
-      // Redirect to Stripe checkout - use $50 product link for products
-      window.location.href = 'https://donate.stripe.com/bJeeVe8JY9Xz63T1Fvco005';
+      window.location.href = data.url;
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsLoading(false);

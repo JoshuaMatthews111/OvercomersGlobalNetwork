@@ -47,6 +47,7 @@ export default function AdminDashboard() {
   const [totalDonations, setTotalDonations] = useState(0);
   const [donationCount, setDonationCount] = useState(0);
   const [donationsLoading, setDonationsLoading] = useState(true);
+  const [recentDonations, setRecentDonations] = useState<Array<{id: string; amount: number; email: string; name: string; date: string; description: string}>>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -76,6 +77,7 @@ export default function AdminDashboard() {
         if (data.total !== undefined) {
           setTotalDonations(data.total);
           setDonationCount(data.count || 0);
+          setRecentDonations(data.recent || []);
         }
       })
       .catch(() => { /* Stripe not configured yet */ })
@@ -348,6 +350,61 @@ export default function AdminDashboard() {
             <p className="text-gray-500 text-sm">1-on-1 Bookings</p>
           </div>
         </div>
+
+        {/* Recent Donations - Master Admin Only */}
+        {adminRole === 'master' && (
+          <div className="bg-white rounded-2xl shadow-sm mb-8">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">Recent Donations</h2>
+                <a
+                  href="https://dashboard.stripe.com/payments"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center gap-1"
+                >
+                  Stripe Dashboard <ChevronRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+            {donationsLoading ? (
+              <div className="p-12 text-center">
+                <Loader2 className="w-8 h-8 text-gray-300 mx-auto mb-2 animate-spin" />
+                <p className="text-gray-400 text-sm">Loading from Stripe...</p>
+              </div>
+            ) : recentDonations.length === 0 ? (
+              <div className="p-12 text-center">
+                <DollarSign className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">No donations recorded yet</p>
+                <p className="text-gray-400 text-xs mt-1">Donations will appear here once Stripe is configured</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {recentDonations.map((donation) => (
+                  <div key={donation.id} className="p-6 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                        <DollarSign className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {donation.name || 'Anonymous'}
+                        </p>
+                        <p className="text-gray-500 text-sm">{donation.email || 'No email'}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-green-600">${donation.amount.toFixed(2)}</p>
+                      <p className="text-gray-400 text-xs mt-1">
+                        {new Date(donation.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
