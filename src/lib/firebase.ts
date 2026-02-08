@@ -33,6 +33,7 @@ export interface AdminPermissions {
   prayerRequests: boolean;
   askProphet: boolean;
   settings: boolean;
+  people: boolean;
 }
 
 export const DEFAULT_ADMIN_PERMISSIONS: AdminPermissions = {
@@ -48,6 +49,7 @@ export const DEFAULT_ADMIN_PERMISSIONS: AdminPermissions = {
   prayerRequests: false,
   askProphet: false,
   settings: false,
+  people: false,
 };
 
 export const MASTER_ADMIN_PERMISSIONS: AdminPermissions = {
@@ -63,6 +65,7 @@ export const MASTER_ADMIN_PERMISSIONS: AdminPermissions = {
   prayerRequests: true,
   askProphet: true,
   settings: true,
+  people: true,
 };
 
 export interface AdminUser {
@@ -518,6 +521,148 @@ export async function getFormSubmissions(collectionName: string) {
     return { success: true, submissions };
   } catch (error) {
     return { success: false, submissions: [], error };
+  }
+}
+
+// ==================== PEOPLE / CONTACTS ====================
+
+export interface PersonNote {
+  id: string;
+  text: string;
+  authorName: string;
+  authorUid: string;
+  createdAt: string;
+}
+
+export interface Person {
+  firebaseId?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address?: string;
+  tags: string[];
+  assignedTo: string; // admin uid
+  assignedToName: string; // admin display name
+  assignedBy: string; // uid of who assigned
+  assignedByName: string;
+  needsFollowUp: boolean;
+  lastFollowedUp: string | null;
+  lastFollowedUpBy: string | null;
+  lastFollowedUpByName: string | null;
+  notes: PersonNote[];
+  status: 'active' | 'inactive' | 'new';
+  source?: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  createdByName: string;
+}
+
+// Add a new person
+export async function addPerson(person: Omit<Person, 'firebaseId' | 'createdAt' | 'updatedAt'>) {
+  try {
+    const docRef = await addDoc(collection(db, "people"), {
+      ...person,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// Get all people
+export async function getPeople() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "people"));
+    const people = querySnapshot.docs.map(d => ({
+      firebaseId: d.id,
+      ...d.data()
+    })) as Person[];
+    people.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return { success: true, people };
+  } catch (error) {
+    return { success: false, people: [], error };
+  }
+}
+
+// Update a person
+export async function updatePerson(firebaseId: string, updates: Partial<Person>) {
+  try {
+    await updateDoc(doc(db, "people", firebaseId), {
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// Delete a person
+export async function deletePerson(firebaseId: string) {
+  try {
+    await deleteDoc(doc(db, "people", firebaseId));
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// Add a note to a person
+export async function addPersonNote(firebaseId: string, note: Omit<PersonNote, 'id' | 'createdAt'>) {
+  try {
+    const personDoc = await getDoc(doc(db, "people", firebaseId));
+    if (!personDoc.exists()) return { success: false, error: 'Person not found' };
+    const data = personDoc.data();
+    const notes = data.notes || [];
+    const newNote: PersonNote = {
+      ...note,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    };
+    notes.unshift(newNote);
+    await updateDoc(doc(db, "people", firebaseId), {
+      notes,
+      updatedAt: new Date().toISOString(),
+    });
+    return { success: true, note: newNote };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// Mark follow-up done
+export async function markFollowUp(firebaseId: string, adminUid: string, adminName: string) {
+  try {
+    await updateDoc(doc(db, "people", firebaseId), {
+      needsFollowUp: false,
+      lastFollowedUp: new Date().toISOString(),
+      lastFollowedUpBy: adminUid,
+      lastFollowedUpByName: adminName,
+      updatedAt: new Date().toISOString(),
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// Assign person to admin
+export async function assignPerson(firebaseId: string, adminUid: string, adminName: string, assignedByUid: string, assignedByName: string) {
+  try {
+    await updateDoc(doc(db, "people", firebaseId), {
+      assignedTo: adminUid,
+      assignedToName: adminName,
+      assignedBy: assignedByUid,
+      assignedByName: assignedByName,
+      updatedAt: new Date().toISOString(),
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
   }
 }
 

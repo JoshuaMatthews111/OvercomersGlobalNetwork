@@ -22,7 +22,8 @@ import {
   UserPlus,
   ShieldCheck,
   MessageSquare,
-  Loader2
+  Loader2,
+  UserCheck
 } from 'lucide-react';
 import { signOutAdmin, MASTER_ADMIN_PERMISSIONS, type AdminPermissions } from '@/lib/firebase';
 
@@ -261,6 +262,15 @@ export default function AdminDashboard() {
             >
               <MessageSquare className="w-5 h-5" />
               Ask The Prophet
+            </Link>
+          )}
+          {hasPermission('people') && (
+            <Link
+              href="/admin/people"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <UserCheck className="w-5 h-5" />
+              People
             </Link>
           )}
           {hasPermission('settings') && (
