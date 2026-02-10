@@ -1,6 +1,9 @@
 import BlogPostClient from './BlogPostClient';
 import { getBlogPosts } from '@/lib/firebase';
 
+// Enable dynamic rendering for blog posts
+export const dynamic = 'force-dynamic';
+
 // Generate static params from Firebase blog posts
 export async function generateStaticParams() {
   try {
