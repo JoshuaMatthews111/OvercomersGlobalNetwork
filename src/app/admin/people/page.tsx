@@ -35,6 +35,8 @@ import {
   Trash2,
   Edit3,
   ChevronDown,
+  Menu,
+  X as CloseIcon,
 } from 'lucide-react';
 import {
   signOutAdmin,
@@ -69,6 +71,7 @@ export default function PeoplePage() {
   const [savingNote, setSavingNote] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Admin info
   const [adminRole, setAdminRole] = useState('');
@@ -254,8 +257,26 @@ export default function PeoplePage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-900 text-white rounded-lg shadow-lg"
+      >
+        {mobileMenuOpen ? <CloseIcon className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
+
+      {/* Mobile Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white p-4 flex flex-col z-50">
+      <aside className={`fixed left-0 top-0 h-full w-64 bg-gray-900 text-white p-4 flex flex-col z-40 transition-transform duration-300 ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
         <div className="mb-4">
           <h1 className="text-xl font-bold text-amber-400">OGN Admin</h1>
           <p className="text-gray-400 text-xs flex items-center gap-1">
@@ -348,7 +369,7 @@ export default function PeoplePage() {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 p-8">
+      <main className="lg:ml-64 p-4 lg:p-8 pt-16 lg:pt-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -413,7 +434,7 @@ export default function PeoplePage() {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* People List */}
-          <div className="lg:col-span-1 space-y-2 max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
+          <div className="lg:col-span-1 space-y-2 max-h-[calc(100vh-300px)] lg:max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
             {loading ? (
               <div className="bg-white rounded-2xl p-12 text-center shadow-sm">
                 <Loader2 className="w-8 h-8 text-gray-300 mx-auto mb-2 animate-spin" />

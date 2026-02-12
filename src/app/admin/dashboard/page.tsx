@@ -23,7 +23,9 @@ import {
   ShieldCheck,
   MessageSquare,
   Loader2,
-  UserCheck
+  UserCheck,
+  Menu,
+  X as CloseIcon
 } from 'lucide-react';
 import { signOutAdmin, MASTER_ADMIN_PERMISSIONS, type AdminPermissions } from '@/lib/firebase';
 
@@ -49,6 +51,7 @@ export default function AdminDashboard() {
   const [donationCount, setDonationCount] = useState(0);
   const [donationsLoading, setDonationsLoading] = useState(true);
   const [recentDonations, setRecentDonations] = useState<Array<{id: string; amount: number; email: string; name: string; date: string; description: string}>>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -132,8 +135,26 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-900 text-white rounded-lg shadow-lg"
+      >
+        {mobileMenuOpen ? <CloseIcon className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
+
+      {/* Mobile Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white p-4 flex flex-col">
+      <aside className={`fixed left-0 top-0 h-full w-64 bg-gray-900 text-white p-4 flex flex-col z-40 transition-transform duration-300 ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
         <div className="mb-4">
           <h1 className="text-xl font-bold text-amber-400">OGN Admin</h1>
           <p className="text-gray-400 text-xs flex items-center gap-1">
@@ -305,7 +326,7 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 p-8">
+      <main className="lg:ml-64 p-4 lg:p-8 pt-16 lg:pt-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
