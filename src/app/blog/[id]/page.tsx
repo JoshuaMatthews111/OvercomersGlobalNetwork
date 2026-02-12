@@ -1,13 +1,10 @@
 import BlogPostClient from './BlogPostClient';
 import { getBlogPosts } from '@/lib/firebase';
 
-// Allow any blog post ID to be rendered, not just pre-built ones
-export const dynamicParams = true;
-
-// Pre-build known published posts at build time
+// Pre-build all known published posts at build time
 export async function generateStaticParams() {
   try {
-    const result = await getBlogPosts(true);
+    const result = await getBlogPosts(false);
     if (result.success) {
       return result.posts.map((post) => ({
         id: post.firebaseId || '',

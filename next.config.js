@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   trailingSlash: true,
   // basePath: '/OvercomersGlobalNetwork', // Commented out for custom domain
   allowedDevOrigins: ["*.preview.same-app.com"],
