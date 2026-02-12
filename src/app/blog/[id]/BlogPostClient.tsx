@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, User, ArrowLeft, Facebook, Twitter, Link as LinkIcon, CheckCircle, Share2, Linkedin, Mail, MessageSquare, MapPin, Send, LogIn, Loader2 } from 'lucide-react';
-import { getBlogPosts, type BlogPost as FirebaseBlogPost } from '@/lib/firebase';
+import { getBlogPosts, getBlogPostById, type BlogPost as FirebaseBlogPost } from '@/lib/firebase';
 
 interface BlogPost {
   id: string;
@@ -54,11 +54,11 @@ export default function BlogPostClient({ id }: { id: string }) {
     async function loadPost() {
       setIsLoading(true);
       try {
-        // Fetch all published posts from Firebase
-        const result = await getBlogPosts(true);
-        if (result.success && result.posts.length > 0) {
-          // Map Firebase posts to display format
-          const allPosts: BlogPost[] = result.posts.map((p: FirebaseBlogPost) => ({
+        // Fetch the single post directly by document ID
+        const postResult = await getBlogPostById(id);
+        if (postResult.success && postResult.post && postResult.post.status === 'published') {
+          const p = postResult.post;
+          const mappedPost: BlogPost = {
             id: p.firebaseId || p.id || '',
             title: p.title,
             excerpt: p.excerpt,
@@ -67,19 +67,32 @@ export default function BlogPostClient({ id }: { id: string }) {
             author: p.author,
             date: p.publishedAt || p.createdAt,
             category: p.category,
-            published: p.status === 'published',
-          }));
+            published: true,
+          };
+          setPost(mappedPost);
 
-          // Find the post by ID
-          const foundPost = allPosts.find((p) => p.id === id && p.published);
-          setPost(foundPost || null);
-
-          // Get related posts (same category, different post)
-          if (foundPost) {
-            const related = allPosts
-              .filter((p) => p.category === foundPost.category && p.id !== foundPost.id && p.published)
-              .slice(0, 2);
-            setRelatedPosts(related);
+          // Fetch related posts separately
+          try {
+            const allResult = await getBlogPosts(true);
+            if (allResult.success) {
+              const related = allResult.posts
+                .filter((rp: FirebaseBlogPost) => rp.category === p.category && (rp.firebaseId || rp.id) !== id)
+                .slice(0, 2)
+                .map((rp: FirebaseBlogPost) => ({
+                  id: rp.firebaseId || rp.id || '',
+                  title: rp.title,
+                  excerpt: rp.excerpt,
+                  content: rp.content,
+                  image: rp.coverImage || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800',
+                  author: rp.author,
+                  date: rp.publishedAt || rp.createdAt,
+                  category: rp.category,
+                  published: true,
+                }));
+              setRelatedPosts(related);
+            }
+          } catch (relatedError) {
+            console.error('Error loading related posts:', relatedError);
           }
         }
       } catch (error) {

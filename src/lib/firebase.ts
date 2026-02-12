@@ -390,6 +390,20 @@ export async function getBlogPosts(publishedOnly = false) {
   }
 }
 
+// Get single blog post by ID
+export async function getBlogPostById(firebaseId: string) {
+  try {
+    const docSnap = await getDoc(doc(db, "blogs", firebaseId));
+    if (docSnap.exists()) {
+      const post = { firebaseId: docSnap.id, ...docSnap.data() } as BlogPost;
+      return { success: true, post };
+    }
+    return { success: false, post: null, error: 'Post not found' };
+  } catch (error) {
+    return { success: false, post: null, error };
+  }
+}
+
 // Update blog post
 export async function updateBlogPost(firebaseId: string, updates: Partial<BlogPost>) {
   try {
