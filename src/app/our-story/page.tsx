@@ -1,6 +1,18 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+  title: 'Our Story',
+  description: 'The story behind Overcomers Global Network — how a vision for discipleship became a worldwide movement of house churches and kingdom citizens.',
+  alternates: { canonical: '/our-story/' },
+  openGraph: {
+    title: 'Our Story | Overcomers Global Network',
+    description: 'How a vision for discipleship became a worldwide movement of house churches and kingdom citizens.',
+    url: 'https://overcomersglobalnetwork.com/our-story/',
+  },
+};
 
 export default function OurStoryPage() {
   return (

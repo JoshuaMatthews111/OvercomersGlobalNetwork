@@ -218,6 +218,32 @@ export default function BlogPostClient({ id }: { id: string }) {
 
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            description: post.excerpt,
+            image: post.image,
+            author: {
+              "@type": "Person",
+              name: post.author,
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "Overcomers Global Network",
+              url: "https://overcomersglobalnetwork.com",
+            },
+            datePublished: post.date,
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `https://overcomersglobalnetwork.com/blog/${post.id}/`,
+            },
+          }),
+        }}
+      />
       <Navigation />
 
       {/* Hero Image */}

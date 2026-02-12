@@ -1,8 +1,20 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import { Calendar, MapPin, Clock, Users, ArrowRight, Globe } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Events',
+  description: 'Upcoming events, conferences, and gatherings from Overcomers Global Network. Join us for worship, teaching, and fellowship.',
+  alternates: { canonical: '/events/' },
+  openGraph: {
+    title: 'Events | Overcomers Global Network',
+    description: 'Upcoming events, conferences, and gatherings. Join us for worship, teaching, and fellowship.',
+    url: 'https://overcomersglobalnetwork.com/events/',
+  },
+};
 
 const featuredEvent = {
   title: 'Global Discipleship Conference 2025',

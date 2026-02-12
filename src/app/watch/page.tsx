@@ -1,8 +1,20 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import { Play, Clock, Calendar, Filter, Search } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Watch',
+  description: 'Watch sermons and teachings from Prophet Joshua Matthews and Overcomers Global Network. Stream powerful messages on discipleship and faith.',
+  alternates: { canonical: '/watch/' },
+  openGraph: {
+    title: 'Watch | Overcomers Global Network',
+    description: 'Stream powerful sermons and teachings on discipleship and faith.',
+    url: 'https://overcomersglobalnetwork.com/watch/',
+  },
+};
 
 const categories = ['All', 'Sunday Message', 'Discipleship', 'Kingdom', 'Prayer', 'Leadership', 'Family'];
 

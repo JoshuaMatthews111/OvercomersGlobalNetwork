@@ -1,7 +1,19 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import { Globe, Users, BookOpen, Heart, Target, Eye } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about Overcomers Global Network — a global discipleship movement raising kingdom citizens through house churches, mentorship, and the Word of God.',
+  alternates: { canonical: '/about/' },
+  openGraph: {
+    title: 'About Overcomers Global Network',
+    description: 'A global discipleship movement raising kingdom citizens through house churches, mentorship, and the Word of God.',
+    url: 'https://overcomersglobalnetwork.com/about/',
+  },
+};
 
 const leaders = [
   {

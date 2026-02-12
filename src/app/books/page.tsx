@@ -1,6 +1,18 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+  title: 'Books',
+  description: 'Browse books by Prophet Joshua Matthews. Powerful teachings on discipleship, faith, spiritual growth, and walking in the fullness of God.',
+  alternates: { canonical: '/books/' },
+  openGraph: {
+    title: 'Books by Prophet Joshua Matthews',
+    description: 'Powerful teachings on discipleship, faith, spiritual growth, and walking in the fullness of God.',
+    url: 'https://overcomersglobalnetwork.com/books/',
+  },
+};
 
 export default function BooksPage() {
   const books = [

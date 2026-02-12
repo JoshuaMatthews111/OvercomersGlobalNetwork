@@ -1,5 +1,17 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'Church Branches',
+  description: 'Find Overcomers Global Network house church branches near you. Locations across the globe for worship, discipleship, and fellowship.',
+  alternates: { canonical: '/church-branches/' },
+  openGraph: {
+    title: 'Church Branches | Overcomers Global Network',
+    description: 'Find house church branches near you for worship, discipleship, and fellowship.',
+    url: 'https://overcomersglobalnetwork.com/church-branches/',
+  },
+};
 
 export default function ChurchBranchesPage() {
   const branches = [

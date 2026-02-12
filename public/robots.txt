@@ -1,0 +1,12 @@
+# Overcomers Global Network
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://overcomersglobalnetwork.com/sitemap.xml
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /profile/
+Disallow: /checkout/

@@ -1,8 +1,20 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Globe, Users, Home, Handshake, ArrowRight, Heart, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+  title: 'Join Our Network',
+  description: 'Join the Overcomers Global Network of house churches and discipleship groups. Connect with believers worldwide and grow together in faith.',
+  alternates: { canonical: '/network/' },
+  openGraph: {
+    title: 'Join Our Network | Overcomers Global Network',
+    description: 'Connect with believers worldwide through house churches and discipleship groups.',
+    url: 'https://overcomersglobalnetwork.com/network/',
+  },
+};
 
 export default function NetworkPage() {
   return (

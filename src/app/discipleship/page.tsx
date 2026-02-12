@@ -1,8 +1,20 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import { Home, Users, BookOpen, Heart, MapPin, ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Discipleship',
+  description: 'Enroll in discipleship programs with Overcomers Global Network. Grow in your faith through structured Bible study, mentorship, and community.',
+  alternates: { canonical: '/discipleship/' },
+  openGraph: {
+    title: 'Discipleship | Overcomers Global Network',
+    description: 'Grow in your faith through structured Bible study, mentorship, and community.',
+    url: 'https://overcomersglobalnetwork.com/discipleship/',
+  },
+};
 
 const steps = [
   {

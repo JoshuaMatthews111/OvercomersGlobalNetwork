@@ -1,7 +1,19 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Mail, MapPin, Phone, Globe, Send, Heart, Users, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Connect With Us',
+  description: 'Connect with Overcomers Global Network. Find a house church near you, join our community, and grow in your walk with God.',
+  alternates: { canonical: '/connect/' },
+  openGraph: {
+    title: 'Connect With Overcomers Global Network',
+    description: 'Find a house church near you, join our community, and grow in your walk with God.',
+    url: 'https://overcomersglobalnetwork.com/connect/',
+  },
+};
 
 const contactMethods = [
   {

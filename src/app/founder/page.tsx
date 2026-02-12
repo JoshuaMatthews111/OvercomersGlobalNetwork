@@ -1,6 +1,18 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+  title: 'Prophet Joshua Matthews | Founder',
+  description: 'Meet Prophet Joshua Matthews, founder of Overcomers Global Network. An international speaker, author, and visionary leader dedicated to raising disciples across nations.',
+  alternates: { canonical: '/founder/' },
+  openGraph: {
+    title: 'Prophet Joshua Matthews | Founder of Overcomers Global Network',
+    description: 'An international speaker, author, and visionary leader dedicated to raising disciples across nations.',
+    url: 'https://overcomersglobalnetwork.com/founder/',
+  },
+};
 
 export default function FounderPage() {
   return (

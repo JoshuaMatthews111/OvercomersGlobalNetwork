@@ -14,9 +14,56 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://overcomersglobalnetwork.com";
+
 export const metadata: Metadata = {
-  title: "Overcomers Global Network | A Global Discipleship Network",
+  title: {
+    default: "Overcomers Global Network | A Global Discipleship Network",
+    template: "%s | Overcomers Global Network",
+  },
   description: "A global discipleship network gathering from home to home. Join house churches, start discipleship, watch messages, and connect with believers worldwide.",
+  keywords: [
+    "discipleship", "house church", "global network", "Christian ministry",
+    "Prophet Joshua Matthews", "overcomers", "bible study", "church network",
+    "prayer", "worship", "faith", "kingdom of God", "evangelism",
+  ],
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "Overcomers Global Network",
+    title: "Overcomers Global Network | A Global Discipleship Network",
+    description: "A global discipleship network gathering from home to home. Join house churches, start discipleship, watch messages, and connect with believers worldwide.",
+    images: [
+      {
+        url: `${siteUrl}/images/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Overcomers Global Network",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Overcomers Global Network | A Global Discipleship Network",
+    description: "A global discipleship network gathering from home to home. Join house churches, start discipleship, watch messages, and connect with believers worldwide.",
+    images: [`${siteUrl}/images/og-image.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -37,6 +84,33 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning className="antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Overcomers Global Network",
+              url: "https://overcomersglobalnetwork.com",
+              logo: "https://overcomersglobalnetwork.com/images/og-image.png",
+              description: "A global discipleship network gathering from home to home. Join house churches, start discipleship, watch messages, and connect with believers worldwide.",
+              founder: {
+                "@type": "Person",
+                name: "Prophet Joshua Matthews",
+                jobTitle: "Founder & Visionary Leader",
+              },
+              contactPoint: {
+                "@type": "ContactPoint",
+                email: "ognmedia2024@gmail.com",
+                contactType: "customer service",
+              },
+              sameAs: [
+                "https://www.facebook.com/overcomersglobalnetwork",
+                "https://www.youtube.com/@overcomersglobalnetwork",
+              ],
+            }),
+          }}
+        />
         <ClientBody>{children}</ClientBody>
       </body>
     </html>

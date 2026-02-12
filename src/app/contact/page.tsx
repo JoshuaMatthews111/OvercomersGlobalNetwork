@@ -1,5 +1,17 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Get in touch with Overcomers Global Network. Reach out for prayer, partnership, or to learn more about our discipleship programs.',
+  alternates: { canonical: '/contact/' },
+  openGraph: {
+    title: 'Contact Overcomers Global Network',
+    description: 'Reach out for prayer, partnership, or to learn more about our discipleship programs.',
+    url: 'https://overcomersglobalnetwork.com/contact/',
+  },
+};
 
 export default function ContactPage() {
   return (

@@ -1,5 +1,17 @@
+import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'Media',
+  description: 'Watch sermons, teachings, and media content from Overcomers Global Network. Powerful messages on faith, discipleship, and kingdom living.',
+  alternates: { canonical: '/media/' },
+  openGraph: {
+    title: 'Media | Overcomers Global Network',
+    description: 'Watch sermons, teachings, and media content. Powerful messages on faith, discipleship, and kingdom living.',
+    url: 'https://overcomersglobalnetwork.com/media/',
+  },
+};
 
 export default function MediaPage() {
   return (
