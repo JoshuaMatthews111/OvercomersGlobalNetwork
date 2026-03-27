@@ -1,0 +1,118 @@
+/* ─── Divine Intimacy – Return to Eden Visual System ─── */
+
+/* Eden base background */
+.di-eden-base {
+  background: linear-gradient(180deg, #0a1a0a 0%, #0f2a0f 30%, #0a1a0a 100%);
+}
+
+/* Eden light rays */
+.di-eden-rays {
+  background: radial-gradient(
+    ellipse 60% 40% at 50% 20%,
+    rgba(212, 175, 55, 0.06) 0%,
+    rgba(100, 180, 100, 0.04) 30%,
+    transparent 70%
+  );
+  animation: di-rays 8s ease-in-out infinite;
+}
+
+/* Eden mist */
+.di-eden-mist {
+  background: linear-gradient(
+    to top,
+    rgba(100, 180, 100, 0.05) 0%,
+    transparent 100%
+  );
+  animation: di-mist 12s ease-in-out infinite;
+}
+
+/* Eden central glow */
+.di-eden-glow {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(100, 180, 100, 0.08) 0%,
+    transparent 70%
+  );
+  animation: di-glow-pulse 6s ease-in-out infinite;
+}
+
+/* Gold gradient */
+.di-gold-gradient {
+  background: linear-gradient(135deg, #d4af37, #f0d060, #d4af37);
+}
+
+/* Gold line */
+.di-gold-line {
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+}
+
+/* Book glow */
+.di-book-glow {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(212, 175, 55, 0.12) 0%,
+    rgba(100, 180, 100, 0.06) 40%,
+    transparent 70%
+  );
+}
+
+/* Book shadow */
+.di-book-shadow {
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(212, 175, 55, 0.08),
+    -5px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Eden button */
+.di-eden-btn {
+  background: linear-gradient(135deg, rgba(100, 180, 100, 0.2), rgba(100, 180, 100, 0.1));
+  border: 1px solid rgba(100, 180, 100, 0.3);
+  color: rgba(180, 230, 180, 0.9);
+}
+
+.di-eden-btn:hover {
+  background: linear-gradient(135deg, rgba(100, 180, 100, 0.3), rgba(100, 180, 100, 0.15));
+  border-color: rgba(100, 180, 100, 0.5);
+}
+
+/* Floating particles */
+.di-particle {
+  animation: di-float-up 20s linear infinite;
+}
+
+/* ─── Animations ─── */
+@keyframes di-rays {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.02) rotate(1deg); }
+}
+
+@keyframes di-mist {
+  0%, 100% { opacity: 1; transform: translateX(0); }
+  50% { opacity: 0.7; transform: translateX(20px); }
+}
+
+@keyframes di-glow-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes di-float-up {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* Eden background wrapper */
+.di-eden-bg {
+  background-color: #0a1a0a;
+}
+
+/* Line clamp utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

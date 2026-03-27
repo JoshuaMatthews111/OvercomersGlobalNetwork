@@ -16,6 +16,7 @@ const nextConfig = {
       "media.npr.org",
       "www.gainesville.com",
       "thetbjoshuafanclub.wordpress.com",
+      "d2xsxph8kpxj0f.cloudfront.net",
     ],
     remotePatterns: [
       {
@@ -36,6 +37,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "ugc.same-assets.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "d2xsxph8kpxj0f.cloudfront.net",
         pathname: "/**",
       },
     ],

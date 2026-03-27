@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Books',
@@ -48,8 +49,9 @@ export default function BooksPage() {
       title: 'Divine Intimacy',
       description: 'The Believers Guide to Fellowship With God',
       image: '/images/books/book-5.png',
-      price: '$15.99',
+      price: '$25.00',
       preOrder: false,
+      link: '/divineintimacy',
     },
     {
       title: 'Exercising Dominion Over Your World',
@@ -127,9 +129,15 @@ export default function BooksPage() {
                         </span>
                       )}
                     </div>
-                    <button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-md font-medium transition-all">
-                      {book.preOrder ? 'Pre-Order Now' : 'Buy Now'}
-                    </button>
+                    {(book as any).link ? (
+                      <Link href={(book as any).link} className="block w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-md font-medium transition-all text-center">
+                        View Book
+                      </Link>
+                    ) : (
+                      <button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-md font-medium transition-all">
+                        {book.preOrder ? 'Pre-Order Now' : 'Buy Now'}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

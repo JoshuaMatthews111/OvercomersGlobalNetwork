@@ -20,7 +20,7 @@ export function Navigation() {
 
   useEffect(() => {
     // Check if we're on a page with dark background
-    const darkPages = ['/'];
+    const darkPages = ['/', '/divineintimacy'];
     const currentPath = window.location.pathname;
     setIsDarkPage(darkPages.includes(currentPath));
   }, []);
