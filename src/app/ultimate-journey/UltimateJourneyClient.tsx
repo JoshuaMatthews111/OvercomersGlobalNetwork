@@ -46,6 +46,7 @@ const CDN = {
   authorCircle: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/author_circle_centered_440deb32.png",
   ministryLogo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ministry-logo_3eb6c31c.png",
   heroBg: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/uj_hero_bg-cbhD54kykb8PLfV3YCxDUN.webp",
+  trailerVideo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ultimate_journey_trailer_b4e3c36f.mp4",
 };
 
 /* ─── Manus Backend API URL (for Stripe & leads) ─── */
@@ -959,12 +960,50 @@ function UjFooter() {
   );
 }
 
+/* ─── Video Preview Section ─── */
+function VideoPreviewSection() {
+  return (
+    <section className="py-20 sm:py-28 relative overflow-hidden" style={{ background: LIGHT.bg }}>
+      <div className="container mx-auto px-4 relative z-10">
+        <ScrollReveal>
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold tracking-[0.2em] uppercase mb-3"
+              style={{ color: DARK.gold, fontFamily: "'Inter', sans-serif" }}>
+              WATCH THE TRAILER
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4"
+              style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+              Begin Your Journey
+            </h2>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl" style={{ border: `2px solid ${DARK.gold}30` }}>
+              <video
+                controls
+                poster={CDN.heroBg}
+                className="w-full aspect-video"
+                preload="metadata"
+              >
+                <source src={CDN.trailerVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </ScrollReveal>
+      </div>
+    </section>
+  );
+}
+
 /* ─── Main Page ─── */
 export default function UltimateJourneyClient() {
   return (
     <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif" }}>
       <UjNavbar />
       <HeroSection />
+      <VideoPreviewSection />
       <SeoHookSection />
       <FoundationsSection />
       <AuthorSection />
