@@ -1,100 +1,136 @@
-/* ─── Divine Intimacy – Return to Eden Visual System ─── */
+/* ─── Divine Intimacy – Dual Theme: Dark Eden Hero + Warm Cream Content ─── */
 
-/* Eden base background */
-.di-eden-base {
-  background: linear-gradient(180deg, #0a1a0a 0%, #0f2a0f 30%, #0a1a0a 100%);
+/* ── Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Color Tokens ── */
+:root {
+  /* Dark hero palette */
+  --di-dark-bg: #0f2a0f;
+  --di-dark-text: #f0ede5;
+  --di-dark-text-muted: rgba(240,237,229,0.6);
+  --di-dark-text-faint: rgba(240,237,229,0.4);
+  --di-dark-gold: #d4af37;
+  --di-dark-gold-soft: rgba(212,175,55,0.85);
+  --di-dark-card-bg: rgba(15,42,15,0.6);
+  --di-dark-border: rgba(60,100,60,0.4);
+
+  /* Light content palette */
+  --di-light-bg: #f5f0e8;
+  --di-light-bg-alt: #ede7db;
+  --di-light-text: #1a2e1a;
+  --di-light-text-muted: #3d5a3d;
+  --di-light-text-faint: #6b8a6b;
+  --di-light-gold: #8b6914;
+  --di-light-gold-bright: #a07d1c;
+  --di-light-card-bg: #faf7f2;
+  --di-light-border: #ddd5c5;
+  --di-light-green-accent: #2d5a2d;
 }
 
-/* Eden light rays */
+/* ── Gold Gradient ── */
+.di-gold-gradient {
+  background: linear-gradient(135deg, #8b6914, #a07d1c, #8b6914);
+}
+
+.di-gold-text {
+  background: linear-gradient(135deg, #8b6914, #a07d1c, #7a5c10);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Eden Background (Hero only) ── */
+.di-eden-bg {
+  background-color: #0f2a0f;
+}
+
+.di-eden-base {
+  background: linear-gradient(180deg, 
+    #1a3d1a 0%, 
+    #234d23 30%, 
+    #1f451f 60%, 
+    #163016 100%
+  );
+}
+
 .di-eden-rays {
-  background: radial-gradient(
-    ellipse 60% 40% at 50% 20%,
-    rgba(212, 175, 55, 0.06) 0%,
-    rgba(100, 180, 100, 0.04) 30%,
-    transparent 70%
+  background: conic-gradient(
+    from 180deg at 50% -10%,
+    rgba(212,175,55,0.06) 0deg,
+    transparent 40deg,
+    rgba(100,180,100,0.04) 80deg,
+    transparent 120deg,
+    rgba(212,175,55,0.06) 160deg,
+    transparent 200deg,
+    rgba(100,180,100,0.04) 240deg,
+    transparent 280deg,
+    rgba(212,175,55,0.06) 320deg,
+    transparent 360deg
   );
   animation: di-rays 8s ease-in-out infinite;
 }
 
-/* Eden mist */
 .di-eden-mist {
-  background: linear-gradient(
-    to top,
-    rgba(100, 180, 100, 0.05) 0%,
-    transparent 100%
-  );
+  background: linear-gradient(to top, rgba(50,100,50,0.12), transparent);
+  filter: blur(40px);
   animation: di-mist 12s ease-in-out infinite;
 }
 
-/* Eden central glow */
 .di-eden-glow {
-  background: radial-gradient(
-    ellipse at center,
-    rgba(100, 180, 100, 0.08) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(ellipse, rgba(180,150,60,0.05) 0%, transparent 70%);
+  filter: blur(60px);
   animation: di-glow-pulse 6s ease-in-out infinite;
 }
 
-/* Gold gradient */
-.di-gold-gradient {
-  background: linear-gradient(135deg, #d4af37, #f0d060, #d4af37);
+.di-eden-warm-wash {
+  background: linear-gradient(180deg, rgba(200,180,120,0.08) 0%, transparent 40%, transparent 70%, rgba(30,60,30,0.3) 100%);
 }
 
-/* Gold line */
-.di-gold-line {
-  background: linear-gradient(90deg, transparent, #d4af37, transparent);
-}
-
-/* Book glow */
+/* ── Book Effects ── */
 .di-book-glow {
-  background: radial-gradient(
-    ellipse at center,
-    rgba(212, 175, 55, 0.12) 0%,
-    rgba(100, 180, 100, 0.06) 40%,
-    transparent 70%
-  );
+  background: radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, rgba(100,180,100,0.06) 40%, transparent 70%);
 }
 
-/* Book shadow */
 .di-book-shadow {
-  box-shadow:
-    0 25px 60px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(212, 175, 55, 0.08),
-    -5px 5px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 20px 20px 60px rgba(0,0,0,0.5), -5px -5px 20px rgba(212,175,55,0.05), 0 0 80px rgba(60,120,60,0.08);
 }
 
-/* Eden button */
+/* ── Gold Line ── */
+.di-gold-line {
+  background: linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.5) 50%, transparent 100%);
+}
+
+/* ── Eden Button ── */
 .di-eden-btn {
-  background: linear-gradient(135deg, rgba(100, 180, 100, 0.2), rgba(100, 180, 100, 0.1));
-  border: 1px solid rgba(100, 180, 100, 0.3);
-  color: rgba(180, 230, 180, 0.9);
+  background: linear-gradient(135deg, rgba(50,100,50,0.3), rgba(40,80,40,0.2));
+  box-shadow: 0 4px 40px rgba(60,120,60,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  color: #e8e4d8;
 }
 
 .di-eden-btn:hover {
-  background: linear-gradient(135deg, rgba(100, 180, 100, 0.3), rgba(100, 180, 100, 0.15));
-  border-color: rgba(100, 180, 100, 0.5);
+  background: linear-gradient(135deg, rgba(50,100,50,0.4), rgba(40,80,40,0.25));
 }
 
-/* Floating particles */
+/* ── Floating Particles ── */
 .di-particle {
   animation: di-float-up 20s linear infinite;
 }
 
-/* ─── Animations ─── */
+/* ── Animations ── */
 @keyframes di-rays {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.02) rotate(1deg); }
+  0%, 100% { opacity: 0.15; transform: rotate(0deg) scale(1); }
+  50% { opacity: 0.25; transform: rotate(2deg) scale(1.02); }
 }
 
 @keyframes di-mist {
-  0%, 100% { opacity: 1; transform: translateX(0); }
-  50% { opacity: 0.7; transform: translateX(20px); }
+  0%, 100% { opacity: 0.3; transform: translateX(0) scale(1); }
+  50% { opacity: 0.5; transform: translateX(30px) scale(1.05); }
 }
 
 @keyframes di-glow-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
 }
 
 @keyframes di-float-up {
@@ -104,12 +140,31 @@
   100% { transform: translateY(-10vh) scale(1); opacity: 0; }
 }
 
-/* Eden background wrapper */
-.di-eden-bg {
-  background-color: #0a1a0a;
+@keyframes di-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Line clamp utility */
+@keyframes di-fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes di-scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn { animation: di-fadeIn 0.7s ease-out forwards; }
+.animate-fadeInUp { animation: di-fadeInUp 0.7s ease-out forwards; }
+.animate-scaleIn { animation: di-scaleIn 0.6s ease-out forwards; }
+
+/* ── Bottom transition from hero to content ── */
+.di-hero-fade-bottom {
+  background: linear-gradient(to top, var(--di-light-bg), transparent);
+}
+
+/* ── Line clamp ── */
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;

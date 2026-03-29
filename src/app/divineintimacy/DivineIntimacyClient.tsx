@@ -1,26 +1,58 @@
 'use client';
 
 import './divineintimacy.css';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
-import { ScrollReveal } from '@/components/ScrollReveal';
+
 import {
   BookOpen, Download, Globe, Mail, ChevronDown, ChevronUp,
   Sparkles, ArrowRight, Check, Star, Quote, Play, X
 } from 'lucide-react';
 
+/* ─── ScrollReveal wrapper using Intersection Observer ─── */
+function ScrollReveal({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(24px)',
+        transition: 'opacity 0.7s ease-out, transform 0.7s ease-out',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 /* ─── CDN Assets ─── */
 const CDN = {
   bookCover: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/divine-intimacy-cover-2_e23ed17b.png",
-  authorPhoto: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/author_original_portrait_625c294d.webp",
+  authorCircle: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/author_circle_centered_44d24d3c.png",
   ministryLogo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ministry-logo_3eb6c31c.png",
   edenVideo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/return_to_eden_af642579.mp4",
   edenGardenBg: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/eden_01_garden_1e4a1346.png",
   edenGardenBg2: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/eden_07_text_d78e4b14.png",
+  edenPathBg: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/eden_path_bg-ZPwaG99a4oLLnsRAikbk7g.webp",
 };
+
+/* ─── Manus Backend API URL (for Stripe & leads) ─── */
+const MANUS_API_BASE = "https://divine-intimacy-landing-page.manus.space";
 
 /* ─── Data ─── */
 const TESTIMONIALS = [
@@ -72,8 +104,30 @@ const DISCOVERIES = [
   { title: "The Manifest Presence", desc: "Experience the tangible, overwhelming presence of God in your daily life." },
 ];
 
-/* ─── Manus Backend API URL (for Stripe & leads) ─── */
-const MANUS_API_BASE = "https://divine-intimacy-landing-page.manus.space";
+/* ─── Color constants ─── */
+const DARK = {
+  bg: "#0f2a0f",
+  text: "#f0ede5",
+  textMuted: "rgba(240,237,229,0.6)",
+  textFaint: "rgba(240,237,229,0.4)",
+  gold: "#d4af37",
+  goldSoft: "rgba(212,175,55,0.85)",
+  cardBg: "rgba(15,42,15,0.6)",
+  border: "rgba(60,100,60,0.4)",
+};
+
+const LIGHT = {
+  bg: "#f5f0e8",
+  bgAlt: "#ede7db",
+  text: "#1a2e1a",
+  textMuted: "#3d5a3d",
+  textFaint: "#6b8a6b",
+  gold: "#8b6914",
+  goldBright: "#a07d1c",
+  cardBg: "#faf7f2",
+  border: "#ddd5c5",
+  greenAccent: "#2d5a2d",
+};
 
 /* ─── Video Overlay ─── */
 function VideoOverlay({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -120,11 +174,8 @@ function VideoOverlay({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         />
       </div>
       <div className="absolute bottom-8 left-0 right-0 text-center animate-fadeInUp" style={{ animationDelay: '1s' }}>
-        <a href="#di-pricing">
-          <button
-            onClick={onClose}
-            className="di-gold-gradient text-[#0a1a0a] font-bold text-base px-10 py-4 rounded-full hover:opacity-90 transition-all shadow-2xl inline-flex items-center gap-2"
-          >
+        <a href="#di-pricing" onClick={onClose}>
+          <button className="di-gold-gradient text-white font-bold text-base px-10 py-4 rounded-full hover:opacity-90 transition-all shadow-2xl inline-flex items-center gap-2">
             <Sparkles className="h-5 w-5" />
             Get the Book Now
           </button>
@@ -134,20 +185,59 @@ function VideoOverlay({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   );
 }
 
-/* ─── Hero Section ─── */
+/* ─── Navbar ─── */
+function DiNavbar() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  return (
+    <nav className={`fixed left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "backdrop-blur-xl shadow-lg" : "bg-transparent"}`}
+      style={scrolled ? { background: "rgba(245,240,232,0.95)", borderBottom: `1px solid ${LIGHT.border}` } : {}}>
+      <div className="container mx-auto px-4 flex items-center justify-between h-20">
+        <Link href="/" className="flex items-center gap-3 group">
+          <Image src={CDN.ministryLogo} alt="OGN" width={40} height={40} className="h-10 w-auto" />
+          <span className={`font-serif text-lg hidden sm:block transition-colors ${scrolled ? "text-[#1a2e1a]" : "text-white/90"} group-hover:text-[#a07d1c]`}
+            style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            Overcomers Global Network
+          </span>
+        </Link>
+        <div className="flex items-center gap-6">
+          <a href="#di-about" className={`text-sm transition-colors hidden md:block ${scrolled ? "text-[#3d5a3d] hover:text-[#a07d1c]" : "text-white/60 hover:text-[#d4af37]"}`}
+            style={{ fontFamily: "'Inter', sans-serif" }}>About</a>
+          <a href="#di-preview" className={`text-sm transition-colors hidden md:block ${scrolled ? "text-[#3d5a3d] hover:text-[#a07d1c]" : "text-white/60 hover:text-[#d4af37]"}`}
+            style={{ fontFamily: "'Inter', sans-serif" }}>Read</a>
+          <a href="#di-pricing">
+            <button className="di-gold-gradient text-white font-semibold text-sm px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity shadow-lg"
+              style={{ fontFamily: "'Inter', sans-serif" }}>
+              Get the Book
+            </button>
+          </a>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+/* ─── HERO: Dark Eden section ─── */
 function HeroSection({ onWatchVideo }: { onWatchVideo: () => void }) {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden di-eden-bg">
       {/* Living Eden Background Layers */}
       <div className="absolute inset-0 di-eden-base" />
-      <div className="absolute inset-0 opacity-[0.08]" style={{
-        backgroundImage: `url(${CDN.edenGardenBg})`,
+      <div className="absolute inset-0" style={{
+        backgroundImage: `url(${CDN.edenPathBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        filter: 'blur(2px) saturate(0.6)',
+        opacity: 0.55,
+        filter: 'saturate(0.9) brightness(1.2)',
       }} />
+      <div className="absolute inset-0 di-eden-warm-wash" />
       <div className="absolute inset-0 di-eden-rays" />
-      <div className="absolute bottom-0 left-0 right-0 h-[40%] di-eden-mist" />
+      <div className="absolute bottom-0 left-0 right-0 h-[30%] di-eden-mist" />
       <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[60%] h-[40%] di-eden-glow" />
 
       {/* Floating light particles */}
@@ -160,7 +250,7 @@ function HeroSection({ onWatchVideo }: { onWatchVideo: () => void }) {
               width: `${2 + (i % 3) * 1.5}px`,
               height: `${2 + (i % 3) * 1.5}px`,
               left: `${(i * 7) % 100}%`,
-              background: i % 3 === 0 ? 'rgba(212, 175, 55, 0.5)' : 'rgba(100, 180, 100, 0.4)',
+              background: i % 3 === 0 ? 'rgba(212, 175, 55, 0.5)' : 'rgba(100, 180, 100, 0.35)',
               animationDelay: `${i * 1.3}s`,
               animationDuration: `${15 + (i % 5) * 4}s`,
             }}
@@ -192,36 +282,37 @@ function HeroSection({ onWatchVideo }: { onWatchVideo: () => void }) {
 
           {/* Headline */}
           <div className="max-w-3xl animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 border border-amber-500/30 bg-amber-500/5">
-              <Star className="h-3.5 w-3.5 text-amber-400" />
-              <span className="text-xs uppercase tracking-[0.2em] font-medium text-amber-400">A Living Revelation</span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6" style={{ border: '1px solid rgba(212,175,55,0.3)', background: 'rgba(212,175,55,0.05)' }}>
+              <Star className="h-3.5 w-3.5" style={{ color: DARK.gold }} />
+              <span className="text-xs uppercase tracking-[0.2em] font-medium" style={{ color: DARK.gold, fontFamily: "'Inter', sans-serif" }}>A Living Revelation</span>
             </div>
 
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 text-white">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6" style={{ color: DARK.text, fontFamily: "'Playfair Display', serif" }}>
               God Desires to
               <br />
-              <span className="gold-shimmer">Speak to You</span>
+              <span style={{ background: 'linear-gradient(135deg, #d4af37, #f0d060, #d4af37)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Speak to You</span>
             </h1>
 
-            <p className="font-serif text-xl sm:text-2xl text-white/70 mb-4 italic leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xl sm:text-2xl italic leading-relaxed max-w-2xl mx-auto mb-4" style={{ color: DARK.textMuted, fontFamily: "'Cormorant Garamond', serif" }}>
               This is a living revelation from God&apos;s heart to yours.
             </p>
 
-            <p className="text-sm text-white/40 mb-10">
-              By <span className="text-white/70 font-medium">Prophet Joshua Matthews</span>
+            <p className="text-sm mb-10" style={{ color: DARK.textFaint, fontFamily: "'Inter', sans-serif" }}>
+              By <span className="font-medium" style={{ color: 'rgba(240,237,229,0.7)' }}>Prophet Joshua Matthews</span>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={onWatchVideo}
-                className="group relative overflow-hidden font-bold text-base px-10 py-4 rounded-full transition-all shadow-2xl di-eden-btn inline-flex items-center justify-center gap-2"
+                className="di-eden-btn font-bold text-base px-10 py-4 rounded-full transition-all shadow-2xl inline-flex items-center justify-center gap-2"
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 <Play className="h-5 w-5 fill-current" />
                 Watch the Message
-                <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
               <a href="#di-pricing">
-                <button className="di-gold-gradient text-[#0a1a0a] font-bold text-base px-10 py-4 rounded-full hover:opacity-90 transition-all shadow-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+                <button className="di-gold-gradient text-white font-bold text-base px-10 py-4 rounded-full hover:opacity-90 transition-all shadow-lg inline-flex items-center justify-center gap-2"
+                  style={{ fontFamily: "'Inter', sans-serif", boxShadow: '0 4px 30px rgba(212,175,55,0.25)' }}>
                   Order Your Copy
                   <ArrowRight className="h-5 w-5" />
                 </button>
@@ -231,130 +322,140 @@ function HeroSection({ onWatchVideo }: { onWatchVideo: () => void }) {
         </div>
       </div>
 
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a1a0a] to-transparent" />
+      {/* Bottom transition: dark Eden → warm cream */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 di-hero-fade-bottom" />
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
-        <ChevronDown className="h-6 w-6 text-white/30" />
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2" style={{ animation: 'di-float-up 2s ease-in-out infinite alternate' }}>
+        <ChevronDown className="h-6 w-6" style={{ color: 'rgba(240,237,229,0.3)' }} />
       </div>
     </section>
   );
 }
 
-/* ─── Video Preview Section ─── */
+/* ─── Video Preview Section (light) ─── */
 function VideoPreviewSection({ onWatchVideo }: { onWatchVideo: () => void }) {
   return (
-    <section className="py-16 sm:py-20 relative overflow-hidden bg-[#0a1a0a]">
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 50%, rgba(50,100,50,0.15) 0%, transparent 60%)'
-      }} />
+    <section className="py-16 sm:py-20 relative overflow-hidden" style={{ background: LIGHT.bg }}>
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto scroll-reveal">
-          <p className="text-center text-sm uppercase tracking-[0.3em] mb-4 font-medium text-amber-400">
-            A Message From God&apos;s Heart
-          </p>
-          <h2 className="text-center font-serif text-2xl sm:text-3xl font-bold text-white mb-8">
-            Watch the Revelation Unfold
-          </h2>
+        <ScrollReveal>
+          <div className="max-w-4xl mx-auto">
+            <p className="text-center text-sm uppercase tracking-[0.3em] mb-4 font-medium" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              A Message From God&apos;s Heart
+            </p>
+            <h2 className="text-center text-2xl sm:text-3xl font-bold mb-8" style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+              Watch the Revelation Unfold
+            </h2>
 
-          <div
-            className="relative cursor-pointer group rounded-2xl overflow-hidden mx-auto"
-            onClick={onWatchVideo}
-            style={{ boxShadow: '0 8px 60px rgba(212,175,55,0.1)' }}
-          >
-            <div className="relative aspect-video bg-black/30 rounded-2xl overflow-hidden border border-white/10">
-              <Image
-                src={CDN.edenGardenBg}
-                alt="Return to Eden - Divine Intimacy"
-                fill
-                className="object-cover opacity-60"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-500" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 border-2 border-amber-400/40 bg-amber-400/20">
-                  <Play className="h-8 w-8 sm:h-10 sm:w-10 ml-1 text-amber-300" fill="currentColor" />
+            <div
+              className="relative cursor-pointer group rounded-2xl overflow-hidden mx-auto"
+              onClick={onWatchVideo}
+              style={{ boxShadow: '0 8px 40px rgba(45,90,45,0.12)' }}
+            >
+              <div className="relative aspect-video rounded-2xl overflow-hidden" style={{ border: `1px solid ${LIGHT.border}` }}>
+                <Image
+                  src={CDN.edenGardenBg}
+                  alt="Return to Eden - Divine Intimacy"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-all duration-500" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500"
+                    style={{ background: 'rgba(212,175,55,0.25)', border: '2px solid rgba(212,175,55,0.5)' }}>
+                    <Play className="h-8 w-8 sm:h-10 sm:w-10 ml-1 text-white" fill="white" />
+                  </div>
+                  <p className="text-lg sm:text-xl text-white italic" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    &ldquo;It is time to return.&rdquo;
+                  </p>
+                  <p className="text-sm text-white/70 mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    Click to experience the message
+                  </p>
                 </div>
-                <p className="font-serif text-lg sm:text-xl text-white/90 italic">
-                  &ldquo;It is time to return.&rdquo;
-                </p>
-                <p className="text-sm text-white/50 mt-2">
-                  Click to experience the message
-                </p>
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 }
 
-/* ─── SEO Hook Section ─── */
+/* ─── SEO Hook (light with subtle accent) ─── */
 function SeoHookSection() {
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#0a1a0a]">
+    <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: LIGHT.bgAlt }}>
       <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 30%, rgba(50,100,50,0.15) 0%, transparent 60%)'
+        background: 'radial-gradient(ellipse at 50% 30%, rgba(45,90,45,0.04) 0%, transparent 60%)'
       }} />
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto text-center scroll-reveal">
-          <p className="text-sm uppercase tracking-[0.3em] mb-6 font-medium text-amber-400">
-            A Word for This Season
-          </p>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-8">
-            God Is Calling You Into
-            <span className="gold-shimmer block mt-2">Something Deeper</span>
-          </h2>
-          <div className="space-y-6 text-lg text-white/60 leading-relaxed">
-            <p>
-              Have you been praying but feel like heaven is silent? Have you been seeking God but feel like something is missing? Have you been longing for a breakthrough that never seems to come?
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-sm uppercase tracking-[0.3em] mb-6 font-medium" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              A Word for This Season
             </p>
-            <p className="text-white/80 font-medium text-xl">
-              You are not alone.
-            </p>
-            <p>
-              Millions of believers around the world are crying out for the same thing — a genuine, life-transforming encounter with the living God. Not religion. Not routine. Not another Sunday service that leaves you empty.
-            </p>
-            <p className="font-serif text-xl italic text-amber-300/80">
-              &ldquo;The hunger you feel is not a sign of failure — it is the Holy Spirit drawing you into the deepest, most intimate fellowship you have ever known.&rdquo;
-            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-8" style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+              God Is Calling You Into
+              <span className="di-gold-text block mt-2">Something Deeper</span>
+            </h2>
+            <div className="space-y-6 text-lg leading-relaxed" style={{ color: LIGHT.textMuted, fontFamily: "'Cormorant Garamond', serif" }}>
+              <p>
+                Have you been praying but feel like heaven is silent? Have you been seeking God but feel like something is missing? Have you been longing for a breakthrough that never seems to come?
+              </p>
+              <p className="font-medium text-xl" style={{ color: LIGHT.text }}>
+                You are not alone.
+              </p>
+              <p>
+                Millions of believers around the world are crying out for the same thing — a genuine, life-transforming encounter with the living God. Not religion. Not routine. Not another Sunday service that leaves you empty.
+              </p>
+              <p className="text-xl italic" style={{ color: LIGHT.gold }}>
+                &ldquo;The hunger you feel is not a sign of failure — it is the Holy Spirit drawing you into the deepest, most intimate fellowship you have ever known.&rdquo;
+              </p>
+            </div>
+            <div className="mt-10">
+              <a href="#di-lead-capture">
+                <button className="di-gold-gradient text-white font-bold text-base px-8 py-4 rounded-full hover:opacity-90 transition-all shadow-lg inline-flex items-center gap-2"
+                  style={{ fontFamily: "'Inter', sans-serif", boxShadow: '0 4px 30px rgba(139,105,20,0.2)' }}>
+                  <Mail className="h-5 w-5" />
+                  Get Your Free Chapter
+                </button>
+              </a>
+            </div>
           </div>
-          <div className="mt-10">
-            <a href="#di-lead-capture">
-              <button className="di-gold-gradient text-[#0a1a0a] font-bold text-base px-8 py-4 rounded-full hover:opacity-90 transition-all shadow-lg inline-flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Get Your Free Chapter
-              </button>
-            </a>
-          </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 }
 
-/* ─── Discoveries Section ─── */
+/* ─── What You'll Discover (light) ─── */
 function DiscoveriesSection() {
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#0a1a0a]">
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 0%, rgba(50,100,50,0.1) 0%, transparent 60%)'
-      }} />
+    <section id="di-about" className="py-24 sm:py-32 relative overflow-hidden" style={{ background: LIGHT.bg }}>
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16 scroll-reveal">
-          <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium text-amber-400">Inside the Book</p>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">What You Will Discover</h2>
-        </div>
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              Inside the Book
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold" style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+              What You Will Discover
+            </h2>
+          </div>
+        </ScrollReveal>
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {DISCOVERIES.map((item, i) => (
-            <div key={i} className="scroll-reveal bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/30 transition-all duration-300 group" style={{ animationDelay: `${i * 0.1}s` }}>
-              <div className="w-10 h-10 rounded-lg mb-4 flex items-center justify-center bg-green-900/30">
-                <span className="font-serif text-lg font-bold text-green-400">{i + 1}</span>
+            <ScrollReveal key={i}>
+              <div className="h-full group hover:shadow-lg transition-all duration-300 rounded-xl p-6"
+                style={{ background: LIGHT.cardBg, border: `1px solid ${LIGHT.border}` }}>
+                <div className="w-10 h-10 rounded-lg mb-4 flex items-center justify-center" style={{ background: 'rgba(45,90,45,0.08)' }}>
+                  <span className="text-lg font-bold" style={{ color: LIGHT.greenAccent, fontFamily: "'Playfair Display', serif" }}>{i + 1}</span>
+                </div>
+                <h3 className="text-lg font-semibold mb-2 transition-colors" style={{ color: LIGHT.text, fontFamily: "'Cormorant Garamond', serif" }}>{item.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }}>{item.desc}</p>
               </div>
-              <h3 className="font-serif text-lg font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors">{item.title}</h3>
-              <p className="text-sm text-white/50 leading-relaxed">{item.desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -362,112 +463,146 @@ function DiscoveriesSection() {
   );
 }
 
-/* ─── Author Section ─── */
+/* ─── About the Author (light) ─── */
 function AuthorSection() {
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#0a1a0a]">
+    <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: LIGHT.bgAlt }}>
       <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 70% 50%, rgba(100,80,30,0.06) 0%, transparent 50%)'
+        background: 'radial-gradient(ellipse at 70% 50%, rgba(45,90,45,0.03) 0%, transparent 50%)'
       }} />
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
-          <div className="lg:col-span-2 flex justify-center scroll-reveal">
-            <div className="relative">
-              <div className="absolute -inset-4 rounded-2xl" style={{
-                background: 'linear-gradient(135deg, rgba(212,175,55,0.12), rgba(50,100,50,0.15))',
-                filter: 'blur(20px)'
-              }} />
-              <Image
-                src={CDN.authorPhoto}
-                alt="Prophet Joshua Matthews"
-                width={320}
-                height={427}
-                className="relative w-72 sm:w-80 rounded-2xl shadow-2xl object-cover"
-                style={{ aspectRatio: '3/4', objectPosition: 'center top' }}
-              />
+        <ScrollReveal>
+          <div className="max-w-4xl mx-auto">
+            <p className="text-sm uppercase tracking-[0.3em] mb-8 font-medium text-center" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              About the Author
+            </p>
+
+            {/* Circle photo + signature quote */}
+            <div className="flex flex-col sm:flex-row items-center gap-8 mb-10">
+              {/* Circle avatar */}
+              <div className="relative shrink-0">
+                <div className="absolute -inset-3 rounded-full" style={{
+                  background: 'linear-gradient(135deg, rgba(160,125,28,0.2), rgba(45,90,45,0.15))',
+                  filter: 'blur(12px)'
+                }} />
+                <Image
+                  src={CDN.authorCircle}
+                  alt="Prophet Joshua Matthews"
+                  width={160}
+                  height={160}
+                  className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover shadow-xl"
+                  style={{ border: '3px solid rgba(160,125,28,0.3)' }}
+                />
+              </div>
+
+              {/* Name + quote beside the circle */}
+              <div className="text-center sm:text-left">
+                <h2 className="text-3xl sm:text-4xl font-bold mb-1" style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+                  Prophet Joshua Matthews
+                </h2>
+                <p className="text-base italic mb-4" style={{ color: LIGHT.textFaint, fontFamily: "'Cormorant Garamond', serif" }}>
+                  &ldquo;Joshua the Leader of Many&rdquo;
+                </p>
+                <blockquote className="text-lg sm:text-xl italic leading-relaxed" style={{ color: LIGHT.gold, fontFamily: "'Cormorant Garamond', serif" }}>
+                  &ldquo;The God who created you for fellowship is calling you by name. It is time to return.&rdquo;
+                </blockquote>
+              </div>
             </div>
-          </div>
-          <div className="lg:col-span-3 text-center lg:text-left scroll-reveal">
-            <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium text-amber-400">About the Author</p>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-2">Prophet Joshua Matthews</h2>
-            <p className="font-serif text-lg italic text-white/50 mb-6">&ldquo;Joshua the Leader of Many&rdquo;</p>
-            <div className="space-y-4 text-white/60 leading-relaxed">
+
+            {/* Bio text */}
+            <div className="space-y-4 leading-relaxed text-center sm:text-left" style={{ color: LIGHT.textMuted, fontFamily: "'Cormorant Garamond', serif", fontSize: '1.1rem' }}>
               <p>
-                Prophet Joshua Matthews is a man called by God to lead nations into the deeper dimensions of His presence. As the founder of <strong className="text-white/80">Overcomers Global Network</strong>, he has dedicated his life to equipping believers with the tools and revelation needed to walk in the fullness of their divine assignment.
+                Prophet Joshua Matthews is a man called by God to lead nations into the deeper dimensions of His presence. As the founder of <strong style={{ color: LIGHT.text }}>Overcomers Global Network</strong>, he has dedicated his life to equipping believers with the tools and revelation needed to walk in the fullness of their divine assignment.
               </p>
               <p>
                 With a prophetic mandate to educate, equip, and empower, Prophet Joshua Matthews carries a unique anointing that bridges the gap between head knowledge and heart experience. His teachings have transformed lives across the globe.
               </p>
             </div>
-            <div className="mt-8">
-              <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 text-white/70 hover:border-amber-400 hover:text-amber-400 transition-all">
-                Visit overcomersglobalnetwork.com
-                <ArrowRight className="h-4 w-4" />
+
+            <div className="mt-8 text-center sm:text-left">
+              <Link href="/">
+                <button className="rounded-full px-6 py-2.5 transition-all inline-flex items-center gap-2"
+                  style={{ border: `1px solid ${LIGHT.border}`, color: LIGHT.textMuted, fontFamily: "'Inter', sans-serif", fontSize: '0.875rem' }}>
+                  Visit overcomersglobalnetwork.com
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </Link>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 }
 
-/* ─── Chapter Preview ─── */
+/* ─── Chapter Preview (light) ─── */
 function ChapterPreviewSection() {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#0a1a0a]">
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 50%, rgba(50,100,50,0.1) 0%, transparent 60%)'
-      }} />
+    <section id="di-preview" className="py-24 sm:py-32 relative overflow-hidden" style={{ background: LIGHT.bg }}>
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12 scroll-reveal">
-          <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium text-amber-400">Free Chapter Preview</p>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">Begin Your Journey Now</h2>
-          <p className="text-white/50 max-w-xl mx-auto">Read the first chapter right here. Experience the power of this book before you purchase.</p>
-        </div>
+        <ScrollReveal>
+          <div className="text-center mb-12">
+            <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              Free Chapter Preview
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+              Begin Your Journey Now
+            </h2>
+            <p style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }} className="max-w-xl mx-auto">
+              Read the first chapter right here. Experience the power of this book before you purchase.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="max-w-3xl mx-auto scroll-reveal">
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
-            <div className="p-8 sm:p-12">
-              <div className="flex items-center gap-3 mb-8 pb-6 border-b border-white/10">
-                <BookOpen className="h-5 w-5 text-amber-400" />
-                <h3 className="font-serif text-xl font-semibold text-white">{CHAPTER_PREVIEW.title}</h3>
-              </div>
-              <div className={`font-serif text-lg leading-[1.9] text-white/70 space-y-6 transition-all duration-500 ${expanded ? '' : 'max-h-[400px] overflow-hidden relative'}`}>
-                {CHAPTER_PREVIEW.content.split('\n\n').map((paragraph, i) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
-                {!expanded && (
-                  <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0f1f0f] to-transparent" />
-                )}
-              </div>
-              <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center">
-                <button
-                  onClick={() => setExpanded(!expanded)}
-                  className="px-6 py-3 rounded-full border border-white/20 text-white/70 hover:border-amber-400 hover:text-amber-400 transition-all inline-flex items-center gap-2"
-                >
-                  {expanded ? <><ChevronUp className="h-4 w-4" /> Show Less</> : <><ChevronDown className="h-4 w-4" /> Read Full Chapter</>}
-                </button>
-                {expanded && (
-                  <a href="#di-pricing">
-                    <button className="di-gold-gradient text-[#0a1a0a] font-semibold rounded-full px-6 py-3 inline-flex items-center gap-2">
-                      <Sparkles className="h-4 w-4" />
-                      Get the Full Book
-                    </button>
-                  </a>
-                )}
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto">
+            <div className="overflow-hidden shadow-lg rounded-xl" style={{ background: LIGHT.cardBg, border: `1px solid ${LIGHT.border}` }}>
+              <div className="p-8 sm:p-12">
+                <div className="flex items-center gap-3 mb-8 pb-6" style={{ borderBottom: `1px solid ${LIGHT.border}` }}>
+                  <BookOpen className="h-5 w-5" style={{ color: LIGHT.goldBright }} />
+                  <h3 className="text-xl font-semibold" style={{ color: LIGHT.text, fontFamily: "'Cormorant Garamond', serif" }}>{CHAPTER_PREVIEW.title}</h3>
+                </div>
+                <div className={`text-lg leading-[1.9] space-y-6 transition-all duration-500 ${expanded ? '' : 'max-h-[400px] overflow-hidden relative'}`}
+                  style={{ color: LIGHT.textMuted, fontFamily: "'Cormorant Garamond', serif" }}>
+                  {CHAPTER_PREVIEW.content.split('\n\n').map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
+                  {!expanded && (
+                    <div className="absolute bottom-0 left-0 right-0 h-40" style={{
+                      background: `linear-gradient(to top, ${LIGHT.cardBg}, transparent)`
+                    }} />
+                  )}
+                </div>
+                <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center">
+                  <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="rounded-full px-6 py-2.5 inline-flex items-center gap-2"
+                    style={{ border: `1px solid ${LIGHT.border}`, color: LIGHT.textMuted, fontFamily: "'Inter', sans-serif", fontSize: '0.875rem' }}
+                  >
+                    {expanded ? <><ChevronUp className="h-4 w-4" /> Show Less</> : <><ChevronDown className="h-4 w-4" /> Read Full Chapter</>}
+                  </button>
+                  {expanded && (
+                    <a href="#di-pricing">
+                      <button className="di-gold-gradient text-white font-semibold rounded-full px-6 py-2.5 inline-flex items-center gap-2"
+                        style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem' }}>
+                        <Sparkles className="h-4 w-4" />
+                        Get the Full Book
+                      </button>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 }
 
-/* ─── Quotes Section ─── */
+/* ─── Quotes Section: Dark accent band ─── */
 function QuotesSection() {
   const [activeQuote, setActiveQuote] = useState(0);
 
@@ -479,24 +614,33 @@ function QuotesSection() {
   }, []);
 
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #0a1a0a, #0f1f0f, #0a1a0a)' }}>
+    <section id="di-quotes" className="py-24 sm:py-32 relative overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0f2a0f, #143214, #0f2a0f)' }}>
       <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 50%, rgba(50,100,50,0.1) 0%, transparent 60%)'
+        background: 'radial-gradient(ellipse at 50% 50%, rgba(45,90,45,0.15) 0%, transparent 60%)'
       }} />
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16 scroll-reveal">
-          <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium text-amber-400">Words That Transform</p>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">From the Pages of Divine Intimacy</h2>
-        </div>
-        <div className="max-w-3xl mx-auto text-center scroll-reveal">
-          <Quote className="h-10 w-10 mx-auto mb-6 opacity-30 text-amber-400" />
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium" style={{ color: DARK.gold, fontFamily: "'Inter', sans-serif" }}>
+              Words That Transform
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold" style={{ color: DARK.text, fontFamily: "'Playfair Display', serif" }}>
+              From the Pages of Divine Intimacy
+            </h2>
+          </div>
+        </ScrollReveal>
+
+        <div className="max-w-3xl mx-auto text-center">
+          <Quote className="h-10 w-10 mx-auto mb-6 opacity-30" style={{ color: DARK.gold }} />
           <div className="min-h-[120px] flex items-center justify-center">
-            <p className="font-serif text-2xl sm:text-3xl italic leading-relaxed text-white/85 transition-opacity duration-500" key={activeQuote}>
+            <p className="text-2xl sm:text-3xl italic leading-relaxed transition-opacity duration-500"
+              style={{ color: DARK.goldSoft, fontFamily: "'Cormorant Garamond', serif" }} key={activeQuote}>
               &ldquo;{BOOK_QUOTES[activeQuote].text}&rdquo;
             </p>
           </div>
-          <p className="text-sm text-white/40 mt-6 uppercase tracking-wider">
-            — {BOOK_QUOTES[activeQuote].chapter} · Divine Intimacy
+          <p className="text-sm mt-6 uppercase tracking-wider" style={{ color: DARK.textFaint, fontFamily: "'Inter', sans-serif" }}>
+            — {BOOK_QUOTES[activeQuote].chapter} &middot; Divine Intimacy
           </p>
           <div className="flex justify-center gap-2 mt-8">
             {BOOK_QUOTES.map((_, i) => (
@@ -505,7 +649,7 @@ function QuotesSection() {
                 onClick={() => setActiveQuote(i)}
                 className="h-2 rounded-full transition-all duration-300"
                 style={{
-                  background: i === activeQuote ? '#d4af37' : 'rgba(100,100,100,0.3)',
+                  background: i === activeQuote ? DARK.gold : 'rgba(100,140,100,0.4)',
                   width: i === activeQuote ? '24px' : '8px',
                 }}
               />
@@ -517,7 +661,7 @@ function QuotesSection() {
   );
 }
 
-/* ─── Testimonials Section ─── */
+/* ─── Testimonials Section (light) ─── */
 function TestimonialsSection() {
   const [active, setActive] = useState(0);
 
@@ -529,33 +673,43 @@ function TestimonialsSection() {
   }, []);
 
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#0a1a0a]">
+    <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: LIGHT.bgAlt }}>
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16 scroll-reveal">
-          <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium text-amber-400">Readers Around the World</p>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">Lives Being Transformed</h2>
-          <p className="text-white/50 max-w-xl mx-auto">Believers from every nation are encountering God through these pages.</p>
-        </div>
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              Readers Around the World
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+              Lives Being Transformed
+            </h2>
+            <p style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }} className="max-w-xl mx-auto">
+              Believers from every nation are encountering God through these pages.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Featured testimonial */}
-        <div className="max-w-3xl mx-auto mb-12 scroll-reveal">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 sm:p-12 text-center backdrop-blur-sm">
-            <div className="flex justify-center mb-6 gap-1">
-              {Array.from({ length: TESTIMONIALS[active].rating }).map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-current text-amber-400" />
-              ))}
-            </div>
-            <Quote className="h-8 w-8 mx-auto mb-6 opacity-30 text-amber-400" />
-            <p className="font-serif text-lg sm:text-xl leading-relaxed text-white/80 mb-8 italic">
-              &ldquo;{TESTIMONIALS[active].text}&rdquo;
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-amber-400/15">
-                {TESTIMONIALS[active].flag}
+        <div className="max-w-3xl mx-auto mb-12">
+          <div className="overflow-hidden shadow-md rounded-xl" style={{ background: LIGHT.cardBg, border: `1px solid ${LIGHT.border}` }}>
+            <div className="p-8 sm:p-12 text-center">
+              <div className="flex justify-center mb-6 gap-1">
+                {Array.from({ length: TESTIMONIALS[active].rating }).map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-current" style={{ color: LIGHT.goldBright }} />
+                ))}
               </div>
-              <div className="text-left">
-                <p className="font-semibold text-white">{TESTIMONIALS[active].name}</p>
-                <p className="text-sm text-white/50">{TESTIMONIALS[active].location}</p>
+              <Quote className="h-8 w-8 mx-auto mb-6 opacity-20" style={{ color: LIGHT.goldBright }} />
+              <p className="text-lg sm:text-xl leading-relaxed mb-8 italic" style={{ color: LIGHT.textMuted, fontFamily: "'Cormorant Garamond', serif" }}>
+                &ldquo;{TESTIMONIALS[active].text}&rdquo;
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: 'rgba(160,125,28,0.1)' }}>
+                  {TESTIMONIALS[active].flag}
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold" style={{ color: LIGHT.text, fontFamily: "'Inter', sans-serif" }}>{TESTIMONIALS[active].name}</p>
+                  <p className="text-sm" style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }}>{TESTIMONIALS[active].location}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -565,40 +719,41 @@ function TestimonialsSection() {
               <button
                 key={i}
                 onClick={() => setActive(i)}
-                className="rounded-full transition-all duration-300"
-                style={{
-                  background: i === active ? '#d4af37' : 'rgba(212,175,55,0.3)',
-                  width: i === active ? '32px' : '10px',
-                  height: '10px',
-                }}
+                className={`h-2.5 rounded-full transition-all duration-300 ${i === active ? 'w-8' : 'w-2.5 opacity-40 hover:opacity-60'}`}
+                style={{ background: i === active ? LIGHT.goldBright : 'rgba(160,125,28,0.3)' }}
               />
             ))}
           </div>
         </div>
 
-        {/* Grid */}
+        {/* Grid of all testimonials */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {TESTIMONIALS.map((t, i) => (
-            <div
-              key={i}
-              className={`scroll-reveal bg-white/[0.03] border hover:border-white/20 rounded-xl p-5 cursor-pointer transition-all duration-300 ${i === active ? 'border-amber-400/30 shadow-lg' : 'border-white/[0.08]'}`}
-              onClick={() => setActive(i)}
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-xl">{t.flag}</span>
-                <div>
-                  <p className="font-semibold text-sm text-white">{t.name}</p>
-                  <p className="text-xs text-white/45">{t.location}</p>
+            <ScrollReveal key={i}>
+              <div
+                className={`hover:shadow-md transition-all duration-300 cursor-pointer rounded-xl p-5 ${i === active ? 'ring-1' : ''}`}
+                style={{
+                  background: LIGHT.cardBg,
+                  border: `1px solid ${i === active ? 'rgba(160,125,28,0.4)' : LIGHT.border}`,
+                  ...(i === active ? { boxShadow: '0 0 20px rgba(160,125,28,0.08)' } : {}),
+                }}
+                onClick={() => setActive(i)}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-xl">{t.flag}</span>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: LIGHT.text, fontFamily: "'Inter', sans-serif" }}>{t.name}</p>
+                    <p className="text-xs" style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }}>{t.location}</p>
+                  </div>
+                  <div className="ml-auto flex gap-0.5">
+                    {Array.from({ length: t.rating }).map((_, j) => (
+                      <Star key={j} className="h-3 w-3 fill-current" style={{ color: LIGHT.goldBright }} />
+                    ))}
+                  </div>
                 </div>
-                <div className="ml-auto flex gap-0.5">
-                  {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="h-3 w-3 fill-current text-amber-400" />
-                  ))}
-                </div>
+                <p className="text-sm italic line-clamp-3" style={{ color: LIGHT.textMuted, fontFamily: "'Cormorant Garamond', serif" }}>&ldquo;{t.text}&rdquo;</p>
               </div>
-              <p className="text-sm text-white/60 line-clamp-3 italic">&ldquo;{t.text}&rdquo;</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -606,88 +761,96 @@ function TestimonialsSection() {
   );
 }
 
-/* ─── Pricing Section ─── */
+/* ─── Pricing Section (light) ─── */
 function PricingSection() {
   const [loading, setLoading] = useState<string | null>(null);
 
-  const handlePurchase = async (productType: string) => {
+  const handleCheckout = async (productType: string) => {
     setLoading(productType);
     try {
-      // Try to use Manus backend for Stripe checkout
       const res = await fetch(`${MANUS_API_BASE}/api/trpc/store.createCheckout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ json: { productType, origin: window.location.origin } }),
       });
       const data = await res.json();
-      if (data?.result?.data?.json?.url) {
-        window.open(data.result.data.json.url, '_blank');
-      } else {
-        // Fallback: contact info
-        alert('To purchase, please contact: ognmedia2024@gmail.com or visit overcomersglobalnetwork.com');
+      const result = data?.result?.data?.json;
+      if (result?.url) {
+        window.open(result.url, '_blank');
+      } else if (result?.message) {
+        alert(result.message);
       }
     } catch {
-      alert('To purchase, please contact: ognmedia2024@gmail.com or visit overcomersglobalnetwork.com');
+      alert('Something went wrong. Please try again.');
     } finally {
       setLoading(null);
     }
   };
 
-  const getIcon = (key: string) => {
-    if (key === 'ebook') return <Download className="h-5 w-5 text-amber-400" />;
-    if (key === 'physical_us') return <BookOpen className="h-5 w-5 text-amber-400" />;
-    return <Globe className="h-5 w-5 text-amber-400" />;
-  };
+  const iconMap: Record<string, typeof Download> = { download: Download, book: BookOpen, globe: Globe };
 
   return (
-    <section id="di-pricing" className="py-24 sm:py-32 relative overflow-hidden bg-[#0a1a0a]">
-      <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 30%, rgba(100,80,30,0.06) 0%, transparent 50%)'
-      }} />
+    <section id="di-pricing" className="py-24 sm:py-32 relative overflow-hidden" style={{ background: LIGHT.bg }}>
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16 scroll-reveal">
-          <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium text-amber-400">Invest in Your Walk with God</p>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">Get Your Copy Today</h2>
-          <p className="text-white/50 max-w-xl mx-auto">Choose the format that works best for you.</p>
-        </div>
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <p className="text-sm uppercase tracking-[0.3em] mb-4 font-medium" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              Invest in Your Walk with God
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: LIGHT.text, fontFamily: "'Playfair Display', serif" }}>
+              Get Your Copy Today
+            </h2>
+            <p style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }} className="max-w-xl mx-auto">
+              Choose the format that works best for you.
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {PRICING.map((tier) => (
-            <div key={tier.key} className={`scroll-reveal rounded-2xl overflow-hidden h-full group hover:-translate-y-1 transition-all duration-300 ${tier.popular ? 'border-2 border-amber-400 shadow-2xl' : 'bg-white/5 border border-white/10 hover:border-white/20'}`} style={tier.popular ? { boxShadow: '0 0 40px rgba(212,175,55,0.1)' } : {}}>
-              {tier.popular && (
-                <div className="di-gold-gradient text-[#0a1a0a] text-xs font-bold uppercase tracking-wider text-center py-1.5">
-                  Most Popular
+          {PRICING.map((tier) => {
+            const Icon = iconMap[tier.icon] || Download;
+            return (
+              <ScrollReveal key={tier.key}>
+                <div className={`relative overflow-hidden h-full group hover:-translate-y-1 hover:shadow-xl transition-all duration-300 rounded-xl ${tier.popular ? 'border-2' : ''}`}
+                  style={{ background: LIGHT.cardBg, borderColor: tier.popular ? LIGHT.goldBright : LIGHT.border, ...(tier.popular ? { boxShadow: '0 0 40px rgba(160,125,28,0.1)' } : {}) }}>
+                  {tier.popular && (
+                    <div className="di-gold-gradient text-white text-xs font-bold uppercase tracking-wider text-center py-1.5"
+                      style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Most Popular
+                    </div>
+                  )}
+                  <div className="p-8 text-center flex flex-col h-full">
+                    <div className="w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(160,125,28,0.08)' }}>
+                      <Icon className="h-5 w-5" style={{ color: LIGHT.goldBright }} />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-1" style={{ color: LIGHT.text, fontFamily: "'Cormorant Garamond', serif" }}>{tier.label}</h3>
+                    <p className="text-sm mb-6" style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }}>{tier.description}</p>
+                    <div className="mb-8">
+                      <span className="text-4xl font-bold di-gold-text" style={{ fontFamily: "'Playfair Display', serif" }}>${tier.price}</span>
+                      <span className="text-sm ml-1" style={{ color: LIGHT.textFaint }}>USD</span>
+                    </div>
+                    <div className="mt-auto">
+                      <button
+                        onClick={() => handleCheckout(tier.key)}
+                        disabled={loading === tier.key}
+                        className={`w-full rounded-full font-semibold py-3 transition-all ${tier.popular ? 'di-gold-gradient text-white hover:opacity-90' : ''}`}
+                        style={!tier.popular ? { background: 'rgba(45,90,45,0.08)', color: LIGHT.text, fontFamily: "'Inter', sans-serif" } : { fontFamily: "'Inter', sans-serif" }}
+                      >
+                        {loading === tier.key ? 'Processing...' : 'Purchase Now'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              )}
-              <div className="p-8 text-center flex flex-col h-full">
-                <div className="w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center bg-amber-400/10">
-                  {getIcon(tier.key)}
-                </div>
-                <h3 className="font-serif text-xl font-semibold text-white mb-1">{tier.label}</h3>
-                <p className="text-sm text-white/45 mb-6">{tier.description}</p>
-                <div className="mb-8">
-                  <span className="font-serif text-4xl font-bold gold-shimmer">${tier.price}</span>
-                  <span className="text-white/40 text-sm ml-1">USD</span>
-                </div>
-                <div className="mt-auto">
-                  <button
-                    onClick={() => handlePurchase(tier.key)}
-                    disabled={loading === tier.key}
-                    className={`w-full rounded-full font-semibold py-4 transition-all ${tier.popular ? 'di-gold-gradient text-[#0a1a0a] hover:opacity-90' : 'bg-white/10 text-white/80 hover:bg-white/15'}`}
-                  >
-                    {loading === tier.key ? 'Processing...' : 'Purchase Now'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+              </ScrollReveal>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
 
-/* ─── Lead Capture ─── */
+/* ─── Lead Capture (dark accent band) ─── */
 function LeadCaptureSection() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -696,80 +859,98 @@ function LeadCaptureSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+    if (!name.trim() || !email.trim()) {
+      alert('Please fill in all fields.');
+      return;
+    }
     setSubmitting(true);
     try {
-      await fetch(`${MANUS_API_BASE}/api/trpc/leads.capture`, {
+      const res = await fetch(`${MANUS_API_BASE}/api/trpc/leads.capture`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ json: { name: name.trim(), email: email.trim() } }),
       });
-      setSubmitted(true);
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        alert('Something went wrong. Please try again.');
+      }
     } catch {
-      // Still show success since the form was submitted
-      setSubmitted(true);
+      alert('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <section id="di-lead-capture" className="py-24 sm:py-32 relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #0a1a0a, #0f1f0f, #0a1a0a)' }}>
+    <section id="di-lead-capture" className="py-24 sm:py-32 relative overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #0f2a0f, #143214, #0f2a0f)' }}>
       <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 50%, rgba(50,100,50,0.08) 0%, transparent 50%)'
+        background: 'radial-gradient(ellipse at 50% 50%, rgba(45,90,45,0.1) 0%, transparent 50%)'
       }} />
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-lg mx-auto scroll-reveal">
-          <div className="text-center mb-8">
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">Get Your Free Chapter</h2>
-            <p className="text-white/50">Enter your details below and receive Chapter 1 delivered straight to your inbox.</p>
-          </div>
+        <div className="max-w-lg mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-8">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: DARK.text, fontFamily: "'Playfair Display', serif" }}>
+                Get Your Free Chapter
+              </h2>
+              <p style={{ color: DARK.textMuted, fontFamily: "'Inter', sans-serif" }}>
+                Enter your details below and receive Chapter 1 delivered straight to your inbox.
+              </p>
+            </div>
+          </ScrollReveal>
 
           {submitted ? (
-            <div className="p-10 rounded-2xl border border-white/10 bg-white/5 text-center backdrop-blur-sm animate-fadeInUp">
-              <Check className="h-14 w-14 mx-auto mb-4 text-amber-400" />
-              <h3 className="font-serif text-2xl font-semibold text-white mb-2">Thank You!</h3>
-              <p className="text-white/50 mb-6">Your free chapter is on its way. Check your inbox.</p>
+            <div className="p-10 rounded-2xl text-center" style={{ background: DARK.cardBg, border: `1px solid ${DARK.border}` }}>
+              <Check className="h-14 w-14 mx-auto mb-4" style={{ color: DARK.gold }} />
+              <h3 className="text-2xl font-semibold mb-2" style={{ color: DARK.text, fontFamily: "'Cormorant Garamond', serif" }}>Thank You!</h3>
+              <p className="mb-6" style={{ color: DARK.textMuted, fontFamily: "'Inter', sans-serif" }}>Your free chapter is on its way. Check your inbox.</p>
               <a href="#di-pricing">
-                <button className="di-gold-gradient text-[#0a1a0a] font-semibold rounded-full px-8 py-3">
+                <button className="di-gold-gradient text-white font-semibold rounded-full px-8 py-3"
+                  style={{ fontFamily: "'Inter', sans-serif" }}>
                   Get the Full Book Now
                 </button>
               </a>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 p-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 p-8 rounded-2xl backdrop-blur-sm"
+              style={{ background: DARK.cardBg, border: `1px solid ${DARK.border}` }}
+            >
               <div>
-                <label htmlFor="di-name" className="text-sm text-white/50 mb-1.5 block">Your Name</label>
+                <label htmlFor="di-name" className="text-sm mb-1.5 block" style={{ color: DARK.textMuted, fontFamily: "'Inter', sans-serif" }}>Your Name</label>
                 <input
                   id="di-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your full name"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg py-3 px-4 text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400/50 transition-colors"
-                  required
+                  className="w-full rounded-lg py-3 px-4 outline-none focus:ring-2 focus:ring-amber-500/30"
+                  style={{ background: 'rgba(10,26,10,0.8)', border: `1px solid ${DARK.border}`, color: DARK.text, fontFamily: "'Inter', sans-serif" }}
                 />
               </div>
               <div>
-                <label htmlFor="di-email" className="text-sm text-white/50 mb-1.5 block">Your Email</label>
+                <label htmlFor="di-email" className="text-sm mb-1.5 block" style={{ color: DARK.textMuted, fontFamily: "'Inter', sans-serif" }}>Your Email</label>
                 <input
                   id="di-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg py-3 px-4 text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400/50 transition-colors"
-                  required
+                  className="w-full rounded-lg py-3 px-4 outline-none focus:ring-2 focus:ring-amber-500/30"
+                  style={{ background: 'rgba(10,26,10,0.8)', border: `1px solid ${DARK.border}`, color: DARK.text, fontFamily: "'Inter', sans-serif" }}
                 />
               </div>
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full di-gold-gradient text-[#0a1a0a] font-bold text-base py-4 rounded-full hover:opacity-90 transition-all"
-                style={{ boxShadow: '0 4px 30px rgba(212,175,55,0.2)' }}
+                className="w-full di-gold-gradient text-white font-bold text-base py-4 rounded-full hover:opacity-90 transition-all"
+                style={{ fontFamily: "'Inter', sans-serif", boxShadow: '0 4px 30px rgba(160,125,28,0.2)' }}
               >
                 {submitting ? 'Sending...' : 'Send Me the Free Chapter'}
               </button>
-              <p className="text-xs text-white/30 text-center">
+              <p className="text-xs text-center" style={{ color: DARK.textFaint, fontFamily: "'Inter', sans-serif" }}>
                 We respect your privacy. Your information will never be shared.
               </p>
             </form>
@@ -780,59 +961,89 @@ function LeadCaptureSection() {
   );
 }
 
-/* ─── Final CTA ─── */
+/* ─── Final CTA (dark Eden) ─── */
 function FinalCTA({ onWatchVideo }: { onWatchVideo: () => void }) {
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#0a1a0a]">
-      <div className="absolute inset-0 opacity-[0.06]" style={{
+    <section className="py-24 sm:py-32 relative overflow-hidden" style={{ background: '#0a1a0a' }}>
+      <div className="absolute inset-0 opacity-[0.1]" style={{
         backgroundImage: `url(${CDN.edenGardenBg2})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         filter: 'blur(3px)',
       }} />
       <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 50%, rgba(50,100,50,0.12) 0%, transparent 60%)'
+        background: 'radial-gradient(ellipse at 50% 50%, rgba(40,80,40,0.15) 0%, transparent 60%)'
       }} />
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto text-center scroll-reveal">
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-6">
-            It Is Time to
-            <span className="gold-shimmer block mt-2">Return</span>
-          </h2>
-          <p className="font-serif text-xl italic text-white/60 mb-10 max-w-2xl mx-auto">
-            &ldquo;The God who created you for fellowship is calling you by name. The garden awaits. Divine Intimacy begins here.&rdquo;
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#di-pricing">
-              <button className="di-gold-gradient text-[#0a1a0a] font-bold text-lg px-12 py-5 rounded-full hover:opacity-90 transition-all shadow-2xl inline-flex items-center gap-3 w-full sm:w-auto justify-center">
-                <Sparkles className="h-5 w-5" />
-                Begin Your Journey Today
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-6" style={{ color: DARK.text, fontFamily: "'Playfair Display', serif" }}>
+              It Is Time to
+              <span className="block mt-2" style={{ background: 'linear-gradient(135deg, #d4af37, #f0d060, #d4af37)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Return</span>
+            </h2>
+            <p className="text-xl italic mb-10 max-w-2xl mx-auto" style={{ color: DARK.textMuted, fontFamily: "'Cormorant Garamond', serif" }}>
+              &ldquo;The God who created you for fellowship is calling you by name. The garden awaits. Divine Intimacy begins here.&rdquo;
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#di-pricing">
+                <button className="di-gold-gradient text-white font-bold text-lg px-12 py-4 rounded-full hover:opacity-90 transition-all inline-flex items-center gap-3"
+                  style={{ fontFamily: "'Inter', sans-serif", boxShadow: '0 4px 40px rgba(212,175,55,0.25)' }}>
+                  <Sparkles className="h-5 w-5" />
+                  Begin Your Journey Today
+                </button>
+              </a>
+              <button
+                onClick={onWatchVideo}
+                className="font-semibold text-base px-8 py-4 rounded-full transition-all inline-flex items-center justify-center gap-2"
+                style={{ border: `1px solid ${DARK.border}`, color: DARK.textMuted, fontFamily: "'Inter', sans-serif" }}
+              >
+                <Play className="h-5 w-5" />
+                Watch the Message
               </button>
-            </a>
-            <button
-              onClick={onWatchVideo}
-              className="font-semibold text-base px-8 py-5 rounded-full border border-white/20 text-white/70 hover:border-green-400 hover:text-green-400 transition-all inline-flex items-center justify-center gap-2"
-            >
-              <Play className="h-5 w-5" />
-              Watch the Message
-            </button>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 }
 
-/* ─── Main Page Component ─── */
+/* ─── Footer (light) ─── */
+function DiFooter() {
+  return (
+    <footer className="py-10" style={{ background: LIGHT.bg, borderTop: `1px solid ${LIGHT.border}` }}>
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <Image src={CDN.ministryLogo} alt="OGN" width={36} height={36} className="h-9 w-auto" />
+            <div>
+              <p className="text-sm font-semibold" style={{ color: LIGHT.text, fontFamily: "'Cormorant Garamond', serif" }}>Overcomers Global Network</p>
+              <p className="text-xs" style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }}>Educate. Equip. Empower.</p>
+            </div>
+          </div>
+          <div className="text-center md:text-right">
+            <Link href="/" className="text-sm hover:opacity-80 transition-opacity" style={{ color: LIGHT.goldBright, fontFamily: "'Inter', sans-serif" }}>
+              overcomersglobalnetwork.com
+            </Link>
+            <p className="text-xs mt-1" style={{ color: LIGHT.textFaint, fontFamily: "'Inter', sans-serif" }}>
+              &copy; {new Date().getFullYear()} Prophet Joshua Matthews. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ─── Main Page ─── */
 export default function DivineIntimacyClient() {
   const [videoOpen, setVideoOpen] = useState(false);
   const openVideo = useCallback(() => setVideoOpen(true), []);
   const closeVideo = useCallback(() => setVideoOpen(false), []);
 
   return (
-    <main className="min-h-screen bg-[#0a1a0a]">
-      <Navigation />
-      <ScrollReveal />
+    <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <DiNavbar />
       <HeroSection onWatchVideo={openVideo} />
       <VideoPreviewSection onWatchVideo={openVideo} />
       <SeoHookSection />
@@ -844,8 +1055,8 @@ export default function DivineIntimacyClient() {
       <PricingSection />
       <LeadCaptureSection />
       <FinalCTA onWatchVideo={openVideo} />
-      <Footer />
+      <DiFooter />
       <VideoOverlay isOpen={videoOpen} onClose={closeVideo} />
-    </main>
+    </div>
   );
 }
