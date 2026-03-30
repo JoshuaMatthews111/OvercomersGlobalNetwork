@@ -1,52 +1,50 @@
-/* ─── Ultimate Journey – Dual Theme: Dark Crimson Hero + Warm Parchment Content ─── */
+/* ─── Ultimate Journey – Crimson/Maroon/Teal Theme matching the book cover ─── */
 
 /* ── Fonts ── */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ── Color Tokens ── */
 :root {
-  /* Dark hero palette – crimson/maroon */
+  /* Dark hero palette — deep crimson/maroon from book cover */
   --uj-dark-bg: #1a0a0f;
-  --uj-dark-text: #f0e8e5;
-  --uj-dark-text-muted: rgba(240,232,229,0.6);
-  --uj-dark-text-faint: rgba(240,232,229,0.4);
-  --uj-dark-gold: #d4af37;
-  --uj-dark-gold-soft: rgba(212,175,55,0.85);
+  --uj-dark-text: #f5ede5;
+  --uj-dark-text-muted: rgba(245,237,229,0.65);
+  --uj-dark-text-faint: rgba(245,237,229,0.4);
   --uj-dark-crimson: #8b1a2b;
-  --uj-dark-card-bg: rgba(26,10,15,0.6);
-  --uj-dark-border: rgba(100,40,50,0.4);
+  --uj-dark-crimson-light: #c0354d;
+  --uj-dark-gold: #d4a855;
+  --uj-dark-gold-soft: rgba(212,168,85,0.85);
+  --uj-dark-teal: #1a6b6b;
+  --uj-dark-card-bg: rgba(26,10,15,0.7);
+  --uj-dark-border: rgba(139,26,43,0.3);
 
-  /* Light content palette – warm parchment */
-  --uj-light-bg: #f5f0e8;
-  --uj-light-bg-alt: #ede7db;
-  --uj-light-text: #2a1a1e;
-  --uj-light-text-muted: #5a3d42;
-  --uj-light-text-faint: #8a6b70;
-  --uj-light-gold: #8b6914;
-  --uj-light-gold-bright: #a07d1c;
+  /* Light content palette — warm parchment */
+  --uj-light-bg: #faf5ef;
+  --uj-light-bg-alt: #f2ebe0;
+  --uj-light-text: #2a1218;
+  --uj-light-text-muted: #5a3040;
+  --uj-light-text-faint: #8a6070;
   --uj-light-crimson: #7a1525;
-  --uj-light-card-bg: #faf7f2;
-  --uj-light-border: #ddd5c5;
+  --uj-light-crimson-bright: #9b1d30;
+  --uj-light-gold: #9a7b30;
+  --uj-light-card-bg: #fff9f4;
+  --uj-light-border: #e5d5c5;
 }
 
-/* ── Crimson Gradient (buttons) ── */
+/* ── Crimson Gradient (primary buttons) ── */
 .uj-crimson-gradient {
-  background: linear-gradient(135deg, #7a1525, #9b2335, #7a1525);
+  background: linear-gradient(135deg, #7a1525, #9b1d30, #7a1525);
 }
 
-.uj-gold-gradient {
-  background: linear-gradient(135deg, #8b6914, #a07d1c, #8b6914);
-}
-
-.uj-gold-text {
-  background: linear-gradient(135deg, #8b6914, #a07d1c, #7a5c10);
+.uj-crimson-text {
+  background: linear-gradient(135deg, #9b1d30, #c0354d, #7a1525);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.uj-crimson-text {
-  background: linear-gradient(135deg, #7a1525, #9b2335, #7a1525);
+.uj-gold-text {
+  background: linear-gradient(135deg, #9a7b30, #c4a040, #8a6b20);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -58,10 +56,10 @@
 }
 
 .uj-hero-base {
-  background: linear-gradient(180deg,
-    #2a0f15 0%,
-    #3a1520 30%,
-    #2d1018 60%,
+  background: linear-gradient(180deg, 
+    #2a0f18 0%, 
+    #3a1520 30%, 
+    #2d1018 60%, 
     #1a0a0f 100%
   );
 }
@@ -69,59 +67,59 @@
 .uj-hero-rays {
   background: conic-gradient(
     from 180deg at 50% -10%,
-    rgba(212,175,55,0.06) 0deg,
+    rgba(139,26,43,0.08) 0deg,
     transparent 40deg,
-    rgba(139,26,43,0.06) 80deg,
+    rgba(212,168,85,0.04) 80deg,
     transparent 120deg,
-    rgba(212,175,55,0.06) 160deg,
+    rgba(139,26,43,0.08) 160deg,
     transparent 200deg,
-    rgba(139,26,43,0.06) 240deg,
+    rgba(26,107,107,0.04) 240deg,
     transparent 280deg,
-    rgba(212,175,55,0.06) 320deg,
+    rgba(139,26,43,0.08) 320deg,
     transparent 360deg
   );
   animation: uj-rays 8s ease-in-out infinite;
 }
 
 .uj-hero-mist {
-  background: linear-gradient(to top, rgba(100,30,40,0.12), transparent);
+  background: linear-gradient(to top, rgba(139,26,43,0.08), transparent);
   filter: blur(40px);
   animation: uj-mist 12s ease-in-out infinite;
 }
 
 .uj-hero-glow {
-  background: radial-gradient(ellipse, rgba(212,175,55,0.05) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(212,168,85,0.06) 0%, transparent 70%);
   filter: blur(60px);
   animation: uj-glow-pulse 6s ease-in-out infinite;
 }
 
 .uj-hero-warm-wash {
-  background: linear-gradient(180deg, rgba(200,160,120,0.08) 0%, transparent 40%, transparent 70%, rgba(30,10,15,0.3) 100%);
+  background: linear-gradient(180deg, rgba(200,160,80,0.06) 0%, transparent 40%, transparent 70%, rgba(26,10,15,0.4) 100%);
 }
 
 /* ── Book Effects ── */
 .uj-book-glow {
-  background: radial-gradient(ellipse at center, rgba(139,26,43,0.15) 0%, rgba(212,175,55,0.06) 40%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(139,26,43,0.15) 0%, rgba(212,168,85,0.06) 40%, transparent 70%);
 }
 
 .uj-book-shadow {
-  box-shadow: 20px 20px 60px rgba(0,0,0,0.5), -5px -5px 20px rgba(139,26,43,0.08), 0 0 80px rgba(212,175,55,0.05);
+  box-shadow: 20px 20px 60px rgba(0,0,0,0.6), -5px -5px 20px rgba(139,26,43,0.08), 0 0 80px rgba(212,168,85,0.06);
 }
 
-/* ── Gold Line ── */
-.uj-gold-line {
-  background: linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.5) 50%, transparent 100%);
+/* ── Crimson Line ── */
+.uj-crimson-line {
+  background: linear-gradient(90deg, transparent 0%, rgba(139,26,43,0.5) 50%, transparent 100%);
 }
 
 /* ── Hero Button ── */
 .uj-hero-btn {
-  background: linear-gradient(135deg, rgba(139,26,43,0.4), rgba(100,20,30,0.3));
+  background: linear-gradient(135deg, rgba(139,26,43,0.3), rgba(100,20,30,0.2));
   box-shadow: 0 4px 40px rgba(139,26,43,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-  color: #f0e8e5;
+  color: #f5ede5;
 }
 
 .uj-hero-btn:hover {
-  background: linear-gradient(135deg, rgba(139,26,43,0.5), rgba(100,20,30,0.35));
+  background: linear-gradient(135deg, rgba(139,26,43,0.4), rgba(100,20,30,0.3));
 }
 
 /* ── Floating Particles ── */
