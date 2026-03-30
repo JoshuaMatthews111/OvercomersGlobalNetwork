@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     url: 'https://overcomersglobalnetwork.com/ultimate-journey/',
     images: [
       {
-        url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ultimate_journey_cover_90c9f5e5.webp',
+        url: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/uj_front_cover_c618b686.png',
         width: 600,
         height: 900,
         alt: 'The Ultimate Journey with Jesus Christ Book Cover',
