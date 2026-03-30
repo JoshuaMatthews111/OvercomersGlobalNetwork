@@ -46,7 +46,7 @@ const CDN = {
   authorCircle: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/author_circle_centered_440deb32.png",
   ministryLogo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ministry-logo_3eb6c31c.png",
   heroBg: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/uj_hero_bg-cbhD54kykb8PLfV3YCxDUN.webp",
-  trailerVideo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ultimate_journey_trailer_b4e3c36f.mp4",
+  trailerVideo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ultimate_journey_trailer_v2_c8003fc6.mp4",
 };
 
 /* ─── Manus Backend API URL (for Stripe & leads) ─── */
