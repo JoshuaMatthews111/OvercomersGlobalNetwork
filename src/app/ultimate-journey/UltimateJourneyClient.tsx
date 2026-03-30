@@ -40,7 +40,7 @@ function ScrollReveal({ children }: { children: ReactNode }) {
 /* ─── CDN Assets ─── */
 const CDN = {
   bookCover: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ultimate_journey_cover_90c9f5e5.webp',
-  heroBg: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/uj_hero_bg-cbhD54kykb8PLfV3YCxDUN.webp',
+  heroBg: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/uj_hero_bg_clean-Df9zPfFsRjTe9NKLmpCkbp.webp',
   authorPhoto: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/author_circle_centered_440deb32.png',
   trailerVideo: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ultimate_journey_trailer_v2_c8003fc6.mp4',
   ministryLogo: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ministry-logo_3eb6c31c.png',
@@ -180,7 +180,7 @@ function HeroSection({ onWatchVideo }: { onWatchVideo: () => void }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden uj-hero-bg">
       <div className="absolute inset-0 uj-hero-base" />
-      <div className="absolute inset-0" style={{ backgroundImage: `url(${CDN.heroBg})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3 }} />
+      <div className="absolute inset-0" style={{ backgroundImage: `url(${CDN.heroBg})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.55 }} />
       <div className="absolute inset-0 uj-hero-rays" />
       <div className="absolute inset-0 uj-hero-mist" />
       <div className="absolute inset-0 uj-hero-glow" />
