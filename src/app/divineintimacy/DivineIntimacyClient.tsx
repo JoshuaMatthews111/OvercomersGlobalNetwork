@@ -43,9 +43,9 @@ function ScrollReveal({ children }: { children: ReactNode }) {
 /* ─── CDN Assets ─── */
 const CDN = {
   bookCover: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/divine-intimacy-cover-2_e23ed17b.png",
-  authorCircle: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/author_circle_centered_44d24d3c.png",
+  authorCircle: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/author_centered_square_149654df.png",
   ministryLogo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/ministry-logo_3eb6c31c.png",
-  edenVideo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/return_to_eden_af642579.mp4",
+  edenVideo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/divine_intimacy_trailer_with_voiceover_b3339ce1.mp4",
   edenGardenBg: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/eden_01_garden_1e4a1346.png",
   edenGardenBg2: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/eden_07_text_d78e4b14.png",
   edenPathBg: "https://d2xsxph8kpxj0f.cloudfront.net/310519663410994003/YAE6K7i42cGNZ9sXAyVQVA/eden_path_bg-ZPwaG99a4oLLnsRAikbk7g.webp",
