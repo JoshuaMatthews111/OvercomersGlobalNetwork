@@ -33,6 +33,7 @@ export function Navigation() {
     { label: 'Resources', href: '/resources' },
     { label: 'Blog', href: '/blog' },
     { label: 'Events', href: '/events' },
+    { label: '1-on-1', href: '/oneonone' },
     { label: 'Give', href: '/give' },
     { label: 'Connect', href: '/connect' },
   ];

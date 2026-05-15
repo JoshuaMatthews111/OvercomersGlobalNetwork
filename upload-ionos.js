@@ -45,5 +45,4 @@ console.log('✨ Your site will be live at: https://overcomerglobalnetwork.com')
 console.log('');
 console.log('🔑 Admin Login:');
 console.log('   URL: https://overcomerglobalnetwork.com/admin');
-console.log('   Email: admin@overcomers.org');
-console.log('   Password: OGN2026Admin!');
+console.log('   Managed via Firebase Auth — see /admin/users for account management.');

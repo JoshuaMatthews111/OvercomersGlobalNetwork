@@ -24,11 +24,10 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 
 # Base URL (update for production)
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
-
-# Admin Credentials
-NEXT_PUBLIC_ADMIN_EMAIL=mr.matthews2022@gmail.com
-NEXT_PUBLIC_ADMIN_PASSWORD=YourSecurePassword
 ```
+
+Admin authentication is handled by Firebase Auth (no `NEXT_PUBLIC_ADMIN_PASSWORD`
+is needed or used by the app). Manage admins inside `/admin/users`.
 
 ---
 

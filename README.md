@@ -41,12 +41,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ## Admin Access
 
 - **URL**: https://overcomersglobalnetwork.com/admin
-- **Email**: admin@overcomers.org
-- **Password**: OGN2026Admin!
+- **Login**: Admin accounts are managed by Firebase Auth. Contact the master admin for access,
+  or use "Forgot Password" on the login page to reset.
 
 ## Deployment
 
-This site is automatically deployed to GitHub Pages using GitHub Actions. The workflow builds the Next.js application and deploys the static files to GitHub Pages.
+This site is deployed on **Vercel** for full Next.js support (API routes, webhooks, email sending, cron jobs). Every push to `main` auto-deploys. See `VERCEL-DEPLOY.md` for the full deployment guide.
 
 ## Features
 

@@ -4,20 +4,29 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { CheckCircle, Package, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle, Package, Mail, ArrowRight, Loader2, Download, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const [loading, setLoading] = useState(true);
+  const [hasEbookDownload, setHasEbookDownload] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState('');
+  const [downloadStarted, setDownloadStarted] = useState(false);
 
   useEffect(() => {
+    // Check for pending eBook download
+    const pendingDownload = localStorage.getItem('ogn-pending-download');
+    if (pendingDownload) {
+      setHasEbookDownload(true);
+      setDownloadUrl(pendingDownload);
+    }
+
     // Update order status in localStorage
     if (sessionId) {
       const orders = JSON.parse(localStorage.getItem('ogn-orders') || '[]');
       const updatedOrders = orders.map((order: any) => {
-        // Mark the most recent pending order as paid
         if (order.status === 'pending_payment') {
           return { ...order, status: 'paid', stripeSessionId: sessionId };
         }
@@ -27,6 +36,21 @@ function CheckoutSuccessContent() {
     }
     setLoading(false);
   }, [sessionId]);
+
+  const handleDownload = () => {
+    if (downloadUrl) {
+      setDownloadStarted(true);
+      // Clear the pending download
+      localStorage.removeItem('ogn-pending-download');
+      // Trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'Divine-Intimacy-eBook.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   if (loading) {
     return (
@@ -55,6 +79,39 @@ function CheckoutSuccessContent() {
               Thank you for your order. Your payment has been processed successfully.
             </p>
 
+            {/* eBook Download Section */}
+            {hasEbookDownload && (
+              <div className="bg-gradient-to-r from-purple-50 to-amber-50 border-2 border-purple-200 rounded-2xl p-8 mb-8">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <BookOpen className="w-8 h-8 text-purple-600" />
+                  <h2 className="font-bold text-gray-900 text-xl">Your eBook is Ready!</h2>
+                </div>
+                <p className="text-gray-600 mb-6 text-center">
+                  Click the button below to download your copy of <strong>Divine Intimacy</strong>.
+                </p>
+                {downloadStarted ? (
+                  <div className="text-center">
+                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                    <p className="text-green-600 font-semibold">Download Started!</p>
+                    <p className="text-gray-500 text-sm mt-2">
+                      Check your downloads folder. If the download didn't start,{' '}
+                      <a href={downloadUrl} download className="text-purple-600 hover:underline">
+                        click here
+                      </a>.
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleDownload}
+                    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-5 rounded-xl font-bold text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
+                  >
+                    <Download className="w-6 h-6" />
+                    Download Your eBook (PDF)
+                  </button>
+                )}
+              </div>
+            )}
+
             {/* Order Confirmation */}
             <div className="bg-gray-50 rounded-2xl p-8 mb-8 text-left">
               <h2 className="font-bold text-gray-900 text-lg mb-6">What happens next?</h2>
@@ -72,17 +129,19 @@ function CheckoutSuccessContent() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Package className="w-5 h-5 text-amber-600" />
+                {!hasEbookDownload && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Package className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Order Processing</h3>
+                      <p className="text-gray-600 text-sm">
+                        We'll prepare your resources and ship them within 3-5 business days.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Order Processing</h3>
-                    <p className="text-gray-600 text-sm">
-                      We'll prepare your resources and ship them within 3-5 business days.
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 

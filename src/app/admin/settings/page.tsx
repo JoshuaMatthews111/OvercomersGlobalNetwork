@@ -229,18 +229,15 @@ export default function AdminSettingsPage() {
             
             <div className="bg-amber-50 rounded-xl p-4 mb-4">
               <p className="text-amber-800 text-sm">
-                <strong>Important:</strong> To change your login credentials, update the environment 
-                variables in your <code className="bg-amber-100 px-1 rounded">.env.local</code> file:
+                <strong>Password Reset:</strong> Admin accounts are managed by Firebase Authentication.
+                Use the <strong>Reset Password</strong> option on the admin login page to receive a
+                password reset link by email.
               </p>
-              <pre className="mt-2 text-xs bg-amber-100 p-2 rounded overflow-x-auto">
-{`NEXT_PUBLIC_ADMIN_EMAIL=your@email.com
-NEXT_PUBLIC_ADMIN_PASSWORD=your_password`}
-              </pre>
             </div>
-            
+
             <p className="text-gray-500 text-sm">
-              For security, credentials are stored in environment variables, not in the database. 
-              Contact your developer to update login credentials.
+              For security, credentials are managed via Firebase Auth. Master admins can invite, suspend,
+              or remove admins in the Admin Users panel.
             </p>
           </div>
         </div>

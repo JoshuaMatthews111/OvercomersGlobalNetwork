@@ -6,6 +6,12 @@ import Link from 'next/link';
 import { checkAdminPermission } from '@/lib/useAdminPermission';
 import Image from 'next/image';
 import { getUnreadNotificationCount } from '@/lib/notifications';
+import {
+  getAllBookings as getFirebaseBookings,
+  getAvailability as getFirebaseAvailability,
+  saveAvailability as saveFirebaseAvailability,
+  updateBooking as updateFirebaseBooking,
+} from '@/lib/bookings';
 
 interface TimeSlot {
   time: string;
@@ -72,19 +78,84 @@ export default function ProphetScheduleAdmin() {
     return () => clearInterval(interval);
   }, []);
 
-  const loadData = () => {
-    const savedAvailability = localStorage.getItem('ogn-prophet-availability');
-    if (savedAvailability) setAvailability(JSON.parse(savedAvailability));
+  const loadData = async () => {
+    // Load availability from Firebase
+    const { availability: fbAvailability } = await getFirebaseAvailability();
+    if (fbAvailability && Object.keys(fbAvailability).length > 0) {
+      setAvailability(fbAvailability);
+    } else {
+      // Fallback to localStorage for legacy data
+      const savedAvailability = localStorage.getItem('ogn-prophet-availability');
+      if (savedAvailability) setAvailability(JSON.parse(savedAvailability));
+    }
+
+    // Load bookings from Firebase (real paid bookings)
+    const { bookings: fbBookings } = await getFirebaseBookings();
+    const fbBookingsMapped = (fbBookings || []).map((b: any) => ({
+      id: b.firebaseId,
+      firebaseId: b.firebaseId,
+      date: b.date,
+      time: b.time,
+      customer: {
+        firstName: b.firstName,
+        lastName: b.lastName,
+        email: b.email,
+        phone: b.phone,
+        notes: b.notes,
+      },
+      status: b.status,
+      isPaid: b.isPaid,
+      paymentAmount: b.paymentAmount,
+      createdAt: b.createdAt,
+    }));
+
+    // Also merge legacy localStorage bookings
     const savedBookings = localStorage.getItem('ogn-prophet-bookings');
-    if (savedBookings) setBookings(JSON.parse(savedBookings));
+    const legacyBookings = savedBookings ? JSON.parse(savedBookings) : [];
+    setBookings([...fbBookingsMapped, ...legacyBookings]);
+
     const savedServices = localStorage.getItem('ogn-prophet-services');
     if (savedServices) setServices(JSON.parse(savedServices));
     setUnreadCount(getUnreadNotificationCount());
   };
 
-  const saveAvailability = () => {
+  const saveAvailability = async () => {
+    // Save to Firebase (live public page reads from Firebase)
+    const result = await saveFirebaseAvailability(availability);
+    // Also keep localStorage backup
     localStorage.setItem('ogn-prophet-availability', JSON.stringify(availability));
-    alert('Availability saved! Changes are now live on the public scheduling page.');
+    if (result.success) {
+      alert('Availability saved to Firebase! Changes are now live on overcomersglobalnetwork.com/oneonone');
+    } else {
+      alert('Saved locally but failed to sync to Firebase. Please check your connection.');
+    }
+  };
+
+  const handleReschedule = async (booking: any, newDate: string, newTime: string) => {
+    if (!booking.firebaseId) {
+      alert('This booking cannot be rescheduled (legacy booking).');
+      return;
+    }
+    try {
+      const res = await fetch('/api/bookings/reschedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookingId: booking.firebaseId,
+          newDate,
+          newTime,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Booking rescheduled. Confirmation email sent to ${booking.customer.email}.`);
+        loadData();
+      } else {
+        alert('Reschedule failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Reschedule failed: ' + String(err));
+    }
   };
 
   const saveServices = () => {

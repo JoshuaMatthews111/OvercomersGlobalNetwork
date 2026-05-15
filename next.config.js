@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
+// NOTE: `output: 'export'` was removed to enable Next.js API routes (Stripe webhooks,
+// booking checkout, reminder cron, email sending). The site is now deployed on Vercel
+// (full Node.js runtime) instead of GitHub Pages static hosting. All existing pages
+// (blog, Firebase-backed features, admin, etc.) continue to work unchanged on Vercel.
 const nextConfig = {
-  output: 'export',
   trailingSlash: true,
   // basePath: '/OvercomersGlobalNetwork', // Commented out for custom domain
   allowedDevOrigins: ["*.preview.same-app.com"],
