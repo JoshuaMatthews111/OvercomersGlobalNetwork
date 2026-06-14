@@ -1,9 +1,12 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 // Dual-deploy: STATIC_EXPORT=1 → GitHub Pages (static), otherwise → Vercel (full runtime)
 const staticExport = process.env.STATIC_EXPORT === '1';
 
 const nextConfig = {
   ...(staticExport ? { output: 'export' } : {}),
+  outputFileTracingRoot: path.join(__dirname),
   trailingSlash: true,
   // basePath: '/OvercomersGlobalNetwork', // Commented out for custom domain
   allowedDevOrigins: ["*.preview.same-app.com"],

@@ -30,6 +30,7 @@ export function Navigation() {
     { label: 'About', href: '/about' },
     { label: 'Discipleship', href: '/discipleship' },
     { label: 'Watch', href: '/watch' },
+    { label: 'App', href: '/app' },
     { label: 'Resources', href: '/resources' },
     { label: 'Blog', href: '/blog' },
     { label: 'Events', href: '/events' },
@@ -66,7 +67,7 @@ export function Navigation() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`transition-colors text-sm font-medium ${
+                className={`whitespace-nowrap transition-colors text-sm font-medium ${
                   scrolled 
                     ? 'text-white hover:text-amber-400' 
                     : isDarkPage
