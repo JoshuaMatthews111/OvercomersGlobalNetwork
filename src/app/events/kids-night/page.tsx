@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { createEventRegistration } from '@/lib/event-registrations';
 import { ArrowRight, Calendar, CheckCircle, Clock, CreditCard, Loader2, MapPin, ShieldCheck, Users } from 'lucide-react';
 
 const eventDetails = {
@@ -17,6 +18,8 @@ const eventDetails = {
   price: 50,
   image: '/images/events/kids-night-2026-07-10.jpg',
 };
+
+const customGivingLink = 'https://donate.stripe.com/9B64gA2lAfhT63T1Fvco00b';
 
 export default function KidsNightPage() {
   return (
@@ -53,6 +56,7 @@ function KidsNightContent() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [registrationSaved, setRegistrationSaved] = useState(false);
 
   const registered = params.get('registered') === '1';
   const canceled = params.get('canceled') === '1';
@@ -68,20 +72,27 @@ function KidsNightContent() {
     setError('');
 
     try {
-      const response = await fetch('/api/events/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+      const registration = await createEventRegistration({
+        eventSlug: 'kids-night-2026-07-10',
+        eventTitle: eventDetails.title,
+        parentName: formData.parentName.trim(),
+        childName: formData.childName.trim(),
+        childAge: formData.childAge.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        notes: formData.notes.trim(),
+        status: 'registered',
+        amount: eventDetails.price,
       });
-      const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Could not start checkout.');
+      if (!registration.success) {
+        throw new Error('Could not save the registration. Please try again.');
       }
 
-      window.location.href = data.url;
+      setRegistrationSaved(true);
+      window.location.href = customGivingLink;
     } catch (err: any) {
-      setError(err.message || 'Could not start checkout. Please try again.');
+      setError(err.message || 'Could not save the registration. Please try again.');
       setIsLoading(false);
     }
   };
@@ -102,7 +113,16 @@ function KidsNightContent() {
                 <div className="mb-6 rounded-2xl border border-green-400/30 bg-green-400/10 p-4 text-green-100">
                   <div className="flex items-center gap-3 font-semibold">
                     <CheckCircle className="h-5 w-5" />
-                    Registration started. Your payment confirmation will connect to the Kids Night registration list.
+                    Registration received. Please complete the $50 Kids Night gift on the giving page.
+                  </div>
+                </div>
+              )}
+
+              {registrationSaved && (
+                <div className="mb-6 rounded-2xl border border-green-400/30 bg-green-400/10 p-4 text-green-100">
+                  <div className="flex items-center gap-3 font-semibold">
+                    <CheckCircle className="h-5 w-5" />
+                    Registration saved. Opening the secure giving page now.
                   </div>
                 </div>
               )}
@@ -130,10 +150,13 @@ function KidsNightContent() {
               <div className="rounded-2xl bg-white text-gray-950 p-6 shadow-xl">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                   <div>
-                    <h2 className="text-2xl font-bold">Register With a $50 Gift</h2>
-                    <p className="text-sm text-gray-600">At Stripe checkout, type <strong>Kids Night</strong> in the note field.</p>
+                    <h2 className="text-2xl font-bold">Step 1: Register Your Child</h2>
+                    <p className="text-sm text-gray-600">After this form, you will be sent to the secure giving page.</p>
                   </div>
-                  <div className="text-3xl font-bold text-amber-600">$50</div>
+                  <div className="text-right">
+                    <div className="text-xs font-semibold uppercase text-gray-500">Suggested Gift</div>
+                    <div className="text-3xl font-bold text-amber-600">$50</div>
+                  </div>
                 </div>
 
                 {error && (
@@ -155,7 +178,7 @@ function KidsNightContent() {
                   <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Notes for our team, allergies, or pickup details" className={`${fieldClass} min-h-24`} />
 
                   <div className="rounded-xl bg-amber-50 p-4 text-sm text-gray-700">
-                    Please type <strong>Kids Night</strong> in the Stripe note field after you click register. Admins will still see this registration by name, child, contact info, and payment status.
+                    Admins will see this registration right away. On the giving page, click the $50 Kids Night button and type <strong>Kids Night</strong> in Stripe so the gift can be matched to this registration.
                   </div>
 
                   <button
@@ -163,7 +186,7 @@ function KidsNightContent() {
                     disabled={isLoading}
                     className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gray-950 px-6 py-4 font-semibold text-white transition hover:bg-gray-800 disabled:opacity-60"
                   >
-                    {isLoading ? <><Loader2 className="h-5 w-5 animate-spin" /> Opening Secure Checkout</> : <><CreditCard className="h-5 w-5" /> Register and Give $50</>}
+                    {isLoading ? <><Loader2 className="h-5 w-5 animate-spin" /> Saving Registration</> : <><CreditCard className="h-5 w-5" /> Continue to $50 Kids Night Gift</>}
                   </button>
 
                   <div className="flex items-center justify-center gap-2 text-xs text-gray-500">

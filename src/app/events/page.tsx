@@ -121,19 +121,19 @@ export default function EventsPage() {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-              <div className="absolute inset-0">
+            <div className="grid lg:grid-cols-[0.78fr_1.22fr] overflow-hidden rounded-3xl bg-gray-950 shadow-2xl">
+              <div className="relative min-h-[460px] bg-black">
                 <Image
                   src={featuredEvent.image}
                   alt={featuredEvent.title}
                   fill
                   priority
-                  className="object-cover"
+                  className="object-contain"
+                  sizes="(min-width: 1024px) 420px, 100vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/50" />
               </div>
-              <div className="relative z-10 p-8 md:p-12 lg:p-16">
-                <div className="max-w-2xl">
+              <div className="p-8 md:p-12 lg:p-16">
+                <div>
                   <span className="inline-flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
                     <Globe className="w-4 h-4" />
                     Featured Event

@@ -11,7 +11,7 @@ export interface EventRegistration {
   email: string;
   phone: string;
   notes?: string;
-  status: 'pending_payment' | 'paid' | 'cancelled';
+  status: 'registered' | 'pending_payment' | 'paid' | 'cancelled';
   amount: number;
   stripeSessionId?: string;
   stripeNote?: string;
