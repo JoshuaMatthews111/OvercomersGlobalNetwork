@@ -17,17 +17,29 @@ export const metadata: Metadata = {
 };
 
 const featuredEvent = {
-  title: 'Global Discipleship Conference 2025',
-  date: 'March 15-17, 2025',
-  location: 'Lagos, Nigeria & Online',
-  description: 'Join believers from around the world for three days of powerful teaching, worship, and connection. This year\'s theme: "Multiply — Making Disciples Who Make Disciples."',
-  image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop',
-  speakers: ['Apostle John Doe', 'Pastor Jane Smith', 'Elder David Johnson'],
+  title: 'Kids Night Fun Night Club',
+  date: 'July 10, 2026',
+  time: '5:00 PM - 9:00 PM',
+  location: '7519 Mentor Ave Ste A106, Mentor, OH 44060',
+  description: 'Kids Night is a safe, fun, and purpose-filled evening for ages 10 and up! Kids will enjoy games, dinner, a movie, and worship while parents get a well-deserved break. Spots are limited, so register today!',
+  image: '/images/events/kids-night-2026-07-10.jpg',
+  href: '/events/kids-night',
+  price: '$50 gift',
 };
 
 const upcomingEvents = [
   {
     id: 1,
+    title: 'Kids Night Fun Night Club',
+    date: 'Jul 10, 2026',
+    time: '5:00 PM - 9:00 PM',
+    location: '7519 Mentor Ave Ste A106, Mentor, OH 44060',
+    type: 'In-Person',
+    description: 'Games, dinner, a movie, and worship for ages 10 and up. Registration is a $50 gift.',
+    href: '/events/kids-night',
+  },
+  {
+    id: 2,
     title: 'House Church Leaders Summit',
     date: 'Feb 8, 2025',
     time: '10:00 AM EST',
@@ -36,7 +48,7 @@ const upcomingEvents = [
     description: 'Monthly gathering for house church leaders to connect, learn, and share.',
   },
   {
-    id: 2,
+    id: 3,
     title: 'Prayer & Intercession Night',
     date: 'Feb 14, 2025',
     time: '7:00 PM EST',
@@ -45,7 +57,7 @@ const upcomingEvents = [
     description: 'Join us for a powerful night of corporate prayer for the nations.',
   },
   {
-    id: 3,
+    id: 4,
     title: 'New Believer\'s Class',
     date: 'Feb 22, 2025',
     time: '9:00 AM EST',
@@ -54,7 +66,7 @@ const upcomingEvents = [
     description: 'Foundations course for those new to the faith or new to OGN.',
   },
   {
-    id: 4,
+    id: 5,
     title: 'Kingdom Business Workshop',
     date: 'Mar 1, 2025',
     time: '2:00 PM EST',
@@ -63,7 +75,7 @@ const upcomingEvents = [
     description: 'Biblical principles for entrepreneurs and marketplace leaders.',
   },
   {
-    id: 5,
+    id: 6,
     title: 'Youth Discipleship Retreat',
     date: 'Mar 8-9, 2025',
     time: 'All Day',
@@ -72,7 +84,7 @@ const upcomingEvents = [
     description: 'Weekend retreat for young disciples ages 13-25.',
   },
   {
-    id: 6,
+    id: 7,
     title: 'Women\'s Fellowship',
     date: 'Mar 15, 2025',
     time: '11:00 AM EST',
@@ -115,6 +127,7 @@ export default function EventsPage() {
                   src={featuredEvent.image}
                   alt={featuredEvent.title}
                   fill
+                  priority
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-900/50" />
@@ -137,21 +150,29 @@ export default function EventsPage() {
                       {featuredEvent.date}
                     </div>
                     <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-amber-400" />
+                      {featuredEvent.time}
+                    </div>
+                    <div className="flex items-center gap-2">
                       <MapPin className="w-5 h-5 text-amber-400" />
                       {featuredEvent.location}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-amber-400" />
+                      {featuredEvent.price}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-4">
                     <Link
-                      href="/connect"
+                      href={featuredEvent.href}
                       className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold transition-all"
                     >
                       Register Now
                       <ArrowRight className="w-5 h-5" />
                     </Link>
-                    <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-full font-semibold transition-all">
+                    <Link href={featuredEvent.href} className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-full font-semibold transition-all">
                       Learn More
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -218,7 +239,7 @@ export default function EventsPage() {
                 {/* Action */}
                 <div className="flex-shrink-0">
                   <Link
-                    href="/connect"
+                    href={event.href || '/connect'}
                     className="inline-flex items-center gap-2 bg-gray-100 hover:bg-amber-500 hover:text-white text-gray-700 px-6 py-3 rounded-full font-medium transition-all"
                   >
                     Register

@@ -29,6 +29,7 @@ import {
   Users
 } from 'lucide-react';
 import { getNotifications, markNotificationRead, markAllNotificationsRead, getUnreadNotificationCount } from '@/lib/notifications';
+import { getAllEventRegistrations, type EventRegistration } from '@/lib/event-registrations';
 
 interface Event {
   id: number;
@@ -55,10 +56,12 @@ interface Notification {
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [registrations, setRegistrations] = useState<EventRegistration[]>([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-  const [activeTab, setActiveTab] = useState<'events' | 'notifications'>('notifications');
+  const [activeTab, setActiveTab] = useState<'events' | 'notifications' | 'registrations'>('registrations');
   const [unreadCount, setUnreadCount] = useState(0);
   const [formData, setFormData] = useState({
     title: '',
@@ -86,13 +89,18 @@ export default function AdminEventsPage() {
     return () => clearInterval(interval);
   }, [router]);
 
-  const loadData = () => {
+  const loadData = async () => {
     const savedEvents = JSON.parse(localStorage.getItem('ogn-events') || '[]');
     setEvents(savedEvents);
 
     const allNotifications = getNotifications();
     setNotifications(allNotifications);
     setUnreadCount(getUnreadNotificationCount());
+
+    setRegistrationsLoading(true);
+    const registrationResult = await getAllEventRegistrations();
+    setRegistrations(registrationResult.registrations);
+    setRegistrationsLoading(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -269,6 +277,24 @@ export default function AdminEventsPage() {
         {/* Tabs */}
         <div className="flex items-center gap-4 mb-6">
           <button
+            onClick={() => setActiveTab('registrations')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+              activeTab === 'registrations'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30'
+                : 'bg-white text-gray-600 hover:text-amber-600 border border-gray-100'
+            }`}
+          >
+            <Users className="w-5 h-5" />
+            Registrations
+            {registrations.length > 0 && (
+              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                activeTab === 'registrations' ? 'bg-white text-amber-600' : 'bg-amber-100 text-amber-700'
+              }`}>
+                {registrations.length}
+              </span>
+            )}
+          </button>
+          <button
             onClick={() => setActiveTab('notifications')}
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
               activeTab === 'notifications'
@@ -298,6 +324,103 @@ export default function AdminEventsPage() {
             Events
           </button>
         </div>
+
+        {/* Registrations Tab */}
+        {activeTab === 'registrations' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Event Registrations</h2>
+                <p className="text-gray-500">Kids Night registrations, payment status, and checkout notes</p>
+              </div>
+              <button
+                onClick={loadData}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-gray-600 hover:text-amber-600 transition-colors"
+              >
+                <CheckCircle className="w-4 h-4" />
+                Refresh
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                <p className="text-sm text-gray-500">Total Registrations</p>
+                <p className="text-3xl font-bold text-gray-900">{registrations.length}</p>
+              </div>
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                <p className="text-sm text-gray-500">Paid</p>
+                <p className="text-3xl font-bold text-green-600">{registrations.filter(r => r.status === 'paid').length}</p>
+              </div>
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                <p className="text-sm text-gray-500">Pending Payment</p>
+                <p className="text-3xl font-bold text-amber-600">{registrations.filter(r => r.status === 'pending_payment').length}</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              {registrationsLoading ? (
+                <div className="p-12 text-center text-gray-500">Loading registrations...</div>
+              ) : registrations.length === 0 ? (
+                <div className="p-12 text-center">
+                  <Users className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">No Registrations Yet</h3>
+                  <p className="text-gray-500">When someone registers for Kids Night, they will appear here.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+                      <tr>
+                        <th className="px-5 py-3">Event</th>
+                        <th className="px-5 py-3">Parent / Child</th>
+                        <th className="px-5 py-3">Contact</th>
+                        <th className="px-5 py-3">Notes</th>
+                        <th className="px-5 py-3">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {registrations.map((registration) => (
+                        <tr key={registration.firebaseId} className="align-top">
+                          <td className="px-5 py-4">
+                            <p className="font-semibold text-gray-900">{registration.eventTitle}</p>
+                            <p className="text-xs text-gray-500">{new Date(registration.createdAt).toLocaleString()}</p>
+                          </td>
+                          <td className="px-5 py-4">
+                            <p className="font-medium text-gray-900">{registration.parentName}</p>
+                            <p className="text-sm text-gray-600">{registration.childName}, age {registration.childAge}</p>
+                          </td>
+                          <td className="px-5 py-4">
+                            <p className="text-sm text-gray-900">{registration.email}</p>
+                            <p className="text-sm text-gray-600">{registration.phone}</p>
+                          </td>
+                          <td className="px-5 py-4 max-w-xs">
+                            <p className="text-sm text-gray-700">{registration.notes || 'No registration notes'}</p>
+                            {registration.stripeNote && (
+                              <p className="text-xs text-amber-700 mt-2">Stripe note: {registration.stripeNote}</p>
+                            )}
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                              registration.status === 'paid'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-amber-100 text-amber-700'
+                            }`}>
+                              {registration.status === 'paid' ? 'Paid' : 'Pending Payment'}
+                            </span>
+                            <p className="text-sm font-bold text-gray-900 mt-2">${registration.amount.toFixed(2)}</p>
+                            {registration.stripeSessionId && (
+                              <p className="text-xs text-gray-400 truncate max-w-[160px]">{registration.stripeSessionId}</p>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Notifications Tab */}
         {activeTab === 'notifications' && (

@@ -117,6 +117,25 @@ export async function POST(request: NextRequest) {
           break;
         }
 
+        if (session.metadata?.checkoutType === 'event-registration' && session.metadata?.eventRegistrationId) {
+          try {
+            const { updateEventRegistration } = await import('@/lib/event-registrations');
+            const stripeNote = session.custom_fields?.find(field => field.key === 'event_note')?.text?.value || '';
+
+            await updateEventRegistration(session.metadata.eventRegistrationId, {
+              status: 'paid',
+              amount: (session.amount_total || 0) / 100,
+              stripeSessionId: session.id,
+              stripeNote,
+            });
+
+            console.log('Event registration marked paid:', session.metadata.eventRegistrationId);
+          } catch (registrationError) {
+            console.error('Error processing event registration payment:', registrationError);
+          }
+          break;
+        }
+
         // Record donation in Firebase (default)
         try {
           await addDoc(collection(db, 'donations'), {
