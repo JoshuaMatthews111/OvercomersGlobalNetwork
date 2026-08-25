@@ -1,29 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [isDarkPage, setIsDarkPage] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    // Check if we're on a page with dark background
-    const darkPages = ['/', '/divineintimacy'];
-    const currentPath = window.location.pathname;
-    setIsDarkPage(darkPages.includes(currentPath));
-  }, []);
 
   const menuItems = [
     { label: 'Home', href: '/' },
@@ -40,13 +23,7 @@ export function Navigation() {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled 
-        ? 'bg-black/60 backdrop-blur-xl border-b border-amber-500/20' 
-        : isDarkPage 
-        ? 'bg-transparent backdrop-blur-sm'
-        : 'bg-white/90 backdrop-blur-xl border-b border-gray-200'
-    }`}>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f1b3d] border-b border-[#1a2d5e]">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-28">
           {/* Logo */}
@@ -67,13 +44,7 @@ export function Navigation() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`whitespace-nowrap transition-colors text-sm font-medium ${
-                  scrolled 
-                    ? 'text-white hover:text-amber-400' 
-                    : isDarkPage
-                    ? 'text-white hover:text-amber-400'
-                    : 'text-gray-900 hover:text-amber-600'
-                }`}
+                className="whitespace-nowrap transition-colors text-sm font-medium text-white hover:text-amber-400"
               >
                 {item.label}
               </Link>
@@ -84,13 +55,7 @@ export function Navigation() {
           <div className="hidden lg:flex items-center gap-4">
             <Link
               href="/network"
-              className={`px-6 py-2.5 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-amber-500/30 ${
-                  scrolled 
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white' 
-                    : isDarkPage
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                    : 'bg-amber-500 hover:bg-amber-600 text-white'
-                }`}
+              className="px-6 py-2.5 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-amber-500/30 bg-amber-500 hover:bg-amber-600 text-white"
             >
               Join Our Network
             </Link>
@@ -99,13 +64,7 @@ export function Navigation() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`lg:hidden p-2 ${
-              scrolled 
-                ? 'text-white' 
-                : isDarkPage
-                ? 'text-white'
-                : 'text-gray-900'
-            }`}
+            className="lg:hidden p-2 text-white"
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -114,7 +73,7 @@ export function Navigation() {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="lg:hidden pb-6 border-t border-amber-500/30 bg-black/20 backdrop-blur-lg">
+          <div className="lg:hidden pb-6 border-t border-amber-500/30 bg-[#0f1b3d]">
             <div className="pt-4 space-y-1">
               {menuItems.map((item) => (
                 <Link

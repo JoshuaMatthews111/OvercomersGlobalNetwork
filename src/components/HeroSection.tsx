@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-[#faf8f5] mb-0">
+    <section className="relative overflow-hidden bg-[#faf8f5] mb-0 pt-28">
       {/* Hero Banner Image */}
       <div className="relative w-full">
         <div className="relative w-full aspect-[1030/400] sm:aspect-[1030/380] md:aspect-[1030/350]">
