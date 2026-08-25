@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Play, Users, BookOpen } from 'lucide-react';
+import { Play, Users, BookOpen, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function HeroSection() {
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
@@ -23,35 +23,24 @@ export function HeroSection() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 7000); // 7 seconds transition
+    }, 7000);
 
     return () => clearInterval(interval);
   }, [slides.length]);
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-gray-900 mb-0">
-      {/* YouTube Video Background */}
+      {/* Static Image Background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 w-full h-full">
-          <iframe
-            src="https://www.youtube.com/embed/MJhFu-xDZm8?autoplay=1&mute=1&loop=1&playlist=MJhFu-xDZm8&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3"
-            title="OGN Background Video"
-            className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-            style={{ 
-              top: '55%',
-              transform: 'translate(-50%, -40%)',
-              width: '177.78vh',
-              height: '100vh',
-              minWidth: '100%',
-              minHeight: '56.25vw'
-            }}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-            allowFullScreen
-          />
-        </div>
-        {/* Overlay gradient */}
+        <Image
+          src="/images/ministry/ministry-4.jpg"
+          alt="Overcomers Global Network"
+          fill
+          className="object-cover"
+          priority
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
-        <div className="absolute inset-x-0 top-0 h-[95%] bg-gradient-to-r from-black/60 via-transparent to-black-60" />
+        <div className="absolute inset-x-0 top-0 h-[95%] bg-gradient-to-r from-black/60 via-transparent to-black/60" />
       </div>
 
       {/* Content */}
@@ -126,6 +115,22 @@ export function HeroSection() {
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
+          </div>
+
+          {/* Location Banner */}
+          <div className="animate-fadeInUp delay-200">
+            <a
+              href="https://maps.app.goo.gl/Utofrj3o6exU12c2A"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-amber-400/30 rounded-2xl px-5 py-3 hover:bg-white/15 transition-all group"
+            >
+              <MapPin className="w-5 h-5 text-amber-400 flex-shrink-0" />
+              <div>
+                <p className="text-white font-semibold text-sm sm:text-base">Join us at our Main Branch</p>
+                <p className="text-white/70 text-xs sm:text-sm">7519 Mentor Ave, Suite A106, Mentor, OH 44060</p>
+              </div>
+            </a>
           </div>
 
           {/* CTA Buttons */}

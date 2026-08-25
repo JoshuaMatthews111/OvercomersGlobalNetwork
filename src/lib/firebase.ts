@@ -34,6 +34,7 @@ export interface AdminPermissions {
   askProphet: boolean;
   settings: boolean;
   people: boolean;
+  store: boolean;
 }
 
 export const DEFAULT_ADMIN_PERMISSIONS: AdminPermissions = {
@@ -50,6 +51,7 @@ export const DEFAULT_ADMIN_PERMISSIONS: AdminPermissions = {
   askProphet: false,
   settings: false,
   people: false,
+  store: false,
 };
 
 export const MASTER_ADMIN_PERMISSIONS: AdminPermissions = {
@@ -66,6 +68,7 @@ export const MASTER_ADMIN_PERMISSIONS: AdminPermissions = {
   askProphet: true,
   settings: true,
   people: true,
+  store: true,
 };
 
 export interface AdminUser {
@@ -674,6 +677,69 @@ export async function assignPerson(firebaseId: string, adminUid: string, adminNa
       assignedByName: assignedByName,
       updatedAt: new Date().toISOString(),
     });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// ==================== STORE PRODUCTS ====================
+
+export interface StoreProduct {
+  id?: string;
+  type: 'book' | 'cd';
+  title: string;
+  subtitle: string;
+  description: string;
+  author: string;
+  price: number;
+  cover: string;
+  preOrder: boolean;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  // CD-specific
+  tracks?: number;
+  duration?: string;
+  frontCover?: string;
+  backCover?: string;
+  bundlePrice?: number;
+}
+
+const productsCollection = collection(db, "products");
+
+export async function getStoreProducts(): Promise<StoreProduct[]> {
+  try {
+    const snapshot = await getDocs(query(productsCollection, orderBy("createdAt", "desc")));
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as StoreProduct));
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+}
+
+export async function addStoreProduct(product: Omit<StoreProduct, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ success: boolean; id?: string; error?: any }> {
+  try {
+    const now = new Date().toISOString();
+    const docRef = await addDoc(productsCollection, { ...product, createdAt: now, updatedAt: now });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+export async function updateStoreProduct(id: string, data: Partial<StoreProduct>): Promise<{ success: boolean; error?: any }> {
+  try {
+    await updateDoc(doc(db, "products", id), { ...data, updatedAt: new Date().toISOString() });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+export async function deleteStoreProduct(id: string): Promise<{ success: boolean; error?: any }> {
+  try {
+    await deleteDoc(doc(db, "products", id));
     return { success: true };
   } catch (error) {
     return { success: false, error };

@@ -299,14 +299,14 @@ END:VCALENDAR`;
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-6">
                   <h3 className="font-bold text-red-800 mb-2">Payment Required</h3>
                   <p className="text-red-700 text-sm mb-4">
-                    To confirm your session, please complete the $150 payment.
+                    To confirm your session, please complete the $350 payment.
                   </p>
                   <a
                     href="https://buy.stripe.com/28EbJ2gcq6LnfEt2Jzco001"
                     className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-semibold transition-all"
                   >
                     <DollarSign className="w-5 h-5" />
-                    Pay $150 Now
+                    Pay $350 Now
                   </a>
                 </div>
               )}
@@ -349,7 +349,7 @@ END:VCALENDAR`;
             </p>
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
               <DollarSign className="w-5 h-5" />
-              <span className="font-semibold">$150 per session</span>
+              <span className="font-semibold">$350 per session</span>
             </div>
           </div>
         </div>
@@ -490,7 +490,7 @@ END:VCALENDAR`;
                   <div className="bg-amber-50 rounded-2xl p-6">
                     <div className="flex justify-between items-center mb-6">
                       <span className="text-gray-700 font-medium">Session Fee:</span>
-                      <span className="text-3xl font-bold text-amber-600">$150</span>
+                      <span className="text-3xl font-bold text-amber-600">$350</span>
                     </div>
                     
                     {isPaid ? (
@@ -519,7 +519,7 @@ END:VCALENDAR`;
                           className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
                         >
                           <DollarSign className="w-5 h-5" />
-                          Pay $150 & Schedule
+                          Pay $350 & Schedule
                         </button>
                         <button
                           type="submit"

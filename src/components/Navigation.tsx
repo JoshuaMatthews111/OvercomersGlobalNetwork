@@ -31,7 +31,7 @@ export function Navigation() {
     { label: 'Discipleship', href: '/discipleship' },
     { label: 'Watch', href: '/watch' },
     { label: 'App', href: '/app' },
-    { label: 'Resources', href: '/resources' },
+    { label: 'Store', href: '/store' },
     { label: 'Blog', href: '/blog' },
     { label: 'Events', href: '/events' },
     { label: '1-on-1', href: '/oneonone' },

@@ -6,12 +6,12 @@ import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import {
   BookOpen, Download, FileText, Search, ArrowRight, ShoppingCart, Check,
-  Heart, CheckSquare, Square, Package, Loader2, X, Gift,
+  Heart, CheckSquare, Square, Package, Loader2, X, Gift, Disc, Play, Music,
 } from 'lucide-react';
 import Link from 'next/link';
 
 // ── Tab types ──
-type Tab = 'guides' | 'books';
+type Tab = 'guides' | 'books' | 'cds';
 
 // ── Teaching Guide data (19 PDFs) ──
 interface Guide {
@@ -65,6 +65,86 @@ const books = [
   { id: 6, title: 'The Ultimate Journey With Jesus Christ', subtitle: 'Foundational Teachings Every Believer Needs', cover: '/images/books/book-7.png', description: 'Essential truths for spiritual growth.', author: 'Joshua Matthews', price: 15.99, preOrder: false },
 ];
 
+// ── CD Volumes ──
+interface CDTrack {
+  number: number;
+  title: string;
+  file: string;
+}
+
+interface CDVolume {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  frontCover: string;
+  backCover: string;
+  price: number;
+  tracks: CDTrack[];
+}
+
+const cdVolumes: CDVolume[] = [
+  {
+    id: 'vol-1',
+    title: 'VOLUME I - Secrets of the Mind & The New Creation',
+    subtitle: 'Influencing the Natural World from the Supernatural Heart of God',
+    description: 'Your mind is a gateway. What you continually behold, believe, and agree with will influence the world you experience.\n\nIn Volume I, Prophet Joshua Matthews takes you on a transformational journey into the mind of Christ, the power of imagination, spiritual perception, faith, proclamation, and the reality of the New Creation. These teachings reveal how your inner world must first come into agreement with what God has spoken before lasting transformation can manifest in your outer world.\n\nYou will learn how to break agreement with limiting patterns of thought, renew your mind through the Word of God, see yourself according to the finished work of Christ, and develop the consciousness of the person you have already become in Him.\n\nThis is more than positive thinking. It is the biblical process of bringing the mind, heart, imagination, words, and faith into alignment with the promises of God.\n\nYour mind is the gateway. What you behold, you will become. Renew it. Align it. Transform your world.',
+    frontCover: '/images/cds/volume-1-front.png',
+    backCover: '/images/cds/volume-1-back.png',
+    price: 50,
+    tracks: [
+      { number: 1, title: 'The Mystery of the New Creation Man', file: '/audio/cds/volume-1/01 The Mystery of the New Creation Man.mp3' },
+      { number: 2, title: 'Your Mind Must Catch Up With Your Spirit', file: '/audio/cds/volume-1/02 Your Mind Must Catch Up With Your Spirit.mp3' },
+      { number: 3, title: 'The Organ of Creation Imagination', file: '/audio/cds/volume-1/03 The Organ of Creation Imagination.mp3' },
+      { number: 4, title: 'The Gates of the Mind', file: '/audio/cds/volume-1/04 The Gates of the Mind.mp3' },
+      { number: 5, title: 'Meditation Releasing Wrong Images', file: '/audio/cds/volume-1/05 Meditation Releasing Wrong Images.mp3' },
+      { number: 6, title: 'Structuring Your Mind to Agree With Heaven', file: '/audio/cds/volume-1/06 Structuring Your Mind to Agree With Heaven.mp3' },
+      { number: 7, title: 'Thought Emotion Action', file: '/audio/cds/volume-1/07 Thought  Emotion  Action.mp3' },
+      { number: 8, title: "The Power of 'I AM'", file: "/audio/cds/volume-1/08 The Power of 'I AM'.mp3" },
+      { number: 9, title: 'Full Persuasion', file: '/audio/cds/volume-1/09 Full Persuasion.mp3' },
+      { number: 10, title: 'Meditation I AM - New Creation Identity', file: '/audio/cds/volume-1/10 Meditation I AM - New Creation Identity.mp3' },
+      { number: 11, title: 'The Image Within', file: '/audio/cds/volume-1/11 The Image Within.mp3' },
+      { number: 12, title: 'The Promise Is Greater Than the Picture', file: '/audio/cds/volume-1/12 The Promise Is Greater Than the Picture.mp3' },
+      { number: 13, title: 'Refusing to Bow to What You See', file: '/audio/cds/volume-1/13 Refusing to Bow to What You See.mp3' },
+      { number: 14, title: 'Making the Word Visible Within', file: '/audio/cds/volume-1/14 Making the Word Visible Within.mp3' },
+      { number: 15, title: 'Meditation Healing the Images of People', file: '/audio/cds/volume-1/15 Meditation Healing the Images of People.mp3' },
+      { number: 16, title: 'The Heart The Place of Agreement', file: '/audio/cds/volume-1/16 The Heart The Place of Agreement.mp3' },
+      { number: 17, title: 'The Inward Journey of Prayer', file: '/audio/cds/volume-1/17 The Inward Journey of Prayer.mp3' },
+      { number: 18, title: 'Attracting a Godly Marriage & Relationship', file: '/audio/cds/volume-1/18 Attracting a Godly Marriage & Relationship.mp3' },
+      { number: 19, title: 'Meditation Preparing for Covenant Love', file: '/audio/cds/volume-1/19 Meditation Preparing for Covenant Love.mp3' },
+    ],
+  },
+  {
+    id: 'vol-2',
+    title: 'VOLUME II - Influencing the Natural World',
+    subtitle: 'Living from the Supernatural Heart of God',
+    description: "God's purpose is not only to transform what is happening inside of you, but to release His nature, wisdom, power, and provision through you into the world around you.\n\nIn Volume II, Prophet Joshua Matthews moves from inner transformation into practical manifestation. These teachings reveal how faith becomes action, how divine promises move from revelation into experience, and how believers can cooperate with the wisdom and direction of God to influence their families, finances, businesses, communities, and environments.\n\nExplore powerful teachings on divine direction, wisdom, giving and honor, supernatural provision, prosperity with purpose, marketplace influence, faith-filled action, and becoming a vessel through whom God can operate in the earth.\n\nYou were not created merely to observe the supernatural. You were created to become a yielded vessel through which heaven influences the natural world.\n\nGod's plan isn't just for you -- it's through you. Influence the natural world from the supernatural heart of God.",
+    frontCover: '/images/cds/volume-2-front.png',
+    backCover: '/images/cds/volume-2-back.png',
+    price: 50,
+    tracks: [
+      { number: 1, title: 'Faith Has a Voice', file: '/audio/cds/volume-2/01 Faith Has a Voice.mp3' },
+      { number: 2, title: 'Action Giving the Inner World Physical Expression', file: '/audio/cds/volume-2/02 Action Giving the Inner World Physical Expression.mp3' },
+      { number: 3, title: 'Remaining in Faith Until the Promise Manifests', file: '/audio/cds/volume-2/03 Remaining in Faith Until the Promise Manifests.mp3' },
+      { number: 4, title: 'Wisdom for the Promise', file: '/audio/cds/volume-2/04 Wisdom for the Promise.mp3' },
+      { number: 5, title: 'Divine Direction & Decision Making', file: '/audio/cds/volume-2/05 Divine Direction & Decision Making.mp3' },
+      { number: 6, title: 'Gods Vessels on Earth', file: '/audio/cds/volume-2/06 Gods Vessels on Earth.mp3' },
+      { number: 7, title: 'The Mystery of Giving & Honor', file: '/audio/cds/volume-2/07 The Mystery of Giving & Honor.mp3' },
+      { number: 8, title: 'Giving & Divine Intervention', file: '/audio/cds/volume-2/08 Giving & Divine Intervention.mp3' },
+      { number: 9, title: 'Money Is a Defense', file: '/audio/cds/volume-2/09 Money Is a Defense.mp3' },
+      { number: 10, title: 'Developing the Mindset of Provision & Prosperity', file: '/audio/cds/volume-2/10 Developing the Mindset of Provision & Prosperity.mp3' },
+      { number: 11, title: 'Meditation Provision & Prosperity', file: '/audio/cds/volume-2/11 Meditation Provision & Prosperity.mp3' },
+      { number: 12, title: 'The Mind of Christ in the Marketplace & Natural World', file: '/audio/cds/volume-2/12 The Mind of Christ in the Marketplace & Natural World.mp3' },
+      { number: 13, title: 'Living From the Supernatural Heart of God', file: '/audio/cds/volume-2/13 Living From the Supernatural Heart of God.mp3' },
+      { number: 14, title: 'Influencing the Natural World From the Supernatural', file: '/audio/cds/volume-2/14 Influencing the Natural World From the Supernatural.mp3' },
+      { number: 15, title: 'From Promise to Manifestation', file: '/audio/cds/volume-2/15 From Promise to Manifestation.mp3' },
+      { number: 16, title: 'Final Meditation The New Creation Experience', file: '/audio/cds/volume-2/16 Final Meditation The New Creation Experience.mp3' },
+    ],
+  },
+];
+
+const CD_BUNDLE_PRICE = 100;
+
 export default function ResourcesPage() {
   const [activeTab, setActiveTab] = useState<Tab>('guides');
   const [selectedGuides, setSelectedGuides] = useState<Set<string>>(new Set());
@@ -75,6 +155,9 @@ export default function ResourcesPage() {
   const [showDonation, setShowDonation] = useState(false);
   const [cart, setCart] = useState<number[]>([]);
   const [showCartNotice, setShowCartNotice] = useState(false);
+  const [cdPurchased, setCdPurchased] = useState<Set<string>>(new Set());
+  const [expandedVolume, setExpandedVolume] = useState<string | null>(null);
+  const [downloadingCd, setDownloadingCd] = useState(false);
 
   // ── Filter guides ──
   const filteredGuides = guides.filter(g => {
@@ -256,6 +339,17 @@ export default function ResourcesPage() {
             >
               <FileText className="w-4 h-4 inline mr-2" />
               Free Teaching Guides ({guides.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('cds')}
+              className={`px-6 py-4 font-semibold text-sm border-b-3 transition-all ${
+                activeTab === 'cds'
+                  ? 'border-b-2 border-amber-500 text-amber-600'
+                  : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Disc className="w-4 h-4 inline mr-2" />
+              Teaching CDs (2 Volumes)
             </button>
             <button
               onClick={() => setActiveTab('books')}
@@ -450,6 +544,160 @@ export default function ResourcesPage() {
                 <Gift className="w-5 h-5" />
                 Support This Ministry
               </Link>
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* ═══════════════ CDS TAB ═══════════════ */}
+      {activeTab === 'cds' && (
+        <>
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-4">
+              {/* Bundle CTA */}
+              <div className="max-w-4xl mx-auto mb-16 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-center">
+                <Disc className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                  Complete Teaching CD Bundle
+                </h2>
+                <p className="text-gray-300 text-lg mb-2">
+                  Volume I + Volume II (35 Teachings)
+                </p>
+                <p className="text-amber-400 text-4xl font-bold mb-6">${CD_BUNDLE_PRICE}</p>
+                <p className="text-gray-400 text-sm mb-8 max-w-2xl mx-auto">
+                  Get both volumes together and save. All tracks are fully downloadable immediately after purchase.
+                </p>
+                <a
+                  href="/give"
+                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  Purchase Bundle - ${CD_BUNDLE_PRICE}
+                </a>
+              </div>
+
+              {/* Individual Volumes */}
+              {cdVolumes.map(volume => (
+                <div key={volume.id} className="max-w-5xl mx-auto mb-16">
+                  <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-lg">
+                    {/* Covers Row */}
+                    <div className="grid md:grid-cols-2 gap-0">
+                      <div className="relative aspect-square">
+                        <Image
+                          src={volume.frontCover}
+                          alt={`${volume.title} - Front Cover`}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute bottom-4 left-4 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
+                          Front Cover
+                        </div>
+                      </div>
+                      <div className="relative aspect-square">
+                        <Image
+                          src={volume.backCover}
+                          alt={`${volume.title} - Back Cover`}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute bottom-4 left-4 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
+                          Back Cover
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Info */}
+                    <div className="p-8 md:p-10">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                        {volume.title}
+                      </h3>
+                      <p className="text-amber-600 font-semibold text-lg mb-6">
+                        {volume.subtitle}
+                      </p>
+                      <div className="text-gray-600 leading-relaxed mb-8 whitespace-pre-line">
+                        {volume.description}
+                      </div>
+
+                      <p className="text-gray-900 font-bold text-sm uppercase tracking-wider mb-1">
+                        By Prophet Joshua Matthews
+                      </p>
+                      <p className="text-amber-600 text-2xl font-bold mb-6">${volume.price}</p>
+
+                      {/* Track List Toggle */}
+                      <button
+                        onClick={() => setExpandedVolume(expandedVolume === volume.id ? null : volume.id)}
+                        className="flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium mb-4 transition-colors"
+                      >
+                        <Music className="w-5 h-5" />
+                        {expandedVolume === volume.id ? 'Hide' : 'Show'} Track List ({volume.tracks.length} tracks)
+                      </button>
+
+                      {expandedVolume === volume.id && (
+                        <div className="bg-gray-50 rounded-2xl p-6 mb-6">
+                          <ol className="space-y-2">
+                            {volume.tracks.map(track => (
+                              <li key={track.number} className="flex items-center gap-3 text-sm">
+                                <span className="w-7 h-7 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                  {track.number}
+                                </span>
+                                <span className="text-gray-700">{track.title}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                      )}
+
+                      {/* Purchase / Download */}
+                      {cdPurchased.has(volume.id) ? (
+                        <div>
+                          <div className="flex items-center gap-2 text-green-600 font-bold mb-4">
+                            <Check className="w-5 h-5" />
+                            Purchased - Download Your Tracks
+                          </div>
+                          <div className="bg-green-50 rounded-2xl p-6 space-y-2">
+                            {volume.tracks.map(track => (
+                              <a
+                                key={track.number}
+                                href={track.file}
+                                download
+                                className="flex items-center gap-3 text-sm text-gray-700 hover:text-amber-600 py-2 px-3 rounded-lg hover:bg-green-100 transition-colors"
+                              >
+                                <Download className="w-4 h-4 flex-shrink-0" />
+                                <span className="font-medium">{track.number}.</span>
+                                <span>{track.title}</span>
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <a
+                          href="/give"
+                          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                        >
+                          <ShoppingCart className="w-5 h-5" />
+                          Purchase Volume - ${volume.price}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Info Section */}
+          <section className="py-16 bg-gradient-to-r from-gray-900 to-gray-800">
+            <div className="container mx-auto px-4 text-center">
+              <Disc className="w-10 h-10 text-amber-400 mx-auto mb-4" />
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Fully Downloadable Digital Teachings
+              </h2>
+              <p className="text-gray-300 text-lg mb-4 max-w-2xl mx-auto">
+                All tracks are delivered as high-quality MP3 files. Once purchased, download them instantly to your device. Listen anywhere, anytime - no internet required.
+              </p>
+              <p className="text-gray-400 text-sm max-w-xl mx-auto">
+                Volume I: 19 Tracks | Volume II: 16 Tracks | Bundle: All 35 Tracks
+              </p>
             </div>
           </section>
         </>

@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
               name: '1-on-1 Session with Prophet Joshua Matthews',
               description: `Booking for ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at ${time}`,
             },
-            unit_amount: 15000, // $150.00
+            unit_amount: 35000, // $350.00
           },
           quantity: 1,
         },

@@ -42,7 +42,7 @@ interface Booking {
 const DEFAULT_SERVICES: ServiceType[] = [
   { id: 'prophetic-word', title: 'Prophetic Word & Prayer', duration: '30 minutes', price: 50, description: 'Personal prophetic word and prayer.', active: true },
   { id: 'spiritual-guidance', title: 'Spiritual Guidance Session', duration: '60 minutes', price: 100, description: 'In-depth spiritual guidance and counsel.', active: true },
-  { id: 'ministry-consultation', title: 'Ministry Consultation', duration: '90 minutes', price: 150, description: 'Strategic consultation for ministry leaders.', active: true },
+  { id: 'ministry-consultation', title: 'Ministry Consultation', duration: '90 minutes', price: 350, description: 'Strategic consultation for ministry leaders.', active: true },
 ];
 
 const TIME_SLOTS = [

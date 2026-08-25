@@ -28,7 +28,7 @@ const givingOptions = [
   { amount: 25, label: '$25', description: 'Provides study materials for one house church', stripeLink: 'https://donate.stripe.com/14A3cw6BQ6Ln0Jz4RHco007' },
   { amount: 50, label: '$50', description: 'Supports a leader training session', stripeLink: 'https://donate.stripe.com/bJeeVe8JY9Xz63T1Fvco005' },
   { amount: 100, label: '$100', description: 'Sponsors a new believer\'s discipleship journey', stripeLink: 'https://donate.stripe.com/00w9AUf8m7Pr77Xbg5co006' },
-  { amount: 150, label: '$150', description: '1-on-1 session with Prophet Joshua', stripeLink: 'https://buy.stripe.com/28EbJ2gcq6LnfEt2Jzco001' },
+  { amount: 350, label: '$350', description: '1-on-1 session with Prophet Joshua', stripeLink: 'https://buy.stripe.com/28EbJ2gcq6LnfEt2Jzco001' },
   { amount: 250, label: '$250', description: 'Helps launch a new house church', stripeLink: 'https://donate.stripe.com/dRm6oIgcq2v763Tac1co009' },
   { amount: 500, label: '$500', description: 'Funds a regional leadership summit', stripeLink: 'https://donate.stripe.com/aFadRa6BQ7Pr8c1fwlco00a' },
   { amount: 1000, label: '$1000', description: 'Supports a month of global missions', stripeLink: 'https://donate.stripe.com/6oU5kEgcqglXfEt6ZPco008' },

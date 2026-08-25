@@ -328,7 +328,7 @@ export async function sendAdminBookingNotification(booking: BookingEmailData & {
                 </tr>
                 <tr>
                   <td style="color:#718096;font-weight:bold;">Payment:</td>
-                  <td style="color:#1a1d29;">${booking.isPaid ? `$${booking.amount || 150} ✓ Received` : 'Awaiting payment'}</td>
+                  <td style="color:#1a1d29;">${booking.isPaid ? `$${booking.amount || 350} ✓ Received` : 'Awaiting payment'}</td>
                 </tr>
                 <tr>
                   <td style="color:#718096;font-weight:bold;">Booking ID:</td>

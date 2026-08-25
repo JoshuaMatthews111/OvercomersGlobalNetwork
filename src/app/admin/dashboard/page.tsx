@@ -25,7 +25,8 @@ import {
   Loader2,
   UserCheck,
   Menu,
-  X as CloseIcon
+  X as CloseIcon,
+  Package,
 } from 'lucide-react';
 import { signOutAdmin, MASTER_ADMIN_PERMISSIONS, type AdminPermissions } from '@/lib/firebase';
 
@@ -183,6 +184,15 @@ export default function AdminDashboard() {
                   {pendingOrders}
                 </span>
               )}
+            </Link>
+          )}
+          {hasPermission('store') && (
+            <Link
+              href="/admin/store"
+              className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-white/5 rounded-lg text-sm transition-colors"
+            >
+              <Package className="w-5 h-5" />
+              Store Manager
             </Link>
           )}
           {hasPermission('events') && (
@@ -473,6 +483,15 @@ export default function AdminDashboard() {
             <FileText className="w-8 h-8 mb-4" />
             <h3 className="font-bold text-lg mb-1">Update Content</h3>
             <p className="text-white/80 text-sm">Edit site content and announcements</p>
+          </Link>
+
+          <Link
+            href="/admin/store"
+            className="bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl p-6 text-white hover:shadow-lg transition-shadow"
+          >
+            <Package className="w-8 h-8 mb-4" />
+            <h3 className="font-bold text-lg mb-1">Store Manager</h3>
+            <p className="text-white/80 text-sm">Edit prices, add/remove products</p>
           </Link>
 
           <Link

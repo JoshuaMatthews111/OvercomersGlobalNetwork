@@ -162,7 +162,7 @@ export default function OneOnOnePage() {
               {/* Price + CTA */}
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <div className="text-center sm:text-left">
-                  <p className="text-5xl font-bold text-white">$150</p>
+                  <p className="text-5xl font-bold text-white">$350</p>
                   <p className="text-gray-500 text-sm">per session • ~60 minutes</p>
                 </div>
                 <button
@@ -413,7 +413,7 @@ export default function OneOnOnePage() {
                         </>
                       ) : (
                         <>
-                          Pay $150 & Confirm Booking
+                          Pay $350 & Confirm Booking
                           <ArrowRight className="w-5 h-5" />
                         </>
                       )}

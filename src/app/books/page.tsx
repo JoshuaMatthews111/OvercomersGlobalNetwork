@@ -102,6 +102,35 @@ export default function BooksPage() {
               </p>
             </div>
 
+            {/* New audio series */}
+            <Link
+              href="/cds"
+              className="block mb-16 rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-900/20 to-cyan-900/10 p-6 md:p-8 hover:border-orange-500 transition-all group"
+            >
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex gap-3 shrink-0">
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-white/10">
+                    <Image src="/images/cds/volume-1-front.jpg" alt="Volume I" fill className="object-cover" sizes="96px" />
+                  </div>
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-white/10">
+                    <Image src="/images/cds/volume-2-front.jpg" alt="Volume II" fill className="object-cover" sizes="96px" />
+                  </div>
+                </div>
+                <div className="text-center md:text-left">
+                  <p className="text-orange-400 tracking-[0.25em] text-xs uppercase mb-2">New Audio Teaching Series</p>
+                  <h3 className="text-2xl font-bold mb-2">
+                    <span className="gold-shimmer">Secrets of the Mind &amp; the New Creation</span>
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    Two volumes · 35 tracks · 4h 35m · $50 each or $100 for the complete series
+                  </p>
+                  <span className="inline-block mt-3 text-orange-400 text-sm font-medium group-hover:underline">
+                    Listen and buy →
+                  </span>
+                </div>
+              </div>
+            </Link>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fadeInUp delay-200">
               {books.map((book, index) => (
                 <div
