@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
-import { Loader2 } from 'lucide-react';
 
 
 const VOLUMES = [
@@ -50,30 +48,13 @@ const VOLUMES = [
   },
 ];
 
+const STRIPE_LINKS: Record<string, string> = {
+  'vol-1': 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c',
+  'vol-2': 'https://buy.stripe.com/8x2eVe4tI0mZcsheshco00d',
+  bundle: 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c', // TODO: replace with actual bundle link
+};
+
 export default function CDsPage() {
-  const [purchasing, setPurchasing] = useState<string | null>(null);
-
-  const handlePurchase = async (productId: string) => {
-    setPurchasing(productId);
-    try {
-      const res = await fetch('/api/store/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Checkout is being set up. Please try again shortly.');
-        setPurchasing(null);
-      }
-    } catch {
-      alert('Something went wrong. Please try again.');
-      setPurchasing(null);
-    }
-  };
-
   return (
     <main className="min-h-screen bg-[#0a0c11]">
       <Navigation />
@@ -163,13 +144,14 @@ export default function CDsPage() {
 
                   <div className="flex flex-wrap items-center gap-4">
                     <span className="text-3xl font-bold text-white">{vol.price}</span>
-                    <button
-                      onClick={() => handlePurchase(index === 0 ? 'vol-1' : 'vol-2')}
-                      disabled={purchasing === (index === 0 ? 'vol-1' : 'vol-2')}
-                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-400 disabled:to-orange-400 text-white px-8 py-3 rounded-md font-medium transition-all inline-flex items-center gap-2"
+                    <a
+                      href={STRIPE_LINKS[index === 0 ? 'vol-1' : 'vol-2']}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-md font-medium transition-all"
                     >
-                      {purchasing === (index === 0 ? 'vol-1' : 'vol-2') ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</> : 'Buy & Download'}
-                    </button>
+                      Buy &amp; Download
+                    </a>
                   </div>
                 </div>
               </div>
@@ -202,13 +184,14 @@ export default function CDsPage() {
 
             <div className="flex flex-wrap justify-center items-center gap-5">
               <span className="text-4xl font-bold text-white">$100</span>
-              <button
-                onClick={() => handlePurchase('bundle')}
-                disabled={purchasing === 'bundle'}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-400 disabled:to-orange-400 text-white px-10 py-4 rounded-md font-semibold text-lg transition-all inline-flex items-center gap-2"
+              <a
+                href={STRIPE_LINKS.bundle}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-md font-semibold text-lg transition-all"
               >
-                {purchasing === 'bundle' ? <><Loader2 className="w-5 h-5 animate-spin" /> Redirecting to Checkout...</> : 'Get the Complete Series'}
-              </button>
+                Get the Complete Series
+              </a>
             </div>
           </div>
         </div>

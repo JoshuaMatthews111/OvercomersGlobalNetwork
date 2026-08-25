@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   BookOpen, Download, ShoppingCart, Check, Disc, Music,
-  ArrowRight, Search, Heart, Gift, X, Package, Loader2,
+  ArrowRight, Search, Heart, Gift, X, Package,
 } from 'lucide-react';
 
 // ── Tab types ──
@@ -29,27 +29,10 @@ export default function StorePage() {
   const [showCartNotice, setShowCartNotice] = useState(false);
   const [books, setBooks] = useState(defaultBooks);
   const [expandedVolume, setExpandedVolume] = useState<string | null>(null);
-  const [purchasing, setPurchasing] = useState<string | null>(null);
-
-  const handleCdPurchase = async (productId: string) => {
-    setPurchasing(productId);
-    try {
-      const res = await fetch('/api/store/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Checkout is being set up. Please try again shortly.');
-        setPurchasing(null);
-      }
-    } catch {
-      alert('Something went wrong. Please try again.');
-      setPurchasing(null);
-    }
+  const STRIPE_LINKS: Record<string, string> = {
+    'vol-1': 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c',
+    'vol-2': 'https://buy.stripe.com/8x2eVe4tI0mZcsheshco00d',
+    bundle: 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c', // TODO: replace with actual bundle link
   };
 
   useEffect(() => {
@@ -218,14 +201,15 @@ export default function StorePage() {
                 <p className="text-gray-400 text-sm mb-8 max-w-2xl mx-auto">
                   Get both volumes together and save. All tracks are fully downloadable immediately after purchase.
                 </p>
-                <button
-                  onClick={() => handleCdPurchase('bundle')}
-                  disabled={purchasing === 'bundle'}
-                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
+                <a
+                  href={STRIPE_LINKS.bundle}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
                 >
-                  {purchasing === 'bundle' ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
-                  {purchasing === 'bundle' ? 'Redirecting to Checkout...' : 'Purchase Bundle - $100'}
-                </button>
+                  <ShoppingCart className="w-5 h-5" />
+                  Purchase Bundle - $100
+                </a>
               </div>
 
               {/* Individual Volumes */}
@@ -279,14 +263,15 @@ export default function StorePage() {
 
                       <div className="flex items-center gap-4">
                         <span className="text-amber-600 text-2xl font-bold">${volume.price}</span>
-                        <button
-                          onClick={() => handleCdPurchase(volume.id)}
-                          disabled={purchasing === volume.id}
-                          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                        <a
+                          href={STRIPE_LINKS[volume.id]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
                         >
-                          {purchasing === volume.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
-                          {purchasing === volume.id ? 'Redirecting...' : `Purchase Volume - $${volume.price}`}
-                        </button>
+                          <ShoppingCart className="w-5 h-5" />
+                          Purchase Volume - ${volume.price}
+                        </a>
                       </div>
                     </div>
                   </div>
