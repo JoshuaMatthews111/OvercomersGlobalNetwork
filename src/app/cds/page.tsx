@@ -1,25 +1,11 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Audio Teaching CDs — Secrets of the Mind & the New Creation',
-  description:
-    'Secrets of the Mind & the New Creation by Joshua Matthews. Two volumes, 35 tracks, 4 hours 35 minutes of teaching on the mind, the new creation, and influencing the natural world from the supernatural heart of God.',
-  alternates: { canonical: '/cds/' },
-  openGraph: {
-    title: 'Secrets of the Mind & the New Creation — Audio Teaching Series',
-    description:
-      'Two volumes, 35 tracks, 4h 35m. Influencing the Natural World from the Supernatural Heart of God.',
-    url: 'https://overcomersglobalnetwork.com/cds/',
-    images: ['/images/cds/volume-1-front.png'],
-  },
-};
-
-// Checkout and the protected downloads run on OGN University, which has the
-// server side this static site does not. Buy buttons hand off there.
-const STORE = 'https://ognuniversity.com/store';
 
 const VOLUMES = [
   {
@@ -65,6 +51,29 @@ const VOLUMES = [
 ];
 
 export default function CDsPage() {
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+
+  const handlePurchase = async (productId: string) => {
+    setPurchasing(productId);
+    try {
+      const res = await fetch('/api/store/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Checkout is being set up. Please try again shortly.');
+        setPurchasing(null);
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+      setPurchasing(null);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#0a0c11]">
       <Navigation />
@@ -154,12 +163,13 @@ export default function CDsPage() {
 
                   <div className="flex flex-wrap items-center gap-4">
                     <span className="text-3xl font-bold text-white">{vol.price}</span>
-                    <a
-                      href={`${STORE}/${vol.slug}`}
-                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-md font-medium transition-all"
+                    <button
+                      onClick={() => handlePurchase(index === 0 ? 'vol-1' : 'vol-2')}
+                      disabled={purchasing === (index === 0 ? 'vol-1' : 'vol-2')}
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-400 disabled:to-orange-400 text-white px-8 py-3 rounded-md font-medium transition-all inline-flex items-center gap-2"
                     >
-                      Buy &amp; Download
-                    </a>
+                      {purchasing === (index === 0 ? 'vol-1' : 'vol-2') ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</> : 'Buy & Download'}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -192,12 +202,13 @@ export default function CDsPage() {
 
             <div className="flex flex-wrap justify-center items-center gap-5">
               <span className="text-4xl font-bold text-white">$100</span>
-              <a
-                href={`${STORE}/secrets-of-the-mind-complete-series`}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-md font-semibold text-lg transition-all"
+              <button
+                onClick={() => handlePurchase('bundle')}
+                disabled={purchasing === 'bundle'}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-400 disabled:to-orange-400 text-white px-10 py-4 rounded-md font-semibold text-lg transition-all inline-flex items-center gap-2"
               >
-                Get the Complete Series
-              </a>
+                {purchasing === 'bundle' ? <><Loader2 className="w-5 h-5 animate-spin" /> Redirecting to Checkout...</> : 'Get the Complete Series'}
+              </button>
             </div>
           </div>
         </div>

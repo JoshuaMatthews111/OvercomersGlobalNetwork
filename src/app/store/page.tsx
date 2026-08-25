@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   BookOpen, Download, ShoppingCart, Check, Disc, Music,
-  ArrowRight, Search, Heart, Gift, X, Package,
+  ArrowRight, Search, Heart, Gift, X, Package, Loader2,
 } from 'lucide-react';
 
 // ── Tab types ──
@@ -29,6 +29,28 @@ export default function StorePage() {
   const [showCartNotice, setShowCartNotice] = useState(false);
   const [books, setBooks] = useState(defaultBooks);
   const [expandedVolume, setExpandedVolume] = useState<string | null>(null);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+
+  const handleCdPurchase = async (productId: string) => {
+    setPurchasing(productId);
+    try {
+      const res = await fetch('/api/store/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Checkout is being set up. Please try again shortly.');
+        setPurchasing(null);
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+      setPurchasing(null);
+    }
+  };
 
   useEffect(() => {
     // Load admin-managed products from Firebase if available
@@ -196,13 +218,14 @@ export default function StorePage() {
                 <p className="text-gray-400 text-sm mb-8 max-w-2xl mx-auto">
                   Get both volumes together and save. All tracks are fully downloadable immediately after purchase.
                 </p>
-                <Link
-                  href="/cds"
-                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
+                <button
+                  onClick={() => handleCdPurchase('bundle')}
+                  disabled={purchasing === 'bundle'}
+                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
                 >
-                  <ShoppingCart className="w-5 h-5" />
-                  Purchase Bundle - $100
-                </Link>
+                  {purchasing === 'bundle' ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                  {purchasing === 'bundle' ? 'Redirecting to Checkout...' : 'Purchase Bundle - $100'}
+                </button>
               </div>
 
               {/* Individual Volumes */}
@@ -256,13 +279,14 @@ export default function StorePage() {
 
                       <div className="flex items-center gap-4">
                         <span className="text-amber-600 text-2xl font-bold">${volume.price}</span>
-                        <Link
-                          href="/cds"
-                          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                        <button
+                          onClick={() => handleCdPurchase(volume.id)}
+                          disabled={purchasing === volume.id}
+                          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white px-6 py-3 rounded-xl font-bold transition-all"
                         >
-                          <ShoppingCart className="w-5 h-5" />
-                          Purchase Volume - ${volume.price}
-                        </Link>
+                          {purchasing === volume.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                          {purchasing === volume.id ? 'Redirecting...' : `Purchase Volume - $${volume.price}`}
+                        </button>
                       </div>
                     </div>
                   </div>
