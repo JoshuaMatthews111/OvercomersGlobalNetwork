@@ -1,140 +1,44 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Play, Users, BookOpen, MapPin } from 'lucide-react';
+import { Users, Play, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export function HeroSection() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const slides = [
-    {
-      headline: "Overcomers Global Network is a movement of believers gathering in local assemblies and homes, making disciples, and advancing God's Kingdom—one person at a time.",
-      isScripture: false
-    },
-    {
-      headline: "And Jesus came and spake unto them, saying,\nAll power is given unto me in heaven and in earth.\nGo ye therefore, and teach all nations.",
-      isScripture: true,
-      reference: "Matthew 28:18–19 (KJV)"
-    }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 7000);
-
-    return () => clearInterval(interval);
-  }, [slides.length]);
-
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gray-900 mb-0">
-      {/* Static Image Background */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/ministry/ministry-4.jpg"
-          alt="Overcomers Global Network"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
-        <div className="absolute inset-x-0 top-0 h-[95%] bg-gradient-to-r from-black/60 via-transparent to-black/60" />
+    <section className="relative overflow-hidden bg-[#faf8f5] mb-0">
+      {/* Hero Banner Image */}
+      <div className="relative w-full">
+        <div className="relative w-full aspect-[1030/400] sm:aspect-[1030/380] md:aspect-[1030/350]">
+          <Image
+            src="/images/hero-banner.png"
+            alt="Prophetic Teaching for Transformation - Overcomers Global Network"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 sm:px-6 min-h-screen flex items-center relative z-10 pt-16 sm:pt-20 pb-20 sm:pb-8">
-        <div className="max-w-4xl space-y-4 sm:space-y-6 md:space-y-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 animate-fadeIn">
-            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-            <span className="text-white/90 text-sm font-medium tracking-wide">
-              A Global Discipleship Network
-            </span>
-          </div>
-
-          {/* Main Headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight animate-fadeInUp delay-100">
-            <span className="shimmer-text-light">From Home to Home</span>
-            <br />
-            <span className="text-white">Across the Nations</span>
-          </h1>
-
-          {/* Sliding Text Content */}
-          <div className="relative h-36 sm:h-32 md:h-28 overflow-visible">
-            <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
-              {slides.map((slide, index) => (
-                <div
-                  key={index}
-                  className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-                    index === currentSlide
-                      ? 'opacity-100 translate-y-0'
-                      : index < currentSlide
-                      ? 'opacity-0 -translate-y-4'
-                      : 'opacity-0 translate-y-4'
-                  }`}
-                >
-                  <div className="space-y-1 sm:space-y-2">
-                    <p 
-                      className={`text-white/90 leading-snug max-w-4xl ${
-                        slide.isScripture 
-                          ? 'text-base sm:text-lg md:text-xl lg:text-2xl italic font-light' 
-                          : 'text-base sm:text-lg md:text-xl lg:text-2xl font-normal'
-                      }`}
-                    >
-                      {slide.headline.split('\n').map((line, lineIndex) => (
-                        <span key={lineIndex}>
-                          {line}
-                          {lineIndex < slide.headline.split('\n').length - 1 && <br />}
-                        </span>
-                      ))}
-                    </p>
-                    {slide.isScripture && (
-                      <p className="text-amber-400 text-sm sm:text-base md:text-lg lg:text-xl not-italic font-semibold">
-                        — {slide.reference}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Slide Indicators */}
-          <div className="flex gap-2 animate-fadeInUp delay-250">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentSlide
-                    ? 'bg-amber-400 w-8'
-                    : 'bg-white/30 hover:bg-white/50'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-
+      {/* Content Below Banner */}
+      <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-14 md:py-16">
+        <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
           {/* Location Banner */}
-          <div className="animate-fadeInUp delay-200">
-            <a
-              href="https://maps.app.goo.gl/Utofrj3o6exU12c2A"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-amber-400/30 rounded-2xl px-5 py-3 hover:bg-white/15 transition-all group"
-            >
-              <MapPin className="w-5 h-5 text-amber-400 flex-shrink-0" />
-              <div>
-                <p className="text-white font-semibold text-sm sm:text-base">Join us at our Main Branch</p>
-                <p className="text-white/70 text-xs sm:text-sm">7519 Mentor Ave, Suite A106, Mentor, OH 44060</p>
-              </div>
-            </a>
-          </div>
+          <a
+            href="https://maps.app.goo.gl/Utofrj3o6exU12c2A"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 bg-white border border-amber-200 rounded-2xl px-5 py-3 hover:shadow-md transition-all group"
+          >
+            <MapPin className="w-5 h-5 text-amber-600 flex-shrink-0" />
+            <div className="text-left">
+              <p className="text-gray-900 font-semibold text-sm sm:text-base">Join us at our Main Branch</p>
+              <p className="text-gray-500 text-xs sm:text-sm">7519 Mentor Ave, Suite A106, Mentor, OH 44060</p>
+            </div>
+          </a>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 animate-fadeInUp delay-300">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
             <Link
               href="/discipleship"
               className="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg transition-all hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
@@ -144,7 +48,7 @@ export function HeroSection() {
             </Link>
             <Link
               href="/watch"
-              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg transition-all hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg transition-all hover:scale-105"
             >
               <Play size={18} className="sm:w-5 sm:h-5" />
               Watch Now
@@ -152,27 +56,20 @@ export function HeroSection() {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-6 md:gap-8 pt-2 animate-fadeIn delay-400 relative z-20">
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 md:gap-14 pt-4">
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">13+</div>
-              <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Nations Reached</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-600">13+</div>
+              <div className="text-gray-600 text-xs sm:text-sm font-medium">Nations Reached</div>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">75+</div>
-              <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">House Churches</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-600">75+</div>
+              <div className="text-gray-600 text-xs sm:text-sm font-medium">House Churches</div>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">100+</div>
-              <div className="text-white text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Disciples Trained</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-600">100+</div>
+              <div className="text-gray-600 text-xs sm:text-sm font-medium">Disciples Trained</div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Scroll Indicator - hidden on mobile */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce hidden sm:block">
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
-          <div className="w-1.5 h-3 bg-white/50 rounded-full animate-pulse" />
         </div>
       </div>
     </section>
