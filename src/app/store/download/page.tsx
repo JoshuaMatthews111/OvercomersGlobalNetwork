@@ -6,8 +6,22 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
 import {
-  Download, Check, Music, Disc, ArrowLeft, Loader2, ShieldCheck,
+  Download, Check, Music, ArrowLeft, Loader2, ShieldCheck, AlertCircle,
 } from 'lucide-react';
+
+// Signed links come from a Supabase Edge Function, because a static site on
+// GitHub Pages cannot check Stripe itself.
+//
+// This is deliberately gated on its own flag rather than on the Supabase keys
+// being present: those keys are already committed in .env.production for other
+// features, so keying off them would switch this on before the function and the
+// storage bucket exist and break downloads for real buyers. Set
+// NEXT_PUBLIC_SIGNED_DOWNLOADS=1 only once the Supabase side is live and tested.
+// While it is off, the page serves the mp3s that still ship in /public.
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const SIGNED_LINKS_ENABLED =
+  process.env.NEXT_PUBLIC_SIGNED_DOWNLOADS === '1' && Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 const VOLUME_1_TRACKS = [
   '01 The Mystery of the New Creation Man',
@@ -83,15 +97,71 @@ function DownloadContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const productId = searchParams.get('product') || '';
-  const [verified, setVerified] = useState(false);
+  const [status, setStatus] = useState<'checking' | 'ready' | 'error'>('checking');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
   const [downloading, setDownloading] = useState<string | null>(null);
   const [downloaded, setDownloaded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // If session_id exists, the payment was successful (Stripe redirected here)
-    if (sessionId && productId) {
-      setVerified(true);
+    let cancelled = false;
+
+    if (!productId) {
+      setErrorMessage('We could not tell which collection this was. Please contact us and we will sort it out.');
+      setStatus('error');
+      return;
     }
+
+    if (!SIGNED_LINKS_ENABLED) {
+      // Legacy behaviour: files are served straight from /public.
+      if (sessionId) setStatus('ready');
+      else {
+        setErrorMessage('We could not find your purchase. Please use the link Stripe sent you after paying.');
+        setStatus('error');
+      }
+      return;
+    }
+
+    if (!sessionId) {
+      setErrorMessage('We could not find your purchase. Please use the link Stripe sent you after paying.');
+      setStatus('error');
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/get-download-links`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            apikey: SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ sessionId, product: productId }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (cancelled) return;
+
+        if (!res.ok) {
+          setErrorMessage(data?.error || 'We could not confirm that purchase. Please contact us.');
+          setStatus('error');
+          return;
+        }
+
+        const map: Record<string, string> = {};
+        for (const t of data.tracks ?? []) {
+          if (t?.title && t?.url) map[t.title] = t.url;
+        }
+        setSignedUrls(map);
+        setStatus('ready');
+      } catch {
+        if (cancelled) return;
+        setErrorMessage('We could not reach the download service. Please try again in a moment.');
+        setStatus('error');
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, [sessionId, productId]);
 
   const volumes = getTracksForProduct(productId);
@@ -99,7 +169,7 @@ function DownloadContent() {
   const handleDownload = (folder: string, track: string) => {
     setDownloading(track);
     const link = document.createElement('a');
-    link.href = `/audio/cds/${folder}/${track}.mp3`;
+    link.href = signedUrls[track] || `/audio/cds/${folder}/${track}.mp3`;
     link.download = `${track}.mp3`;
     document.body.appendChild(link);
     link.click();
@@ -116,14 +186,42 @@ function DownloadContent() {
     });
   };
 
-  if (!verified) {
+  if (status === 'checking') {
     return (
       <main className="min-h-screen bg-white">
         <Navigation />
         <div className="pt-40 pb-20 text-center">
           <Loader2 className="w-12 h-12 text-amber-500 mx-auto mb-4 animate-spin" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Verifying your purchase...</h1>
-          <p className="text-gray-500">If this takes too long, please contact us for support.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Confirming your purchase...</h1>
+          <p className="text-gray-500">This only takes a moment.</p>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <main className="min-h-screen bg-white">
+        <Navigation />
+        <div className="pt-40 pb-20 text-center px-4">
+          <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-10 h-10 text-amber-500" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">We could not open your downloads</h1>
+          <p className="text-gray-600 max-w-md mx-auto mb-8">{errorMessage}</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link href="/contact" className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-semibold transition-all">
+              Contact Us
+            </Link>
+            <Link href="/store" className="border border-gray-200 hover:border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold transition-all">
+              Back to Store
+            </Link>
+          </div>
+          <p className="text-gray-400 text-sm mt-8">
+            If you have already paid, your receipt email from Stripe has the link. We will always
+            send your files if anything goes wrong.
+          </p>
         </div>
         <Footer />
       </main>
@@ -151,6 +249,12 @@ function DownloadContent() {
               <ShieldCheck className="w-4 h-4" />
               Payment confirmed via Stripe
             </div>
+            {SIGNED_LINKS_ENABLED && (
+              <p className="text-gray-500 text-sm mt-4 max-w-xl mx-auto">
+                These download links stay active for 24 hours. Save the files to your device — once
+                they are downloaded they are yours to keep. Need the links again? Just contact us.
+              </p>
+            )}
           </div>
 
           {/* Download Sections */}
