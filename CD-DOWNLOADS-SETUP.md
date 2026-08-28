@@ -131,9 +131,12 @@ Push, wait for Pages, then **buy one CD for real** and confirm the tracks
 download. Also confirm that opening
 `/store/download/?product=revelation&session_id=cs_test_bogus` is now refused.
 
-### 7. Only then, remove the audio from the repo
+### 7. Remove the audio from the repo — DONE 2026-08-28 for revelation
 
-Only remove the albums actually in the bucket. Today that is `revelation` alone.
+Only remove albums actually in the bucket. `revelation` is done; `volume-1` and
+`volume-2` stay published from `/public` on purpose.
+
+The local files are kept and `.gitignore`d, so the masters remain on disk.
 
 ```bash
 git rm -r --cached public/audio/cds/revelation

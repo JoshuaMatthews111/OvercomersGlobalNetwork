@@ -41,3 +41,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .claude/
+
+# Revelation CD audio is served from the private Supabase bucket cd-audio,
+# not from the published site. Keep the local copies; do not commit them.
+public/audio/cds/revelation/
