@@ -96,7 +96,30 @@ The Revelation link already redirects correctly. Adding the explicit
 `{CHECKOUT_SESSION_ID}` placeholder to it too is worth doing — the signed-link
 flow depends on that parameter arriving.
 
-### 6. Switch it on and test with a real purchase
+### 6. Switch it on and test with a real purchase — DONE 2026-08-28
+
+Deployed with JWT verification on, `STRIPE_SECRET_KEY` set as a function secret.
+Verified against real Stripe data:
+
+| Case | Result |
+|---|---|
+| Real **paid** session, matching product | 12 signed URLs, audio downloads (206) |
+| Real **unpaid** session | refused — "purchase has not been completed" |
+| Real paid session for a **different product** | refused — "does not cover this collection" |
+| Bogus / missing session id | refused |
+| Unsigned public read of the bucket | refused (400) |
+
+The paid case was proven by deploying a throwaway copy of the function that
+mapped a genuine paid Payment Link to the revelation folder, calling it, and
+downloading a track through the returned link. That copy was deleted immediately
+afterwards (`selftest-download-links`, gone from both Supabase and the repo).
+
+Note: `vol-1` and `vol-2` are in the function's catalog but their files are not
+in the bucket. `createSignedUrls` returns per-item nulls rather than failing, so
+the page falls back to the mp3s in `/public` for those two. That is intentional
+while the volumes stay on GitHub Pages.
+
+#### Original instructions
 
 Add to `.env.production`:
 
