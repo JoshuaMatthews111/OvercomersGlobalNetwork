@@ -50,13 +50,31 @@ const VOLUME_2_TRACKS = [
   '16 Final Meditation The New Creation Experience',
 ];
 
+const REVELATION_TRACKS = [
+  '01 A Son Was Given To You',
+  '02 Christ Formed In You',
+  '03 Born From Above',
+  '04 The Cry of Abba Within',
+  '05 Put On the New Man',
+  '06 The Life In You Does Not Sink',
+  '07 The Way Within the Veil',
+  '08 No Condemnation',
+  '09 Crucified With Him, Alive In Him',
+  '10 One Spirit With Him',
+  '11 From Glory To Glory',
+  '12 Beholding Him Within',
+];
+
 function getTracksForProduct(productId: string) {
-  const volumes: { label: string; folder: string; tracks: string[] }[] = [];
+  const volumes: { label: string; badge: string; folder: string; tracks: string[] }[] = [];
   if (productId === 'vol-1' || productId === 'bundle') {
-    volumes.push({ label: 'Volume I — The Inner World', folder: 'volume-1', tracks: VOLUME_1_TRACKS });
+    volumes.push({ label: 'Volume I — The Inner World', badge: 'VOLUME I', folder: 'volume-1', tracks: VOLUME_1_TRACKS });
   }
   if (productId === 'vol-2' || productId === 'bundle') {
-    volumes.push({ label: 'Volume II — Influencing the Natural World', folder: 'volume-2', tracks: VOLUME_2_TRACKS });
+    volumes.push({ label: 'Volume II — Influencing the Natural World', badge: 'VOLUME II', folder: 'volume-2', tracks: VOLUME_2_TRACKS });
+  }
+  if (productId === 'revelation') {
+    volumes.push({ label: 'The Revelation of the Son of God', badge: 'NEW RELEASE', folder: 'revelation', tracks: REVELATION_TRACKS });
   }
   return volumes;
 }
@@ -141,7 +159,7 @@ function DownloadContent() {
               <div className="bg-gray-900 p-6 flex items-center justify-between">
                 <div>
                   <p className="text-amber-400 tracking-wider text-xs uppercase font-bold mb-1">
-                    {volume.folder === 'volume-1' ? 'VOLUME I' : 'VOLUME II'}
+                    {volume.badge}
                   </p>
                   <h2 className="text-xl font-bold text-white">{volume.label}</h2>
                   <p className="text-gray-400 text-sm mt-1">{volume.tracks.length} tracks</p>

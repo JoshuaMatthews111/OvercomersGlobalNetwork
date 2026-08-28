@@ -12,10 +12,10 @@ const PRODUCTS: Record<string, { name: string; description: string; amount: numb
     description: '16 tracks, 1h 56m of audio teaching by Prophet Joshua Matthews (320 kbps MP3)',
     amount: 5000, // $50
   },
-  bundle: {
-    name: 'Secrets of the Mind & the New Creation — Complete Series',
-    description: 'Both volumes: 35 tracks, 4h 35m of audio teaching by Prophet Joshua Matthews (320 kbps MP3)',
-    amount: 10000, // $100
+  revelation: {
+    name: 'The Revelation of the Son of God',
+    description: '12 teachings & meditations, 2h 06m, by Prophet Joshua Matthews (MP3 download)',
+    amount: 2500, // $25
   },
 };
 

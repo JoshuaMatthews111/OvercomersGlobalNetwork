@@ -32,7 +32,9 @@ export default function StorePage() {
   const STRIPE_LINKS: Record<string, string> = {
     'vol-1': 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c',
     'vol-2': 'https://buy.stripe.com/8x2eVe4tI0mZcsheshco00d',
-    bundle: 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c', // TODO: replace with actual bundle link
+    // Paste the Stripe Payment Link for The Revelation of the Son of God ($25) here.
+    // Leave it empty and the buy button points people to /contact instead of a dead link.
+    revelation: '',
   };
 
   useEffect(() => {
@@ -67,6 +69,35 @@ export default function StorePage() {
 
   const VOLUMES = [
     {
+      id: 'revelation',
+      number: 'NEW RELEASE',
+      title: 'The Revelation of the Son of God',
+      subtitle: 'Christ Begotten of God \u00b7 Born of a Woman \u00b7 Testified by Angels \u00b7 Now Living Within You',
+      front: '/images/cds/revelation-front.jpg',
+      back: '/images/cds/revelation-back.jpg',
+      price: 25,
+      tracks: 12,
+      duration: '2h 06m',
+      format: 'MP3 download',
+      ctaLabel: 'Purchase & Download',
+      highlights: [
+        'Part One \u2014 The Son Given',
+        'A Son Was Given To You',
+        'Christ Formed In You',
+        'Born From Above',
+        'The Cry of Abba Within',
+        'Put On the New Man',
+        'The Life In You Does Not Sink',
+        'Part Two \u2014 The Son Revealed',
+        'The Way Within the Veil',
+        'No Condemnation',
+        'Crucified With Him, Alive In Him',
+        'One Spirit With Him',
+        'From Glory To Glory',
+        'Beholding Him Within',
+      ],
+    },
+    {
       id: 'vol-1',
       number: 'VOLUME I',
       title: 'Secrets of the Mind & The New Creation',
@@ -76,6 +107,8 @@ export default function StorePage() {
       price: 50,
       tracks: 19,
       duration: '2h 39m',
+      format: '320 kbps MP3',
+      ctaLabel: 'Purchase Volume',
       highlights: [
         'The Mystery of the New Creation Man',
         'Your Mind Must Catch Up With Your Spirit',
@@ -96,6 +129,8 @@ export default function StorePage() {
       price: 50,
       tracks: 16,
       duration: '1h 56m',
+      format: '320 kbps MP3',
+      ctaLabel: 'Purchase Volume',
       highlights: [
         'Faith Has a Voice',
         'Remaining in Faith Until the Promise Manifests',
@@ -186,32 +221,8 @@ export default function StorePage() {
       {/* ═══════════════ CDS TAB ═══════════════ */}
       {activeTab === 'cds' && (
         <>
-          {/* Bundle */}
           <section className="py-16 bg-white">
             <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto mb-16 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-center">
-                <Disc className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-                  Complete Teaching CD Bundle
-                </h2>
-                <p className="text-gray-300 text-lg mb-2">
-                  Volume I + Volume II (35 Teachings)
-                </p>
-                <p className="text-amber-400 text-4xl font-bold mb-6">$100</p>
-                <p className="text-gray-400 text-sm mb-8 max-w-2xl mx-auto">
-                  Get both volumes together and save. All tracks are fully downloadable immediately after purchase.
-                </p>
-                <a
-                  href={STRIPE_LINKS.bundle}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  Purchase Bundle - $100
-                </a>
-              </div>
-
               {/* Individual Volumes */}
               {VOLUMES.map(volume => (
                 <div key={volume.id} className="max-w-5xl mx-auto mb-16">
@@ -219,11 +230,11 @@ export default function StorePage() {
                     {/* Covers */}
                     <div className="grid md:grid-cols-2 gap-0">
                       <div className="relative aspect-square">
-                        <Image src={volume.front} alt={`${volume.number} Front Cover`} fill className="object-cover" />
+                        <Image src={volume.front} alt={`${volume.title} Front Cover`} fill className="object-cover" />
                         <div className="absolute bottom-4 left-4 bg-black/70 text-white text-xs px-3 py-1 rounded-full">Front Cover</div>
                       </div>
                       <div className="relative aspect-square">
-                        <Image src={volume.back} alt={`${volume.number} Back Cover`} fill className="object-cover" />
+                        <Image src={volume.back} alt={`${volume.title} Back Cover`} fill className="object-cover" />
                         <div className="absolute bottom-4 left-4 bg-black/70 text-white text-xs px-3 py-1 rounded-full">Back Cover</div>
                       </div>
                     </div>
@@ -236,7 +247,7 @@ export default function StorePage() {
                       <div className="flex flex-wrap gap-4 text-sm text-gray-400 mb-6">
                         <span>{volume.tracks} tracks</span>
                         <span>{volume.duration}</span>
-                        <span>320 kbps MP3</span>
+                        <span>{volume.format}</span>
                       </div>
 
                       {/* Highlights */}
@@ -263,15 +274,25 @@ export default function StorePage() {
 
                       <div className="flex items-center gap-4">
                         <span className="text-amber-600 text-2xl font-bold">${volume.price}</span>
-                        <a
-                          href={STRIPE_LINKS[volume.id]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
-                        >
-                          <ShoppingCart className="w-5 h-5" />
-                          Purchase Volume - ${volume.price}
-                        </a>
+                        {STRIPE_LINKS[volume.id] ? (
+                          <a
+                            href={STRIPE_LINKS[volume.id]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                          >
+                            <ShoppingCart className="w-5 h-5" />
+                            {volume.ctaLabel} - ${volume.price}
+                          </a>
+                        ) : (
+                          <Link
+                            href="/contact"
+                            className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                          >
+                            <ShoppingCart className="w-5 h-5" />
+                            Message Us To Order - ${volume.price}
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </div>

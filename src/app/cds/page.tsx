@@ -3,6 +3,7 @@
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 const VOLUMES = [
@@ -51,7 +52,44 @@ const VOLUMES = [
 const STRIPE_LINKS: Record<string, string> = {
   'vol-1': 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c',
   'vol-2': 'https://buy.stripe.com/8x2eVe4tI0mZcsheshco00d',
-  bundle: 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c', // TODO: replace with actual bundle link
+  // Paste the Stripe Payment Link for The Revelation of the Son of God ($25) here.
+  // Leave it empty and the buy button points people to /contact instead of a dead link.
+  revelation: '',
+};
+
+const REVELATION = {
+  title: 'The Revelation of the Son of God',
+  tagline: 'Christ Begotten of God · Born of a Woman · Testified by Angels · Now Living Within You',
+  front: '/images/cds/revelation-front.jpg',
+  back: '/images/cds/revelation-back.jpg',
+  price: '$25',
+  duration: '2h 06m',
+  parts: [
+    {
+      label: 'Part One — The Son Given',
+      duration: '57 min',
+      tracks: [
+        ['A Son Was Given To You', '6:06'],
+        ['Christ Formed In You', '4:06'],
+        ['Born From Above', '9:36'],
+        ['The Cry of Abba Within', '12:30'],
+        ['Put On the New Man', '13:12'],
+        ['The Life In You Does Not Sink', '12:00'],
+      ],
+    },
+    {
+      label: 'Part Two — The Son Revealed',
+      duration: '69 min',
+      tracks: [
+        ['The Way Within the Veil', '13:00'],
+        ['No Condemnation', '11:06'],
+        ['Crucified With Him, Alive In Him', '9:42'],
+        ['One Spirit With Him', '9:18'],
+        ['From Glory To Glory', '11:24'],
+        ['Beholding Him Within', '14:30'],
+      ],
+    },
+  ],
 };
 
 export default function CDsPage() {
@@ -160,38 +198,105 @@ export default function CDsPage() {
         </div>
       </section>
 
-      {/* Bundle */}
+      {/* New release — The Revelation of the Son of God */}
       <section className="py-20 bg-[#0a0c11]">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center border border-orange-500/30 rounded-2xl p-10 bg-gradient-to-b from-orange-900/10 to-transparent">
-            <p className="text-orange-400 tracking-[0.3em] text-xs uppercase mb-4">Complete Series</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="gold-shimmer">Both Volumes Together</span>
-            </h2>
-            <p className="text-gray-300 leading-relaxed mb-8 max-w-2xl mx-auto">
-              The whole teaching in order, as it was taught — all 35 tracks across both volumes,
-              4 hours and 35 minutes, including all six guided meditations.
-            </p>
-
-            <div className="flex justify-center gap-4 mb-8">
-              <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-lg overflow-hidden border border-white/10">
-                <Image src="/images/cds/volume-1-front.png" alt="Volume I" fill className="object-cover" sizes="144px" />
-              </div>
-              <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-lg overflow-hidden border border-white/10">
-                <Image src="/images/cds/volume-2-front.png" alt="Volume II" fill className="object-cover" sizes="144px" />
-              </div>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-orange-400 tracking-[0.3em] text-xs uppercase mb-4">New Release</p>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                <span className="gold-shimmer">{REVELATION.title}</span>
+              </h2>
+              <p className="text-gray-300 text-base md:text-lg max-w-3xl mx-auto">
+                {REVELATION.tagline}
+              </p>
             </div>
 
-            <div className="flex flex-wrap justify-center items-center gap-5">
-              <span className="text-4xl font-bold text-white">$100</span>
-              <a
-                href={STRIPE_LINKS.bundle}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-4 rounded-md font-semibold text-lg transition-all"
-              >
-                Get the Complete Series
-              </a>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+              {/* Covers */}
+              <div>
+                <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 shadow-2xl">
+                  <Image
+                    src={REVELATION.front}
+                    alt={`${REVELATION.title} front cover`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+                <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 mt-4 max-w-[45%]">
+                  <Image
+                    src={REVELATION.back}
+                    alt={`${REVELATION.title} back cover with full tracklist`}
+                    fill
+                    className="object-cover"
+                    sizes="45vw"
+                  />
+                </div>
+                <p className="text-gray-500 text-xs mt-2">Front and back cover</p>
+              </div>
+
+              {/* Copy + tracklist */}
+              <div>
+                <p className="text-gray-300 leading-relaxed mb-6">
+                  This digital teaching and meditation collection takes you into the revelation of
+                  Christ — not only the Son who was given, but the Son revealed and now living
+                  within you. It was created to move you from simply knowing about Jesus Christ to
+                  understanding the mystery of Christ formed in you, your union with Him, and the
+                  life of the Son operating within you.
+                </p>
+
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400 mb-8">
+                  <span>12 full teachings &amp; meditations</span>
+                  <span>{REVELATION.duration}</span>
+                  <span>Two parts</span>
+                </div>
+
+                <div className="space-y-6 mb-8">
+                  {REVELATION.parts.map((part) => (
+                    <div key={part.label}>
+                      <div className="flex items-baseline justify-between border-b border-orange-500/30 pb-2 mb-3">
+                        <h3 className="text-orange-400 tracking-[0.15em] text-xs uppercase font-bold">
+                          {part.label}
+                        </h3>
+                        <span className="text-gray-500 text-xs">{part.duration}</span>
+                      </div>
+                      <ol className="space-y-1.5">
+                        {part.tracks.map(([name, length]) => (
+                          <li key={name} className="flex items-baseline gap-3 text-sm">
+                            <span className="text-gray-300 flex-1">{name}</span>
+                            <span className="text-gray-500 font-mono text-xs">{length}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4">
+                  <span className="text-3xl font-bold text-white">{REVELATION.price}</span>
+                  {STRIPE_LINKS.revelation ? (
+                    <a
+                      href={STRIPE_LINKS.revelation}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-md font-medium transition-all"
+                    >
+                      Buy &amp; Download
+                    </a>
+                  ) : (
+                    <Link
+                      href="/contact"
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-md font-medium transition-all"
+                    >
+                      Message Us To Order
+                    </Link>
+                  )}
+                </div>
+                <p className="text-gray-500 text-xs mt-3">
+                  Delivered digitally — download and listen on your phone, tablet, or computer.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -233,7 +338,7 @@ export default function CDsPage() {
               <h3 className="text-xl font-bold mb-5 text-white">How the download works</h3>
               <ol className="space-y-4 text-gray-300 text-sm">
                 {[
-                  'Choose a volume or the complete series and click through to secure checkout.',
+                  'Choose the volume or collection you want and click through to secure checkout.',
                   'Pay by card through Stripe — your card details are never handled by this site.',
                   'You land straight in your library, where every track is listed and ready.',
                   'Download the tracks you want, or the whole volume at once, on any device.',
