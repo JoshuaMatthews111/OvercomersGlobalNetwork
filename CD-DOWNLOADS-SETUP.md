@@ -26,24 +26,33 @@ behaves exactly as it does today, so nothing breaks between now and the cutover.
 
 ## Steps
 
-### 1. Upgrade the OGN Supabase account to Pro — Joshua only
+### 1. Plan — staying on Free for now
 
-Project `ljmzujrzdhwmvvapajlr` (OGNAPP2026). **This must be done first.** Free
-projects auto-pause after ~7 days idle, and a paused project stops resolving —
-every download link on the site would break until someone restored it by hand.
-That is the same pause that took both OGN sites down in August.
+Joshua chose to stay on the Free plan rather than upgrade OGNAPP2026
+(`ljmzujrzdhwmvvapajlr`) to Pro. Two consequences to watch:
 
-### 2. Create the bucket
+- **Pausing.** The project was found paused on 2026-08-28 and had to be restored
+  by hand before anything could be uploaded. Pausing is judged on *database*
+  activity, and serving mp3s from Storage is not database activity — so this can
+  recur while CDs are actively selling, and every download link dies until
+  someone restores it.
+- **Egress.** Free gives 5 GB uncached per month, shared across the whole
+  organization. One Revelation download is 116 MB, so roughly 40 downloads a
+  month before Fair Use restrictions apply — which can mean 402s on every API
+  request, not just downloads.
 
-Supabase dashboard → Storage → New bucket:
+For this reason **only the Revelation CD was moved.** Volume I and Volume II
+(660 MB) stay on GitHub Pages, where serving them costs no egress.
 
-- Name: `cd-audio`
-- **Private** (not public — public defeats the whole point)
+### 2. Create the bucket — DONE
 
-### 3. Upload the audio
+`cd-audio`, private. The upload script creates it automatically if missing.
+
+### 3. Upload the audio — DONE for revelation
 
 ```bash
-node scripts/upload-cd-audio.mjs
+node scripts/upload-cd-audio.mjs revelation   # one album
+node scripts/upload-cd-audio.mjs             # everything
 ```
 
 Reads `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from `.env.local`. Safe to
@@ -53,7 +62,11 @@ re-run; it skips files already uploaded. Confirm with:
 node scripts/upload-cd-audio.mjs --check
 ```
 
-Expect 19 + 16 + 12 = 47 files.
+12/12 revelation tracks uploaded and size-verified on 2026-08-28. Signed URLs
+were confirmed working and unsigned public access confirmed blocked.
+
+Note: right after a restore the database refuses some connections and a few
+uploads fail with "too many connections" — just run the script again.
 
 ### 4. Deploy the edge function
 
@@ -97,8 +110,10 @@ download. Also confirm that opening
 
 ### 7. Only then, remove the audio from the repo
 
+Only remove the albums actually in the bucket. Today that is `revelation` alone.
+
 ```bash
-git rm -r --cached public/audio/cds
+git rm -r --cached public/audio/cds/revelation
 echo "public/audio/cds/" >> .gitignore
 git commit -m "Serve CD audio from Supabase Storage"
 ```

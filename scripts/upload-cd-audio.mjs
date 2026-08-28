@@ -74,9 +74,13 @@ if (bucketErr) {
   process.exit(1);
 }
 if (!buckets.some((b) => b.name === BUCKET)) {
-  console.error(`Bucket "${BUCKET}" does not exist yet.`);
-  console.error('Create it as a PRIVATE bucket, then run this again.');
-  process.exit(1);
+  console.log(`Bucket "${BUCKET}" does not exist — creating it as private.`);
+  const { error } = await supabase.storage.createBucket(BUCKET, { public: false });
+  if (error) {
+    console.error(`Could not create bucket "${BUCKET}": ${error.message}`);
+    process.exit(1);
+  }
+  console.log('Bucket created.\n');
 }
 
 const folders = (await readdir(AUDIO_ROOT, { withFileTypes: true }))
@@ -92,7 +96,15 @@ if (checkOnly) {
   process.exit(0);
 }
 
-const files = await walk(AUDIO_ROOT);
+const only = process.argv.slice(2).find((a) => !a.startsWith('--'));
+if (only && !folders.includes(only)) {
+  console.error(`No such album folder "${only}". Available: ${folders.join(', ')}`);
+  process.exit(1);
+}
+
+const allFiles = await walk(AUDIO_ROOT);
+const files = only ? allFiles.filter((f) => f.key.startsWith(`${only}/`)) : allFiles;
+if (only) console.log(`Limiting to album "${only}".`);
 const totalBytes = (await Promise.all(files.map((f) => stat(f.full)))).reduce((n, s) => n + s.size, 0);
 console.log(`${files.length} mp3 files, ${mb(totalBytes)} to consider.\n`);
 
