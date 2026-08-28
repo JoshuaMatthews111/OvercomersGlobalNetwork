@@ -52,9 +52,7 @@ const VOLUMES = [
 const STRIPE_LINKS: Record<string, string> = {
   'vol-1': 'https://buy.stripe.com/4gM9AU3pE0mZfEt4RHco00c',
   'vol-2': 'https://buy.stripe.com/8x2eVe4tI0mZcsheshco00d',
-  // Paste the Stripe Payment Link for The Revelation of the Son of God ($25) here.
-  // Leave it empty and the buy button points people to /contact instead of a dead link.
-  revelation: '',
+  revelation: 'https://donate.stripe.com/aFa00kf8mb1Dcshdodco00e',
 };
 
 const REVELATION = {
