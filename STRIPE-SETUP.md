@@ -20,7 +20,10 @@ STRIPE_SECRET_KEY=sk_live_your_secret_key_here
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your_publishable_key_here
 
 # Webhook Secret (for production)
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+# Get this from Stripe > Developers > Webhooks > your endpoint > Signing secret.
+# NEVER paste the real value into this file - this repository is PUBLIC.
+# Set it in Vercel > Settings > Environment Variables instead.
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_signing_secret_here
 
 # Base URL (update for production)
 NEXT_PUBLIC_BASE_URL=http://localhost:3000

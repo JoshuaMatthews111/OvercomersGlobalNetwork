@@ -40,7 +40,7 @@ Copy-paste each one into the Environment Variables section on the Vercel import 
 | Variable Name | Value |
 |---|---|
 | `STRIPE_SECRET_KEY` | *(your `sk_live_...` from Stripe dashboard)* |
-| `STRIPE_WEBHOOK_SECRET` | `whsec_placeholder_for_now` (we'll fix in Step 5) |
+| `STRIPE_WEBHOOK_SECRET` | `*(from Stripe > Developers > Webhooks > your endpoint > Signing secret)*` 🔄 |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | *(your `pk_live_...` from Stripe dashboard)* |
 | `NEXT_PUBLIC_BASE_URL` | `https://overcomersglobalnetwork.com` |
 | `ZOHO_EMAIL` | `joshuamatthews@overcomersglobalnetwork.com` |
